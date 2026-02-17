@@ -1,4 +1,5 @@
 using BusinessLayer.Interfaces;
+using BusinessLayer.Security;
 using BusinessLayer.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,5 +12,8 @@ public static class DependencyInjection
     {
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        
+        builder.Services.Configure<JwtOptions>(
+            builder.Configuration.GetSection("JWTOptions"));
     } 
 }

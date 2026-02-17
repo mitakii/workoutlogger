@@ -3,46 +3,80 @@ using DataAccessLayer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BusinessLayer.Services;
+using DataAccessLayer.Data;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+var issuer = builder.Configuration["JWTOptions:Issuer"] ?? throw new InvalidOperationException("issuer");
+var audience = builder.Configuration["JWTOptions:Audience"] ?? throw new InvalidOperationException("audience");
+var key = builder.Configuration["JWTOptions:SigningKey"] ?? throw new InvalidOperationException("key");
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
+builder.ConfigureDataAccessServices();
+builder.ConfigureBusinessServices();
+
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = 
-        options.DefaultChallengeScheme = 
-            options.DefaultSignInScheme =
-                options.DefaultForbidScheme =
-                    options.DefaultSignOutScheme =
-                        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidIssuer = issuer,
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidAudience = audience,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]))
+            Encoding.UTF8.GetBytes(key)),
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            // manually take token from cookies instead of headers
+            if(context.Request.Cookies.ContainsKey("accessToken"))
+                context.Token = context.Request.Cookies["accessToken"];
+            
+            return Task.CompletedTask;
+        }
     };
 });
 
+
 builder.Services.AddAuthorization();
-builder.ConfigureDataAccessServices();
-builder.ConfigureBusinessServices();
+
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    
+    using (var scope = app.Services.CreateScope())
+    {
+        await SeedRoles.SeedRolesAsync(scope.ServiceProvider);
+        await SeedAdmin.SeedAsync(scope.ServiceProvider);
+    }
 }
 
 app.UseHttpsRedirection();
 
 app.UseRouting();
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -5,5 +5,5 @@ namespace DataAccessLayer.Entities;
 public class User : IdentityUser<Guid>
 {
     public string? Description {get; set;}
-    public ICollection<Workout> Workouts { get; set; }
+    //public ICollection<Workout> Workouts { get; set; }
 }
