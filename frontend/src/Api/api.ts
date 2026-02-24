@@ -1,19 +1,19 @@
 import axios from "axios";
 
 let isRefreshing = false;
-let failedQueue = [];
+let failedQueue: any[] = [];
 
 export const api = axios.create({
   baseURL: "http://localhost:5241/api",
   withCredentials: true,
 });
 
-const processQueue = (error) => {
+const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach((promise) => {
     if (error) {
       promise.reject(error);
     } else {
-      promise.resolve();
+      promise.resolve(token);
     }
   });
   failedQueue = [];

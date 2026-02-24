@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { api } from "../api/api";
-import { AuthState } from "../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
-  const { setUser, setLoading } = AuthState();
+  const [username, setUsername] = useState<string>();
+  const [password, setPassword] = useState<string>();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const submitHandler = async () => {
@@ -14,13 +13,7 @@ export const Login = () => {
       return;
     }
 
-    try {
-      await api.post("/auth/login", { username, password });
-      setLoading(true);
-      navigate("/");
-    } catch (error) {
-      alert(error);
-    }
+    await login(username, password);
   };
 
   return (

@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { api } from "../api/api";
+import { api } from "../Api/api";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/UserContext";
 
 export const Register = () => {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
-  const [email, setEmail] = useState();
+  const [username, setUsername] = useState<string>();
+  const [password, setPassword] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const submitHandler = async () => {
@@ -13,12 +15,7 @@ export const Register = () => {
       return;
     }
 
-    try {
-      await api.post("/auth/register", { email, username, password });
-      navigate("/");
-    } catch (error) {
-      alert(error);
-    }
+    await register(username, email, password);
   };
 
   return (

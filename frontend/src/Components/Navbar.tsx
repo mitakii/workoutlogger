@@ -1,10 +1,12 @@
-import { Link, Links } from "react-router-dom";
+import { Link } from "react-router";
 
-export const NavBar = () => {
+const Navbar = () => {
   return (
-    <>
+    <div>
       <Link to={"/login"}> Login </Link>
       <Link to={"/register"}> Register </Link>
-    </>
+    </div>
   );
 };
+
+export default Navbar;
