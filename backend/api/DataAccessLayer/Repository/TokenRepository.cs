@@ -36,8 +36,6 @@ public class TokenRepository : ITokenRepository
         return true;
     }
     
-    
-
     public async Task<bool> DeleteRefreshTokenAsync(string refreshToken)
     {
         if (string.IsNullOrEmpty(refreshToken))

@@ -74,7 +74,7 @@ public class AuthController : ControllerBase
         if (await _userManager.IsLockedOutAsync(user))
             return Forbid();
         
-        await _tokenService.RevokeUserRefreshTokenAsync(user.Id.ToString());
+        await _tokenService.RevokeRefreshTokenByUIdAsync(user.Id.ToString());
 
         if (!await _userManager.CheckPasswordAsync(user, request.Password))
             return Unauthorized();

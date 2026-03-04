@@ -12,6 +12,7 @@ public static class DependencyInjection
     {
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IExerciseService, ExerciseService>();
         
         builder.Services.Configure<JwtOptions>(
             builder.Configuration.GetSection("JWTOptions"));

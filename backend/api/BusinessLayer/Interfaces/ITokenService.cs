@@ -14,7 +14,7 @@ public interface ITokenService
     public Task<Result<string>> GenerateRefreshTokenAsync(User user);
     public Task<Result<bool>> RevokeRefreshTokenAsync(string refreshToken);
     
-    public Task<Result<string>> RevokeUserRefreshTokenAsync(string userId);
+    public Task<Result<string>> RevokeRefreshTokenByUIdAsync(string userId);
     
     
 }

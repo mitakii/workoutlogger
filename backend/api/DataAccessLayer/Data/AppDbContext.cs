@@ -12,21 +12,17 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>,  Guid>
         
     }
     
-    // public DbSet<Exercise> Exercises { get; set; }
-    // public DbSet<ExerciseSet> Sets { get; set; }
-    // public DbSet<Tag> Tags { get; set; }
+    public DbSet<Workout> Workouts { get; set; }
+    public DbSet<Exercise> Exercises { get; set; }
+    public DbSet<ExerciseTranslations> ExerciseTranslations { get; set; }
+    public DbSet<UserExercise> UserExercises { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-    // protected override void OnModelCreating(ModelBuilder modelBuilder)
-    // {
-    //     modelBuilder.Entity<Exercise>()
-    //         .HasMany(e => e.Sets)
-    //         .WithOne(s => s.Exercise)
-    //         .HasForeignKey(s => s.ExerciseId);
-    //     
-    //     modelBuilder.Entity<User>()
-    //         .HasMany(e => e.Workouts)
-    //         .WithOne(s => s.User)
-    //         .HasForeignKey(s => s.UserId);
-    // }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<ExerciseTranslations>()
+            .HasIndex(et => new {et.ExerciseId, et.Language})
+            .IsUnique();
+    }
 }

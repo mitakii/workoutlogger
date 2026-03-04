@@ -22,6 +22,58 @@ namespace DataAccessLayer.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("DataAccessLayer.Entities.Exercise", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MediaUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NameTag")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Exercises");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.ExerciseTranslations", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ExerciseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExerciseId", "Language")
+                        .IsUnique();
+
+                    b.ToTable("ExerciseTranslations");
+                });
+
             modelBuilder.Entity("DataAccessLayer.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -78,6 +130,9 @@ namespace DataAccessLayer.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<string>("UserPfpUrl")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -88,6 +143,76 @@ namespace DataAccessLayer.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.UserExercise", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RefExerciseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("WorkoutId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RefExerciseId");
+
+                    b.HasIndex("WorkoutId");
+
+                    b.ToTable("UserExercises");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.UserExerciseSet", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ExerciseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Reps")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.ToTable("UserExerciseSet");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.Workout", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DateCompleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateStarted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Workouts");
                 });
 
             modelBuilder.Entity("DataAccessLayer.RefreshToken", b =>
@@ -242,6 +367,58 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("DataAccessLayer.Entities.ExerciseTranslations", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.Exercise", "Exercise")
+                        .WithMany("Translations")
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exercise");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.UserExercise", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.Exercise", "RefExercise")
+                        .WithMany()
+                        .HasForeignKey("RefExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Entities.Workout", "Workout")
+                        .WithMany("UserExercises")
+                        .HasForeignKey("WorkoutId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RefExercise");
+
+                    b.Navigation("Workout");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.UserExerciseSet", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.UserExercise", "Exercise")
+                        .WithMany("UserExerciseSets")
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exercise");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.Workout", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.User", "User")
+                        .WithMany("Workouts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DataAccessLayer.RefreshToken", b =>
                 {
                     b.HasOne("DataAccessLayer.Entities.User", "User")
@@ -302,6 +479,26 @@ namespace DataAccessLayer.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.Exercise", b =>
+                {
+                    b.Navigation("Translations");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.User", b =>
+                {
+                    b.Navigation("Workouts");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.UserExercise", b =>
+                {
+                    b.Navigation("UserExerciseSets");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.Workout", b =>
+                {
+                    b.Navigation("UserExercises");
                 });
 #pragma warning restore 612, 618
         }

@@ -141,7 +141,7 @@ public class TokenService : ITokenService
         return Result<bool>.Success(token);
     }
 
-    public async Task<Result<string>> RevokeUserRefreshTokenAsync(string userId)
+    public async Task<Result<string>> RevokeRefreshTokenByUIdAsync(string userId)
     {
         if (string.IsNullOrEmpty(userId))
             return Result<string>.Failed(ErrorCode.BadRequest, "userId is required");
