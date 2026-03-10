@@ -22,14 +22,12 @@ public class ExerciseController : ControllerBase
         _userManager = userManager;
     }
 
-    [Authorize(Roles =  "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create(ExerciseCreateRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest();
-        
-
         
         var result = await _exerciseService.CreateAsync(request);
         return !result.Succeeded ? result.ToIActionResultErrors() : Ok();
@@ -46,6 +44,7 @@ public class ExerciseController : ControllerBase
         return !result.Succeeded ? result.ToIActionResultErrors() : Ok();
     }
 
+    [Authorize(Roles = "Admin")]
     //later move to separate controller 
     [HttpPost("translations")]
     public async Task<IActionResult> AddTranslation(ExerciseTranslationCreateRequest request)

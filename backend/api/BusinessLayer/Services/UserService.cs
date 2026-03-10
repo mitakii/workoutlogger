@@ -1,4 +1,5 @@
 using ApplicationLayer.Data.Enums;
+using BusinessLayer.DTO;
 using BusinessLayer.Exceptions;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
@@ -16,6 +17,7 @@ public class UserService : IUserService
         _userManager = userManager;
         _context = context;
     }
+    
     public async Task<Result<bool>> ChangeUserLanguageAsync(string userId, string language)
     {
         if (string.IsNullOrEmpty(language))
@@ -33,5 +35,34 @@ public class UserService : IUserService
                 result.Errors.Select(e => e.Description).ToList());
         
         return Result<bool>.Success(true);
+    }
+
+    public async Task<Result<UserGetResponse>> GetUserAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Result<UserGetResponse>.Failed(ErrorCode.NotFound, "User not found");
+
+        return Result<UserGetResponse>.Success(MapToResponse(user));
+    }
+
+    public async Task<Result<UserGetResponse>> GetUserByNameAsync(string username)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+        if(user == null)
+            return Result<UserGetResponse>.Failed(ErrorCode.NotFound, "User not found");
+
+        return Result<UserGetResponse>.Success(MapToResponse(user));
+    }
+
+    private UserGetResponse MapToResponse(User user)
+    {
+        return new UserGetResponse
+        {
+            Id = user.Id.ToString(),
+            Username = user.UserName,
+            Descrrpition = user.Description,
+            PfpUrl = user.UserPfpUrl
+        };
     }
 }

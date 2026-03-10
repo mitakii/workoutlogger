@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace PresentationLayer.Controllers;
 
 [ApiController]
-[Route("api/user")]
+[Route("api/[controller]")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -25,14 +25,26 @@ public class UserController : ControllerBase
         _userManager = userManager;
     }
     
-    [Authorize]
-    [HttpGet("me")]
-    public async Task<IActionResult> Get()
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetProfile(string userId)
     {
-        var user = await _userManager.FindByIdAsync(
-            User.FindFirstValue(ClaimTypes.NameIdentifier));
+        if (string.IsNullOrEmpty(userId))
+            return BadRequest();
 
-        return Ok(user.UserName);
+        var result = await _userService.GetUserAsync(userId);
+        return result.Succeeded ? Ok(result) : NotFound();
     }
-    
+
+    [Authorize]
+    [HttpPost("language")]
+    public async Task<IActionResult> ChangeLanguage(string language)
+    {
+        if (string.IsNullOrEmpty(language))
+            return BadRequest();
+        
+        var userId = User.FindFirst(JwtRegisteredClaimNames.NameId)?.Value;
+            
+        var result = await _userService.ChangeUserLanguageAsync(userId, language);
+        return result.Succeeded ? Ok(result) : NotFound();
+    }
 }
