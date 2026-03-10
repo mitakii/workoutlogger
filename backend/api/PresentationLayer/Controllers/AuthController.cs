@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
         _jwtOptions = jwtOptions.Value;
     }
 
-[Authorize]
+    [Authorize]
     [HttpGet("status")]
     public async Task<IActionResult> Status()
     {
@@ -126,6 +126,7 @@ public class AuthController : ControllerBase
         Response.Cookies.Delete("refreshToken");
         return Ok();
     }
+    
     [Authorize]
     [HttpGet("test")]
     public IActionResult Test()

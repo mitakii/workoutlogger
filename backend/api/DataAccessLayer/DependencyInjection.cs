@@ -1,3 +1,4 @@
+using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Interfaces;
@@ -34,5 +35,6 @@ public static class DependencyInjection
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
         
         builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+        builder.Services.AddScoped<ITranslationRepository, TranslationRepository>();
     } 
 }

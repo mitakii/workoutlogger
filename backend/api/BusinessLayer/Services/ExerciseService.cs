@@ -18,8 +18,22 @@ public class ExerciseService : IExerciseService
         _dbContext = context;
     }
     
-    public async Task<Result<bool>> CreateAsync(Exercise exercise)
+    public async Task<Result<bool>> CreateAsync(ExerciseCreateRequest request)
     {
+        var exercise = new Exercise
+        {
+            NameTag = request.NameTag,
+            Description = request.Description,
+            MediaUrl =  request.MediaUrl,
+            Translations = request.Translations
+                .Select(t => new ExerciseTranslations
+                {
+                    Name = t.Name,
+                    Description = t.Description,
+                    Language = t.Language
+                }).ToList(),
+        };
+        
         await _dbContext.Exercises.AddAsync(exercise);
         await _dbContext.SaveChangesAsync();
         return Result<bool>.Success(true);
@@ -73,28 +87,32 @@ public class ExerciseService : IExerciseService
         });
     }
 
-    public async Task<Result<PagedResult<ExerciseGetResponse>>> GetAllAsync(string q,string lang, int page, int pageSize)
+    public async Task<Result<PagedResult<ExerciseGetResponse>>> GetAllAsync(
+        ExerciseSearchRequest request)
     {
-        if (string.IsNullOrEmpty(q))
-            return Result<PagedResult<ExerciseGetResponse>>.Failed(ErrorCode.BadRequest, "Search query is empty");
+        if (string.IsNullOrEmpty(request.Query))
+            return Result<PagedResult<ExerciseGetResponse>>
+                .Failed(ErrorCode.BadRequest, "Search query is empty");
 
-        var normQ =  q.ToLower();
+        var normQ = request.Query.ToLower();
         
         var query = _dbContext.ExerciseTranslations
             .AsNoTracking()
-            .Where(e => e.Language == lang && e.Name.ToLower().Contains(normQ));
+            .Where(e => e.Language == request.Language && e.Name.ToLower().Contains(normQ));
         
         var totalItems = await query.CountAsync();
 
-        return Result<PagedResult<ExerciseGetResponse>>.Success(new PagedResult<ExerciseGetResponse>()
+        return Result<PagedResult<ExerciseGetResponse>>
+            .Success(new PagedResult<ExerciseGetResponse>()
         {
-            PageNumber = page,
-            PageSize = pageSize,
+            PageNumber = request.Page,
+            PageSize = request.PageSize,
             TotalItems = totalItems,
+            TotalPages = (int)Math.Ceiling((double)totalItems / request.PageSize),
             Items = await query
                 .OrderBy(t => t.Name)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .Select(t =>
                     new ExerciseGetResponse
                     {
@@ -105,8 +123,39 @@ public class ExerciseService : IExerciseService
         });
     }
 
-    public Task<Result<bool>> UpdateAsync(Exercise exercise)
+    public async Task<Result<bool>> UpdateAsync(ExerciseUpdateRequest request)
     {
-        throw new NotImplementedException();
+        var exercise = await _dbContext.Exercises.FindAsync(request.Id);
+        if (exercise == null)
+            return Result<bool>.Failed(ErrorCode.NotFound, "Exercise not found");
+        
+        exercise.Description = string.IsNullOrEmpty(request.Description) ? exercise.Description : request.Description;
+        exercise.MediaUrl = string.IsNullOrEmpty(request.MediaUrl) ? exercise.MediaUrl : request.MediaUrl;
+        exercise.NameTag = string.IsNullOrEmpty(request.Nametag)  ? exercise.NameTag : request.Nametag;
+        _dbContext.Exercises.Update(exercise);
+        await _dbContext.SaveChangesAsync();
+        
+        return Result<bool>.Success(true);
+    }
+
+    public async Task<Result<bool>> AddTranslationAsync(ExerciseTranslationCreateRequest request)
+    {
+        if (string.IsNullOrEmpty(request.ExerciseId))
+            return Result<bool>.Failed(ErrorCode.BadRequest, "ExerciseId is empty or null");
+        
+        var exercise = await _dbContext.Exercises.FindAsync(request.ExerciseId);
+        if (exercise == null)
+            return Result<bool>.Failed(ErrorCode.NotFound, "Exercise not found");
+
+        var translation = new ExerciseTranslations
+        {
+            Language = request.Language,
+            Name = request.Name,
+            Description = request.Description,
+        };
+        
+        exercise.Translations.Add(translation);
+        await _dbContext.SaveChangesAsync();
+        return Result<bool>.Success(true);
     }
 }

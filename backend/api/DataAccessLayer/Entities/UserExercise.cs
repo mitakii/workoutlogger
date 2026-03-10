@@ -6,6 +6,9 @@ namespace DataAccessLayer.Entities;
 public class UserExercise
 {
     public Guid Id { get; set; }
+    public int Order { get; set; }
+    public Guid RefExerciseId { get; set; }
+    [ForeignKey(nameof(RefExerciseId))]
     public Exercise RefExercise  { get; set; }
     public Workout Workout { get; set; }
     

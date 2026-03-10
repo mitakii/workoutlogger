@@ -5,4 +5,5 @@ namespace BusinessLayer.Interfaces;
 
 public interface IUserService
 {
+    public Task<Result<bool>> ChangeUserLanguageAsync(string userId, string language);
 }

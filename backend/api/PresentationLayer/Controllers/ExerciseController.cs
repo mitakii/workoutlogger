@@ -22,30 +22,61 @@ public class ExerciseController : ControllerBase
         _userManager = userManager;
     }
 
-[Authorize(Roles =  "Admin")]
-    [HttpPost("create")]
+    [Authorize(Roles =  "Admin")]
+    [HttpPost]
     public async Task<IActionResult> Create(ExerciseCreateRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest();
         
-        var exercise = new Exercise
-        {
-            NameTag = request.NameTag,
-            Translations = request.Translations
-                .Select(t => new ExerciseTranslations
-                {
-                    Name = t.Name,
-                    Description = t.Description,
-                    Language = t.Language
-                }).ToList(),
-        };
+
         
-        var result = await _exerciseService.CreateAsync(exercise);
-        if (!result.Succeeded)
-            return result.ToIActionResultErrors();
-        return Ok();
+        var result = await _exerciseService.CreateAsync(request);
+        return !result.Succeeded ? result.ToIActionResultErrors() : Ok();
     }
     
+    [Authorize(Roles =  "Admin")]
+    [HttpDelete("{exerciseId}")]
+    public async Task<IActionResult> Delete(string exerciseId)
+    {
+        if (string.IsNullOrEmpty(exerciseId))
+            return BadRequest();
+        
+        var result = await _exerciseService.DeleteAsync(exerciseId);
+        return !result.Succeeded ? result.ToIActionResultErrors() : Ok();
+    }
+
+    //later move to separate controller 
+    [HttpPost("translations")]
+    public async Task<IActionResult> AddTranslation(ExerciseTranslationCreateRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.Values
+                .SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
+
+        var result = await _exerciseService.AddTranslationAsync(request);
+        return  !result.Succeeded ? result.ToIActionResultErrors() : Ok();
+    }
     
+    [HttpGet("{exerciseId}")]
+    public async Task<IActionResult> Get(string exerciseId)
+    {
+        if (string.IsNullOrEmpty(exerciseId))
+            return BadRequest();
+        
+        var result = await _exerciseService.GetByIdAsync(exerciseId);
+        return !result.Succeeded ? result.ToIActionResultErrors() : Ok(result.Data);
+    }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> Search(ExerciseSearchRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.Values
+                .SelectMany(v => v.Errors
+                    .Select(e => e.ErrorMessage)));
+        
+        var result = await _exerciseService.GetAllAsync(request);
+        return !result.Succeeded ? result.ToIActionResultErrors() : Ok(result.Data);
+    }
 }
