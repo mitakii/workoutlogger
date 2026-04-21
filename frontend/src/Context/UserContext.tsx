@@ -3,20 +3,25 @@ import { useNavigate } from "react-router";
 import {
   loginApi,
   logoutApi,
-  meApi as statusApi,
+  statusApi,
   registerApi,
 } from "../Services/AuthService";
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
-type UserProviderProps = {
+type Props = {
   children: React.ReactNode;
 };
 
 type UserContextType = {
   user: UserProfile | null;
-  login: (username: string, password: string) => void;
-  register: (username: string, email: string, password: string) => void;
+  loginUser: (username: string, password: string) => void;
+  registerUser: (
+    username: string,
+    email: string,
+    password: string,
+    language: string
+  ) => void;
   logout: () => void;
   isLoggedIn: () => boolean;
 };
@@ -26,88 +31,85 @@ type UserProfile = {
   email: string;
 };
 
-const UserProvider = ({ children }: UserProviderProps) => {
+const UserProvider = ({ children }: Props) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isReady, setIsReady] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    try {
-      statusApi()
-        .then((res) => {
-          if (res) {
-            const userObj = {
-              username: res?.data.username,
-              email: res?.data.email,
-            };
-            setUser(userObj);
-          }
-        })
-        .catch(() => setUser(null))
-        .finally(() => setIsReady(true));
-      console.log(user);
-    } catch (e) {
-      console.log(e);
-    }
+    const checkUser = async () => {
+      try {
+        const res = await statusApi();
+        const userObj: UserProfile = {
+          username: res?.data.userName,
+          email: res?.data.email,
+        };
+        setUser(userObj);
+      } catch (e) {
+        console.log(e);
+        setUser(null);
+      }
+      setIsReady(true);
+    };
+
+    checkUser();
   }, []);
 
   const isLoggedIn = () => !!user;
 
-  const register = async (
+  const registerUser = async (
     username: string,
     email: string,
-    password: string
+    password: string,
+    language: string
   ) => {
-    await registerApi(username, email, password)
-      .then(() => {
-        navigate("/");
-      })
-      .catch((e) => console.log(e));
+    try {
+      const res = await registerApi(username, email, password, language);
+      navigate("/");
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const login = async (username: string, password: string) => {
-    await loginApi(username, password)
-      .then((res) => {
-        if (res) {
-          const userObj = {
-            username: res?.data.username,
-            email: res?.data.email,
-          };
-
-          setUser(userObj);
-        }
-        navigate("/");
-      })
-      .catch((e) => console.log(e));
+  const loginUser = async (username: string, password: string) => {
+    try {
+      const res = await loginApi(username, password);
+      const userObj = {
+        username: res?.data.username,
+        email: res?.data.email,
+      };
+      setUser(userObj);
+      navigate("/");
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const logout = async () => {
-    await logoutApi()
-      .then(() => {
-        setUser(null);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-    navigate("/");
+    try {
+      const res = await logoutApi();
+      setUser(null);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
     <UserContext.Provider
       value={{
         user,
-        login,
-        register,
+        loginUser,
+        registerUser,
         isLoggedIn,
         logout,
       }}
     >
-      {isReady ? children : null}
+      {isReady ? children : <div>Is loading...</div>}
     </UserContext.Provider>
   );
 };
 
-export const useAuth = () => {
+export const useUserContext = () => {
   return useContext(UserContext);
 };
 

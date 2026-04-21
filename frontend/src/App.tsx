@@ -1,23 +1,19 @@
-import { Route, Routes } from "react-router-dom";
-import { Login } from "./Pages/Login";
-import { Register } from "./Pages/Register";
+import { Outlet, Route, Routes } from "react-router-dom";
 import UserProvider from "./Context/UserContext";
-import { NotFound } from "./Pages/NotFound";
-import { Home } from "./Pages/Home";
 import Navbar from "./Components/Navbar";
+import WorkoutProvider from "./Context/WorkoutContext";
 
-function App() {
+export const App = () => {
   return (
-    <UserProvider>
-      <Navbar />
-      <Routes>
-        <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </UserProvider>
+    <>
+      <UserProvider>
+        <Navbar />
+        <WorkoutProvider>
+          <Outlet />
+        </WorkoutProvider>
+      </UserProvider>
+    </>
   );
-}
+};
 
 export default App;

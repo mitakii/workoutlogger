@@ -8,12 +8,12 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: any) => {
   failedQueue.forEach((promise) => {
     if (error) {
       promise.reject(error);
     } else {
-      promise.resolve(token);
+      promise.resolve();
     }
   });
   failedQueue = [];
@@ -36,7 +36,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await api.post("/auth/refresh");
+        await api.post("/refresh");
         processQueue(null);
 
         return api(originalRequest);
@@ -47,6 +47,7 @@ api.interceptors.response.use(
         isRefreshing = false;
       }
     }
+
     return Promise.reject(error);
   }
 );
