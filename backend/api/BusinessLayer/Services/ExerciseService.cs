@@ -88,7 +88,7 @@ public class ExerciseService : IExerciseService
     }
 
     public async Task<Result<PagedResult<ExerciseGetResponse>>> GetAllAsync(
-        ExerciseSearchRequest request)
+        ExerciseSearchRequest request, string language)
     {
         if (string.IsNullOrEmpty(request.Query))
             return Result<PagedResult<ExerciseGetResponse>>
@@ -98,7 +98,7 @@ public class ExerciseService : IExerciseService
         
         var query = _dbContext.ExerciseTranslations
             .AsNoTracking()
-            .Where(e => e.Language == request.Language && e.Name.ToLower().Contains(normQ));
+            .Where(e => e.Language == language && e.Name.ToLower().Contains(normQ));
         
         var totalItems = await query.CountAsync();
 

@@ -13,4 +13,7 @@ public class UserRegisterRequest
     [Required]
     [EmailAddress]
     public string Email { get; set; }
+    [Required]
+    [MaxLength(4)]
+    public string Language { get; set; }
 }

@@ -6,6 +6,7 @@ using BusinessLayer.Helpers;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,11 +23,11 @@ public class WorkoutService : IWorkoutService
         _translationRepo = translationRepository;
     }
     
-    public async Task<Result<string>> StartAsync(string userId)
+    public async Task<Result<WorkoutResponse>> StartAsync(string userId)
     {
-        var user  = await _context.Users.FindAsync(userId);
+        var user  = await _context.Users.FindAsync(Guid.Parse(userId));
         if (user == null)
-            return Result<string>.Failed(ErrorCode.NotFound,"User not found");
+            return Result<WorkoutResponse>.Failed(ErrorCode.NotFound,"User not found");
         
         var workout = new Workout
         {
@@ -37,7 +38,14 @@ public class WorkoutService : IWorkoutService
         await _context.Workouts.AddAsync(workout);
         await _context.SaveChangesAsync();
 
-        return Result<string>.Success(workout.Id.ToString());
+        return Result<WorkoutResponse>.Success(new WorkoutResponse
+        {
+            StartTime =  workout.DateStarted,
+            UserId = user.Id.ToString(),
+            WorkoutId = workout.Id.ToString(),
+            WorkoutName = workout.Name,
+            WorkoutNotes = workout.Notes,
+        });
     }
 
     public async Task<Result<bool>> StopAsync(string workoutId)
@@ -123,18 +131,23 @@ public class WorkoutService : IWorkoutService
         });
     }
 
-    public async Task<Result<bool>> AddUserExerciseAsync(string workoutId, string exerciseId)
+    public async Task<Result<UserExerciseGetResponse>> AddUserExerciseAsync(string workoutId, string exerciseId, string language)
     {
         var workout = await _context.Workouts
             .Include(w => w.UserExercises)
             .FirstOrDefaultAsync(w =>  w.Id == Guid.Parse(workoutId));
         
         if (workout == null)
-            return Result<bool>.Failed(ErrorCode.NotFound,"Workout not found");
+            return Result<UserExerciseGetResponse>.Failed(ErrorCode.NotFound,"Workout not found");
+
+        if( workout.UserExercises
+           .Select(ue => ue.RefExerciseId)
+           .Any(ueid => ueid == Guid.Parse(exerciseId)))
+            return Result<UserExerciseGetResponse>.Failed(ErrorCode.BadRequest, "Exercise already exists");
 
         var exercise = await _context.Exercises.FindAsync(exerciseId);
         if(exercise == null)
-            return  Result<bool>.Failed(ErrorCode.NotFound,"Exercise not found");
+            return  Result<UserExerciseGetResponse>.Failed(ErrorCode.NotFound,"Exercise not found");
         
         var userExercise = new UserExercise
         {
@@ -146,7 +159,16 @@ public class WorkoutService : IWorkoutService
         workout.UserExercises.Add(userExercise);
         
         await _context.SaveChangesAsync();
-        return Result<bool>.Success(true);
+        var translation = await _translationRepo.GetExerciseTranslationAsync(exercise.Id, language);
+        return Result<UserExerciseGetResponse>.Success(new UserExerciseGetResponse
+        {
+            ExerciseDescription = translation.Description,
+            ExerciseName = translation.Name,
+            Id = userExercise.Id.ToString(),
+            ImageUrl = "",
+            Order =  userExercise.Order,
+            Sets = new List<UserExerciseSetResponse>()
+        });
     }
 
     public async Task<Result<ICollection<UserExerciseGetResponse>>> GetAllExercisesAsync(string workoutId, string language)

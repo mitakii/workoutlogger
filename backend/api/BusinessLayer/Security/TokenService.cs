@@ -44,9 +44,9 @@ public class TokenService : ITokenService
         
         var claims = new List<Claim>
         {
-            new (JwtRegisteredClaimNames.GivenName, user.UserName!),
-            new (JwtRegisteredClaimNames.NameId, user.Id.ToString()),
-            new (JwtRegisteredClaimNames.Email,  user.Email!),
+            new (ClaimTypes.Name, user.UserName!),
+            new (ClaimTypes.Sid, user.Id.ToString()),
+            new (ClaimTypes.Email,  user.Email!),
             new (ClaimTypes.Locality, user.Language),
         };
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));

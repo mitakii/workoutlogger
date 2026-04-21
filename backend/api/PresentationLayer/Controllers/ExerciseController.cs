@@ -30,7 +30,7 @@ public class ExerciseController : ControllerBase
             return BadRequest();
         
         var result = await _exerciseService.CreateAsync(request);
-        return !result.Succeeded ? result.ToIActionResultErrors() : Ok();
+        return result.Succeeded ? Ok() : result.ToIActionResultErrors();
     }
     
     [Authorize(Roles =  "Admin")]
@@ -41,7 +41,7 @@ public class ExerciseController : ControllerBase
             return BadRequest();
         
         var result = await _exerciseService.DeleteAsync(exerciseId);
-        return !result.Succeeded ? result.ToIActionResultErrors() : Ok();
+        return result.Succeeded ? Ok() : result.ToIActionResultErrors();
     }
 
     [Authorize(Roles = "Admin")]
@@ -54,7 +54,7 @@ public class ExerciseController : ControllerBase
                 .SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
 
         var result = await _exerciseService.AddTranslationAsync(request);
-        return  !result.Succeeded ? result.ToIActionResultErrors() : Ok();
+        return result.Succeeded ? Ok() : result.ToIActionResultErrors();
     }
     
     [HttpGet("{exerciseId}")]
@@ -64,7 +64,7 @@ public class ExerciseController : ControllerBase
             return BadRequest();
         
         var result = await _exerciseService.GetByIdAsync(exerciseId);
-        return !result.Succeeded ? result.ToIActionResultErrors() : Ok(result.Data);
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
     [HttpGet("search")]
@@ -75,7 +75,18 @@ public class ExerciseController : ControllerBase
                 .SelectMany(v => v.Errors
                     .Select(e => e.ErrorMessage)));
         
-        var result = await _exerciseService.GetAllAsync(request);
-        return !result.Succeeded ? result.ToIActionResultErrors() : Ok(result.Data);
+        string language = null;
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+        if (identity != null)
+        {
+            language = identity.FindFirst(ClaimTypes.Locality)?.Value;
+        }
+        else return Unauthorized();
+        if(language == null)
+            return BadRequest("unknown language");
+        
+        
+        var result = await _exerciseService.GetAllAsync(request, language);
+        return result.Succeeded ? Ok(result.Data): result.ToIActionResultErrors();
     }
 }

@@ -14,7 +14,7 @@ public class TranslationRepository : ITranslationRepository
         _context = context;
     }
 
-    public async Task<ExerciseTranslations?> GetExerciseTranslation(Guid exerciseId, string language)
+    public async Task<ExerciseTranslations?> GetExerciseTranslationAsync(Guid exerciseId, string language)
     {
         return await _context.ExerciseTranslations
             .FirstOrDefaultAsync(t => (t.Language == language || t.Language == "en") && t.ExerciseId == exerciseId);

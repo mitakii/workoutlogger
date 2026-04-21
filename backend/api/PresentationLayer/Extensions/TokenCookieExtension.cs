@@ -15,7 +15,7 @@ public static class TokenCookieExtension
             HttpOnly = false,
             Secure = false,
             SameSite = SameSiteMode.Lax,
-            Path = "/api/auth/refresh",
+            Path = "/api/refresh",
             Expires = DateTimeOffset.Now.AddDays(options.RefreshTokenDays) 
         });
         context.Response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions

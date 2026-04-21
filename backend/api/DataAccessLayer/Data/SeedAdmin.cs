@@ -13,7 +13,8 @@ public static class SeedAdmin
         var user = new User()
         {
             UserName = "test",
-            Email = "test@gmail.com"
+            Email = "test@gmail.com",
+            Language = "en"
         };
 
         if (await userManager.FindByNameAsync(user.UserName) == null)
@@ -22,6 +23,7 @@ public static class SeedAdmin
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(user, "Admin");
+                await userManager.AddToRoleAsync(user, "User");
             }
         }
     }

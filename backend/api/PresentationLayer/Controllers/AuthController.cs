@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BusinessLayer.DTO;
 using BusinessLayer.Interfaces;
 using BusinessLayer.Services;
@@ -13,7 +14,7 @@ using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegiste
 namespace PresentationLayer.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api")]
 public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
@@ -36,13 +37,23 @@ public class AuthController : ControllerBase
     [HttpGet("status")]
     public async Task<IActionResult> Status()
     {
-        var userId = User.FindFirst(JwtRegisteredClaimNames.NameId)?.Value;
+        string userId = null;
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+        if (identity != null)
+        {
+            userId = identity.FindFirst(ClaimTypes.Sid)?.Value;
+        }
+        else return Unauthorized();
+        
         var user = await _userManager.FindByIdAsync(userId);
+        if(user == null) return NotFound("user not found ");
+        
         return Ok(new
         {
             user.UserName,
             user.Email,
-            user.Id
+            user.Id,
+            user.Language
         });
     }
     
@@ -50,7 +61,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> RefreshToken()
     {
         if(!HttpContext.Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
-            return Unauthorized();
+            return Unauthorized("refreshToken not found");
         
         var tokens = await _tokenService.RefreshTokensAsync(refreshToken);
         if(!tokens.Succeeded)
@@ -90,8 +101,10 @@ public class AuthController : ControllerBase
 
         return Ok(new
         {
-            user.Id,
             user.UserName,
+            user.Email,
+            user.Id,
+            user.Language
         });
     }
 
@@ -102,7 +115,8 @@ public class AuthController : ControllerBase
         var user = new User
         {
             UserName = request.Username,
-            Email = request.Email
+            Email = request.Email,
+            Language =  request.Language,
         };
         var result = await _userManager.CreateAsync(user, request.Password);
 
@@ -117,13 +131,15 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        if(!HttpContext.Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
-            return Unauthorized();
+        string userId = null;
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+        if (identity != null)
+        {
+            userId = identity.FindFirst(ClaimTypes.Sid)?.Value;
+        }
+        await _tokenService.RevokeRefreshTokenByUIdAsync(userId);
         
-        await _tokenService.RevokeRefreshTokenAsync(refreshToken);
-        
-        Response.Cookies.Delete("accessToken");
-        Response.Cookies.Delete("refreshToken");
+        new TokenDTO{AccessToken = "", RefreshToken = ""}.SetTokenToCookie(HttpContext, _jwtOptions);
         return Ok();
     }
     
