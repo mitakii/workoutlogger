@@ -31,12 +31,21 @@ export type UserSession = {
 };
 
 export type UserExercise = {
-  name: string;
+  id: string;
+  exerciseName: string;
   userExerciseId: string;
   exerciseId: string;
   order: number;
-  description: string;
-  imgUrl: string;
+  exerciseDescription: string;
+  imageUrl: string;
+  userSets: UserSet[];
+};
+
+export type UserSet = {
+  id: string;
+  weight: number;
+  reps: number;
+  order: number;
 };
 
 const WorkoutProvider = ({ children }: Props) => {

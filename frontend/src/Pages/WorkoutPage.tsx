@@ -17,12 +17,13 @@ type Props = {};
 const WorkoutPage = (props: Props) => {
   const { user } = useUserContext();
   const { session, refreshSession } = useWorkoutContext();
-  const [userExercises, setUserExercises] = useState<UserExercise>();
+  const [userExercises, setUserExercises] = useState<UserExercise[]>([]);
 
   const handleAddExercise = async (exercise: Exercise) => {
     if (!session) return;
     try {
-      const res = addUserExercise(session?.workoutId, exercise.id);
+      const res = await addUserExercise(session?.workoutId, exercise.id);
+      setUserExercises((prev) => [...prev, res]);
     } catch (e) {
       console.log(e);
     }

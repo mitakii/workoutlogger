@@ -1,29 +1,25 @@
 import { useState } from "react";
 import { useUserContext } from "../Context/UserContext";
-import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import * as Yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type LoginFormInput = {
-  userName: string;
-  password: string;
-};
-const validation = Yup.object().shape({
-  userName: Yup.string().required("Username is required"),
-  password: Yup.string().required("Password is required"),
+const loginSchema = z.object({
+  userName: z.string().min(1, "Username is required"),
+  password: z.string().min(8, "Password is required"),
 });
 
+export type LoginFormInput = z.infer<typeof loginSchema>;
+
 export const Login = () => {
-  const { loginUser, isLoggedIn } = useUserContext();
+  const { loginUser } = useUserContext();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormInput>({ resolver: yupResolver(validation) });
+  } = useForm<LoginFormInput>({ resolver: zodResolver(loginSchema) });
 
   const handleLogin = (form: LoginFormInput) => {
-    console.log("here");
     loginUser(form.userName, form.password);
   };
 

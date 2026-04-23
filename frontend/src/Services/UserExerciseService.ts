@@ -1,23 +1,21 @@
 import { api } from "../Api/api";
+import type { UserExercise } from "../Context/WorkoutContext";
+import z, { string } from "zod";
+import { ExerciseSchema, UserExerciseSchema } from "../Schemas/Exercise.schema";
+import type { Exercise } from "../Pages/WorkoutPage";
 
 export type ExerciseSearch = {
   query: string;
   pageSize: number;
 };
 
-export const searchExercise = async ({ query, pageSize }: ExerciseSearch) => {
-  try {
-    return await api.get(`/exercise/search`, { params: { query, pageSize } });
-  } catch (e) {
-    console.log(e);
-    throw e;
-  }
-};
-
-export const getUserExercises = async (workoutId: string) => {
+export const getUserExercises = async (
+  workoutId: string
+): Promise<UserExercise> => {
   try {
     const res = await api.get(`/${workoutId}/exercises`);
-    return res.data;
+    const parsed = UserExerciseSchema.parse(res.data);
+    return parsed;
   } catch (e) {
     console.log(e);
     throw e;
@@ -27,10 +25,14 @@ export const getUserExercises = async (workoutId: string) => {
 export const addUserExercise = async (
   workoutId: string,
   exerciseId: string
-) => {
+): Promise<UserExercise> => {
   try {
-    const res = await api.post(`/workout/${workoutId}/exercise/${exerciseId}`);
-    return res.data;
+    const res = await api.post<UserExercise>(
+      `/workout/${workoutId}/exercise/${exerciseId}`
+    );
+
+    const parsed = UserExerciseSchema.parse(res.data);
+    return parsed;
   } catch (e) {
     console.log(e);
     throw e;

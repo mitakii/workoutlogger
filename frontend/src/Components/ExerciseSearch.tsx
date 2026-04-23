@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../index.css";
-import { searchExercise } from "../Services/UserExerciseService";
+import { searchExercise } from "../Services/ExerciseService";
 import { useUserContext } from "../Context/UserContext";
 import type { UserExercise } from "../Context/WorkoutContext";
 import type { Exercise } from "../Pages/WorkoutPage";

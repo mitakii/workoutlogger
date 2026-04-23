@@ -1,22 +1,17 @@
 import { useState } from "react";
 import { useUserContext } from "../Context/UserContext";
-import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import * as Yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type RegisterFormInput = {
-  userName: string;
-  email: string;
-  password: string;
-  language: string;
-};
-const validation = Yup.object().shape({
-  userName: Yup.string().min(4).required("Username is required"),
-  email: Yup.string().email().required("email is required"),
-  password: Yup.string().min(8).required("password is required"),
-  language: Yup.string().max(4).required("language is required"),
+const registerSchema = z.object({
+  userName: z.string().min(4, "Username is required"),
+  email: z.email("email is required"),
+  password: z.string().min(8, "password is required"),
+  language: z.string().max(4, "language is required"),
 });
+
+export type RegisterFormInput = z.infer<typeof registerSchema>;
 
 export const Register = () => {
   const { registerUser } = useUserContext();
@@ -24,7 +19,7 @@ export const Register = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterFormInput>({ resolver: yupResolver(validation) });
+  } = useForm<RegisterFormInput>({ resolver: zodResolver(registerSchema) });
 
   const handleRegister = (form: RegisterFormInput) => {
     registerUser(form.userName, form.email, form.password, form.language);
