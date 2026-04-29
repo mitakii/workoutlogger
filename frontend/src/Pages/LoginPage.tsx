@@ -5,7 +5,7 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const loginSchema = z.object({
-  userName: z.string().min(1, "Username is required"),
+  username: z.string().min(1, "Username is required"),
   password: z.string().min(8, "Password is required"),
 });
 
@@ -17,18 +17,40 @@ export const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormInput>({ resolver: zodResolver(loginSchema) });
+    reset,
+  } = useForm<LoginFormInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+  const [error, setError] = useState("");
 
-  const handleLogin = (form: LoginFormInput) => {
-    loginUser(form.userName, form.password);
+  const handleLogin = async (form: LoginFormInput) => {
+    try {
+      await loginUser(form.username, form.password);
+    } catch (e: any) {
+      if (e.status === 400) {
+        setError("invalid credentials");
+      } else {
+        console.log(e);
+      }
+      reset();
+    }
   };
 
   return (
     <div>
+      {error && <p>{error}</p>}
       <form action="" onSubmit={handleSubmit(handleLogin)}>
-        <input type="text" placeholder="username" {...register("userName")} />
-        {errors.userName ? <p>{errors.userName.message}</p> : ""}
-        <input type="password" {...register("password")} />
+        <input type="text" placeholder="username" {...register("username")} />
+        {errors.username ? <p>{errors.username.message}</p> : ""}
+        <input
+          type="password"
+          placeholder="password"
+          {...register("password")}
+        />
         {errors.password ? <p>{errors.password.message}</p> : ""}
         <button type="submit"></button>
       </form>

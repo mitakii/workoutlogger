@@ -75,13 +75,15 @@ const UserProvider = ({ children }: Props) => {
     try {
       const res = await loginApi(username, password);
       const userObj = {
-        username: res?.data.username,
-        email: res?.data.email,
+        username: res?.userName,
+        email: res?.email,
       };
+      console.log("res");
+      console.log(res);
       setUser(userObj);
       navigate("/");
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   };
 

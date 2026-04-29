@@ -1,11 +1,20 @@
 import axios from "axios";
 import { api } from "../Api/api";
 
+type ApiError = {
+  message: string;
+  field?: "username" | "password";
+};
+
 export const loginApi = async (username: string, password: string) => {
   try {
-    return await api.post("/login", { username, password });
+    const res = await api.post("/login", { username, password });
+    return res.data;
   } catch (e) {
     console.log(e);
+    if (axios.isAxiosError<ApiError>(e)) {
+      throw e.response?.data || { message: "Login failed" };
+    }
     throw e;
   }
 };

@@ -21,8 +21,6 @@ const SessionMenu = (props: Props) => {
     try {
       const newSession = await createNewSession();
       navigate(`/session/${newSession.workoutId}`);
-      console.log("new session: ");
-      console.log(newSession);
     } catch (e) {
       console.log(e);
     }
@@ -30,7 +28,7 @@ const SessionMenu = (props: Props) => {
 
   return (
     <div className="grid-rows-2 justify-center p-4">
-      {session !== null && (
+      {isLoggedIn() && session !== null && (
         <Link to={`/session/${session?.workoutId}`}>
           <div className="m-4">open last session</div>
         </Link>

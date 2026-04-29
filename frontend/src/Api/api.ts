@@ -34,7 +34,6 @@ api.interceptors.response.use(
       }
 
       isRefreshing = true;
-
       try {
         await api.post("/refresh");
         processQueue(null);

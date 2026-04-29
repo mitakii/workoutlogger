@@ -7,8 +7,8 @@ export const App = () => {
   return (
     <>
       <UserProvider>
-        <Navbar />
         <WorkoutProvider>
+          <Navbar />
           <Outlet />
         </WorkoutProvider>
       </UserProvider>

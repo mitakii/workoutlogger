@@ -482,3 +482,21 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+backend/api/DataAccessLayer/Migrations/20260218181530_Workouts.cs
+backend/api/DataAccessLayer/Migrations/20260218181530_Workouts.Designer.cs
+backend/api/DataAccessLayer/Migrations/20260304210244_ExerciseTranslations.cs
+backend/api/DataAccessLayer/Migrations/20260304210244_ExerciseTranslations.Designer.cs
+backend/api/DataAccessLayer/Migrations/20260308182040_UserTranslationOption.cs
+backend/api/DataAccessLayer/Migrations/20260308182040_UserTranslationOption.Designer.cs
+backend/api/DataAccessLayer/Migrations/20260310174843_Order.cs
+backend/api/DataAccessLayer/Migrations/20260310174843_Order.Designer.cs
+backend/api/PresentationLayer/appsettings.Development.json
+backend/api/DataAccessLayer/Migrations/20260218181530_Workouts.cs
+backend/api/DataAccessLayer/Migrations/20260218181530_Workouts.Designer.cs
+backend/api/DataAccessLayer/Migrations/20260304210244_ExerciseTranslations.cs
+backend/api/DataAccessLayer/Migrations/20260304210244_ExerciseTranslations.Designer.cs
+backend/api/DataAccessLayer/Migrations/20260308182040_UserTranslationOption.cs
+backend/api/DataAccessLayer/Migrations/20260308182040_UserTranslationOption.Designer.cs
+backend/api/DataAccessLayer/Migrations/20260310174843_Order.cs
+backend/api/DataAccessLayer/Migrations/20260310174843_Order.Designer.cs
+backend/api/PresentationLayer/appsettings.Development.json

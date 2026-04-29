@@ -1,13 +1,14 @@
 import { Link } from "react-router";
 import "../index.css";
 import { useUserContext } from "../Context/UserContext";
+import { useWorkoutContext } from "../Context/WorkoutContext";
 
 const Navbar = () => {
   const { isLoggedIn, logout, user } = useUserContext();
+  const { session } = useWorkoutContext();
 
   const logoutUser = () => {
     logout();
-    console.log("is user authorized: " + isLoggedIn());
   };
 
   return (

@@ -1,8 +1,11 @@
+import axios from "axios";
 import { api } from "../Api/api";
 
 export const lastSession = async () => {
   try {
-    return await api.get("/lastSession");
+    return await axios.get("http://localhost:5241/api/workout/lastWorkout", {
+      withCredentials: true,
+    });
   } catch (e) {
     console.log(e);
     throw e;
