@@ -7,7 +7,7 @@ namespace BusinessLayer.Interfaces;
 
 public interface IExerciseService
 {
-    public Task<Result<bool>> CreateAsync(ExerciseCreateRequest exercise);
+    public Task<Result<string>> CreateAsync(ExerciseCreateRequest exercise);
     public Task<Result<bool>> DeleteAsync(string exerciseId);
     
     public Task<Result<ExerciseGetResponse>> GetByIdAsync(string exerciseId);

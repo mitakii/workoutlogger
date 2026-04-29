@@ -131,6 +131,28 @@ public class WorkoutService : IWorkoutService
         });
     }
 
+    public async Task<Result<WorkoutResponse>> GetLastWorkoutAsync(string userId, string language)
+    {
+        var lastWorkout = await _context.Workouts
+            .Where(w => w.UserId == Guid.Parse(userId))
+            .OrderByDescending(w => w.DateStarted)
+            .Include(w => w.UserExercises)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if(lastWorkout == null)
+            return  Result<WorkoutResponse>.Failed(ErrorCode.NotFound,"Workout not found");
+            
+        return Result<WorkoutResponse>.Success(new WorkoutResponse
+        {
+            StartTime =  lastWorkout.DateStarted,
+            UserId = userId,
+            WorkoutId = lastWorkout.Id.ToString(),
+            WorkoutName = lastWorkout.Name,
+            WorkoutNotes = lastWorkout.Notes,
+        });
+    }
+
     public async Task<Result<UserExerciseGetResponse>> AddUserExerciseAsync(string workoutId, string exerciseId, string language)
     {
         var workout = await _context.Workouts

@@ -32,7 +32,7 @@ public class UserController : ControllerBase
             return BadRequest();
 
         var result = await _userService.GetUserAsync(userId);
-        return result.Succeeded ? Ok(result) : NotFound();
+        return result.Succeeded ? Ok(result.Data) : NotFound();
     }
 
     [Authorize]
@@ -45,6 +45,6 @@ public class UserController : ControllerBase
         var userId = User.FindFirst(JwtRegisteredClaimNames.NameId)?.Value;
             
         var result = await _userService.ChangeUserLanguageAsync(userId, language);
-        return result.Succeeded ? Ok(result) : NotFound();
+        return result.Succeeded ? Ok(result.Data) : NotFound();
     }
 }

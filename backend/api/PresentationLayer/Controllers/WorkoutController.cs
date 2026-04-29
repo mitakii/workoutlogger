@@ -33,7 +33,35 @@ public class WorkoutController : ControllerBase
             return NotFound("user is not found");
         
         var result =  await _workoutService.StartAsync(userId);
-        return result.Succeeded ? Ok(result) : result.ToIActionResultErrors();
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
+    }
+
+    [Authorize]
+    [HttpGet("lastWorkout")]
+    public async Task<IActionResult> GetLastWorkout()
+    {
+        string userId = null;
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+        if (identity != null)
+        {
+            userId = identity.FindFirst(ClaimTypes.Sid)?.Value;
+        }
+        if (userId == null)
+            return NotFound("user is not found");
+
+        
+        string language = null;
+        if (identity != null)
+        {
+            language = identity.FindFirst(ClaimTypes.Locality)?.Value;
+        }
+        else return Unauthorized();
+        
+        if (language == null)
+            return BadRequest("unknown language");
+        
+        var result  = await _workoutService.GetLastWorkoutAsync(userId, language);
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
     
     
@@ -48,7 +76,7 @@ public class WorkoutController : ControllerBase
         
         var result = await _workoutService.GetByIdAsync(workoutId, language);
         
-        return result.Succeeded ? Ok(result) : result.ToIActionResultErrors();
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
     [Authorize]
@@ -59,7 +87,7 @@ public class WorkoutController : ControllerBase
             return BadRequest();
         
         var result = await _workoutService.DeleteAsync(workoutId);
-        return result.Succeeded ? Ok(result) : result.ToIActionResultErrors();
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
     [Authorize]
@@ -80,7 +108,7 @@ public class WorkoutController : ControllerBase
             return BadRequest("unknown language");
         var result = await _workoutService.AddUserExerciseAsync(workoutId, exerciseId, language);
         
-        return result.Succeeded ? Ok(result) : result.ToIActionResultErrors();
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
     
     [Authorize]
@@ -92,7 +120,7 @@ public class WorkoutController : ControllerBase
 
         var result = await _workoutService.RemoveUserExerciseAsync(exerciseId);
         
-        return result.Succeeded ? Ok(result) : result.ToIActionResultErrors();
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
 

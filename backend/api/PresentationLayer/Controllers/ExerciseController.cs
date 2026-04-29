@@ -30,7 +30,10 @@ public class ExerciseController : ControllerBase
             return BadRequest();
         
         var result = await _exerciseService.CreateAsync(request);
-        return result.Succeeded ? Ok() : result.ToIActionResultErrors();
+        return result.Succeeded ? Ok(new
+        {
+            id = result.Data
+        }) : result.ToIActionResultErrors();
     }
     
     [Authorize(Roles =  "Admin")]

@@ -18,13 +18,13 @@ public class ExerciseService : IExerciseService
         _dbContext = context;
     }
     
-    public async Task<Result<bool>> CreateAsync(ExerciseCreateRequest request)
+    public async Task<Result<string>> CreateAsync(ExerciseCreateRequest request)
     {
         var exercise = new Exercise
         {
             NameTag = request.NameTag,
-            Description = request.Description,
             MediaUrl =  request.MediaUrl,
+            Description = "",
             Translations = request.Translations
                 .Select(t => new ExerciseTranslations
                 {
@@ -36,7 +36,7 @@ public class ExerciseService : IExerciseService
         
         await _dbContext.Exercises.AddAsync(exercise);
         await _dbContext.SaveChangesAsync();
-        return Result<bool>.Success(true);
+        return Result<string>.Success(exercise.Id.ToString());
     }
 
     public async Task<Result<bool>> DeleteAsync(string exerciseId)
