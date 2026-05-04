@@ -18,9 +18,11 @@ export const UserExerciseSchema = z.object({
   exerciseId: z.string(),
 });
 
-export const ExerciseSchema = z.object({
-  name: z.string(),
-  id: z.string(),
-  description: z.string(),
-  imageUrl: z.string(),
-});
+export const ExerciseSchema = z.array(
+  z.object({
+    name: z.string(),
+    id: z.string(),
+    description: z.string(),
+    imageUrl: z.nullable(z.string()),
+  })
+);

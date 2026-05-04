@@ -1,19 +1,35 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "../index.css";
 import { searchExercise } from "../Services/ExerciseService";
 import { useUserContext } from "../Context/UserContext";
 import type { UserExercise } from "../Context/WorkoutContext";
 import type { Exercise } from "../Pages/WorkoutPage";
+import { useDebounce } from "react-use";
 
-type Props = {};
+type SearchBarProps = {
+  onSearch: (query: string) => void;
+};
 
-const ExerciseSeaerch = () => {
+const ExerciseSeaerch: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState("");
-  const [exercises, setExercises] = useState<Exercise[]>();
+
+  useDebounce(
+    () => {
+      if (query === "") return;
+      onSearch(query);
+    },
+    200,
+    [query]
+  );
 
   return (
     <div>
-      <input type="text" />
+      <input
+        type="text"
+        onChange={({ currentTarget }) => {
+          setQuery(currentTarget.value);
+        }}
+      />
     </div>
   );
 };

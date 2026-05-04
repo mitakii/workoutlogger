@@ -1,48 +1,112 @@
 import React, { useState } from "react";
 import z from "zod";
 import { addExercise } from "../Services/ExerciseService";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 type Props = {};
 const exerciseScheme = z.object({
   nameTag: z.string().min(4, "name tag to short"),
-  language: z.string().max(4, "language too long"),
-  description: z.string().max(200),
-  name: z.string(),
   mediaUrl: z.string(),
+  translations: z
+    .array(
+      z.object({
+        language: z.string().max(4, "language too long"),
+        description: z.string().max(200),
+        name: z.string(),
+      })
+    )
+    .min(1, "At least one translation is required"),
 });
+
 type ExerciseFormInput = z.infer<typeof exerciseScheme>;
+
 export const ExercisePage = (props: Props) => {
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
-  } = useForm<ExerciseFormInput>({ resolver: zodResolver(exerciseScheme) });
+    reset,
+  } = useForm<ExerciseFormInput>({
+    resolver: zodResolver(exerciseScheme),
+    defaultValues: {
+      nameTag: "",
+      mediaUrl: "",
+      translations: [
+        {
+          language: "",
+          description: "",
+          name: "",
+        },
+      ],
+    },
+  });
 
-  const handleExercisePost = (form: ExerciseFormInput) => {
-    addExercise(
-      form.nameTag,
-      form.mediaUrl,
-      form.language,
-      form.name,
-      form.description
-    );
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "translations",
+  });
+
+  const handleExercisePost = async (form: ExerciseFormInput) => {
+    await addExercise(form.nameTag, form.mediaUrl, form.translations);
+    reset();
   };
+
   return (
     <div>
       <form action="" onSubmit={handleSubmit(handleExercisePost)}>
         <input type="text" placeholder="name tag" {...register("nameTag")} />
         {errors.nameTag ? <p>{errors.nameTag.message}</p> : ""}
-        <input type="text" placeholder="language" {...register("language")} />
-        {errors.language ? <p>{errors.language.message}</p> : ""}
-        <input type="text" placeholder="name" {...register("name")} />
-        {errors.name ? <p>{errors.name.message}</p> : ""}
-        <input type="text" {...register("description")} />
-        {errors.description ? <p>{errors.description.message}</p> : ""}
+
         <input type="text" {...register("mediaUrl")} />
         {errors.mediaUrl ? <p>{errors.mediaUrl.message}</p> : ""}
-        <button type="submit"></button>
+        <div>Translations</div>
+
+        {fields.map((field, index) => (
+          <div key={field.id}>
+            <input
+              type="text"
+              placeholder="language"
+              {...register(`translations.${index}.language`)}
+            />
+            {errors.translations?.[index]?.language ? (
+              <p>{errors.translations[index].message}</p>
+            ) : (
+              ""
+            )}
+
+            <input
+              type="text"
+              placeholder="name"
+              {...register(`translations.${index}.name`)}
+            />
+            {errors.translations?.[index]?.name ? (
+              <p>{errors.translations[index].name.message}</p>
+            ) : (
+              ""
+            )}
+            <input
+              type="text"
+              {...register(`translations.${index}.description`)}
+            />
+            {errors.translations?.[index]?.description ? (
+              <p>{errors.translations[index].description.message}</p>
+            ) : (
+              ""
+            )}
+            <button type="button" onClick={() => remove(index)}></button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => append({ language: "", name: "", description: "" })}
+        >
+          {" "}
+          add new translation
+        </button>
+        <br />
+        <button type="submit">Save</button>
       </form>
     </div>
   );
