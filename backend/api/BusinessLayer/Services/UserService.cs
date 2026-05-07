@@ -31,8 +31,8 @@ public class UserService : IUserService
         
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
-            return Result<bool>.Failed(ErrorCode.BadRequest, 
-                result.Errors.Select(e => e.Description).ToList());
+            return Result<bool>.Failed(ErrorCode.BadRequest,
+                result.Errors.ToDictionary(error => error.Code, error => error.Description));
         
         return Result<bool>.Success(true);
     }

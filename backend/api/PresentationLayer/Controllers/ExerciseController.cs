@@ -71,7 +71,7 @@ public class ExerciseController : ControllerBase
     }
 
     [HttpGet("search")]
-    public async Task<IActionResult> Search(ExerciseSearchRequest request)
+    public async Task<IActionResult> Search([FromQuery] ExerciseSearchRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.Values

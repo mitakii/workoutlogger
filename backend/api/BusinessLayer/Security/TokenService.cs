@@ -107,7 +107,7 @@ public class TokenService : ITokenService
         
         var accessToken = await GenerateAccessTokenAsync(oldToken.User);
         if (!accessToken.Succeeded)
-            return Result<TokenDTO>.Failed(accessToken.Code, accessToken.ErrorMessage!);
+            return Result<TokenDTO>.Failed(accessToken.Code, accessToken.ErrorMessages!);
         
         return Result<TokenDTO>.Success(new TokenDTO
         {

@@ -4,7 +4,8 @@ namespace BusinessLayer.Exceptions;
 
 public class Result<T>
 {
-    public ICollection<string>? ErrorMessage { get; }
+    // field / error message 
+    public IDictionary<string, string>? ErrorMessages { get; } 
     public ErrorCode Code { get; }
     public bool Succeeded { get;  }
     public T? Data { get; }
@@ -13,20 +14,21 @@ public class Result<T>
     {
         Succeeded = true;
         Data = data;
-        ErrorMessage = null;
+        ErrorMessages = new Dictionary<string, string>();
     }
     
-    private Result(ErrorCode errorCode, ICollection<string> errors)
+    private Result(ErrorCode errorCode, IDictionary<string, string> errors)
     {
         Code = errorCode;
         Succeeded = false;
         Data = default(T);
-        ErrorMessage = errors;
+        ErrorMessages = errors;
     }
 
     public static Result<T> Success(T data) => new Result<T>(data);
-
-    public static Result<T> Failed(ErrorCode code, ICollection<string> errors) => new Result<T>(code, errors);
-    public static Result<T> Failed(ErrorCode code, string error) => new Result<T>(code, [error]);
+    
+    public static Result<T> Failed(ErrorCode code, IDictionary<string,string> errors) => new Result<T>(code, errors);
+    public static Result<T> Failed(ErrorCode code, string error) =>
+        new Result<T>(code, new Dictionary<string, string>() { [error] = "" });
 
 }

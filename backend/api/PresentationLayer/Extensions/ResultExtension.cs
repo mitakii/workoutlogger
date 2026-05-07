@@ -8,13 +8,17 @@ public static class ResultExtension
 {
     public static IActionResult ToIActionResultErrors<T>(this Result<T> result)
     {
+        var response = new
+        {
+            errors = result.ErrorMessages
+        };
         return result.Code switch
         {
-            ErrorCode.BadRequest => new BadRequestObjectResult(result.ErrorMessage),
-            ErrorCode.Unauthorized => new UnauthorizedObjectResult(result.ErrorMessage),
-            ErrorCode.NotFound => new NotFoundObjectResult(result.ErrorMessage),
+            ErrorCode.BadRequest => new BadRequestObjectResult(response),
+            ErrorCode.Unauthorized => new UnauthorizedObjectResult(response),
+            ErrorCode.NotFound => new NotFoundObjectResult(response),
             ErrorCode.InternalError => new StatusCodeResult(StatusCodes.Status500InternalServerError),
-            _ => new BadRequestObjectResult(result.ErrorMessage)
+            _ => new BadRequestObjectResult(response)
         };
     }
 }

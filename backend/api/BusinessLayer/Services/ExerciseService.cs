@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using ApplicationLayer.Data.Enums;
 using BusinessLayer.DTO;
 using BusinessLayer.Exceptions;
@@ -20,6 +21,12 @@ public class ExerciseService : IExerciseService
     
     public async Task<Result<string>> CreateAsync(ExerciseCreateRequest request)
     {
+        request.NameTag = Regex.Replace(request.NameTag.Trim().ToLower(), @"\s+", "_");
+        
+        if(await _dbContext.Exercises.AnyAsync((e) => e.NameTag == request.NameTag))
+            return Result<string>.Failed(ErrorCode.BadRequest,
+                new Dictionary<string, string>{ [nameof(request.NameTag)] = "NameTag already exists" });
+
         var exercise = new Exercise
         {
             NameTag = request.NameTag,
