@@ -30,7 +30,7 @@ export const addUserExercise = async (
     const res = await api.post<UserExercise>(
       `/workout/${workoutId}/exercise/${exerciseId}`
     );
-
+    console.log(res.data);
     const parsed = UserExerciseSchema.parse(res.data);
     return parsed;
   } catch (e) {

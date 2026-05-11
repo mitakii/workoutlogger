@@ -3,9 +3,16 @@ import { api } from "../Api/api";
 
 export const lastSession = async () => {
   try {
-    return await axios.get("http://localhost:5241/api/workout/lastWorkout", {
-      withCredentials: true,
-    });
+    const res = await axios.get(
+      "http://localhost:5241/api/workout/lastWorkout",
+      {
+        withCredentials: true,
+      }
+    );
+    return {
+      ...res.data,
+      userExercises: res.data.userExercises ?? [],
+    };
   } catch (e) {
     console.log(e);
     throw e;
@@ -14,7 +21,12 @@ export const lastSession = async () => {
 
 export const createSession = async () => {
   try {
-    return await api.post("/workout/start");
+    const res = await api.post("/workout/start");
+    const norm = {
+      ...res.data,
+      userExercises: res.data.userExercises ?? [],
+    };
+    return norm;
   } catch (e) {
     console.log(e);
     throw e;
@@ -23,7 +35,11 @@ export const createSession = async () => {
 
 export const getSession = async (id: string) => {
   try {
-    return await api.get(`/workout/${id}`);
+    const res = await api.get(`/workout/${id}`);
+    return {
+      ...res.data,
+      userExercises: res.data.userExercises ?? [],
+    };
   } catch (e) {
     console.log(e);
     throw e;

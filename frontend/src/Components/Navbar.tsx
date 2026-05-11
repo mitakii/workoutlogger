@@ -17,7 +17,7 @@ const Navbar = () => {
         <Link
           to={"/"}
           className="text-xl font-bold"
-          onClick={() => console.log(user)}
+          onClick={() => console.log(session)}
         >
           logo
         </Link>

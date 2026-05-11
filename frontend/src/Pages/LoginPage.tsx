@@ -36,6 +36,7 @@ export const Login = () => {
       } else {
         console.log(e);
       }
+      console.log(e);
       reset();
     }
   };

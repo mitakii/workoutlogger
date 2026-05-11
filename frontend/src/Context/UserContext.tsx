@@ -78,8 +78,6 @@ const UserProvider = ({ children }: Props) => {
         username: res?.userName,
         email: res?.email,
       };
-      console.log("res");
-      console.log(res);
       setUser(userObj);
       navigate("/");
     } catch (e) {

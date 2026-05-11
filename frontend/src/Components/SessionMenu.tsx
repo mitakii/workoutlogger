@@ -21,6 +21,8 @@ const SessionMenu = (props: Props) => {
     try {
       const newSession = await createNewSession();
       navigate(`/session/${newSession.workoutId}`);
+
+      return;
     } catch (e) {
       console.log(e);
     }

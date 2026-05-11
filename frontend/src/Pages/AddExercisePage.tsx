@@ -3,6 +3,7 @@ import z from "zod";
 import { addExercise } from "../Services/ExerciseService";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { AxiosError } from "axios";
 
 type Props = {};
 const exerciseScheme = z.object({
@@ -11,9 +12,12 @@ const exerciseScheme = z.object({
   translations: z
     .array(
       z.object({
-        language: z.string().max(4, "language too long"),
-        description: z.string().max(200),
-        name: z.string(),
+        language: z
+          .string()
+          .min(2, "Language is required")
+          .max(4, "language too long"),
+        description: z.string().min(1, "Description required").max(200),
+        name: z.string().min(1, "Name required"),
       })
     )
     .min(1, "At least one translation is required"),
@@ -21,11 +25,12 @@ const exerciseScheme = z.object({
 
 type ExerciseFormInput = z.infer<typeof exerciseScheme>;
 
-export const ExercisePage = (props: Props) => {
+export const AddExercisePage = (props: Props) => {
   const {
     register,
     control,
     handleSubmit,
+    setError,
     formState: { errors },
     reset,
   } = useForm<ExerciseFormInput>({
@@ -49,12 +54,21 @@ export const ExercisePage = (props: Props) => {
   });
 
   const handleExercisePost = async (form: ExerciseFormInput) => {
-    await addExercise(form.nameTag, form.mediaUrl, form.translations);
-    reset();
+    try {
+      await addExercise(form.nameTag, form.mediaUrl, form.translations);
+      reset();
+    } catch (e: any) {
+      const apiError = e.response?.data;
+      setError("nameTag", {
+        type: "server",
+        message: `${apiError.errors?.["NameTag"]}`,
+      });
+    }
   };
 
   return (
     <div>
+      {errors.root?.message}
       <form action="" onSubmit={handleSubmit(handleExercisePost)}>
         <input type="text" placeholder="name tag" {...register("nameTag")} />
         {errors.nameTag ? <p>{errors.nameTag.message}</p> : ""}
@@ -71,11 +85,10 @@ export const ExercisePage = (props: Props) => {
               {...register(`translations.${index}.language`)}
             />
             {errors.translations?.[index]?.language ? (
-              <p>{errors.translations[index].message}</p>
+              <p>{errors.translations[index].language.message}</p>
             ) : (
               ""
             )}
-
             <input
               type="text"
               placeholder="name"
@@ -98,6 +111,7 @@ export const ExercisePage = (props: Props) => {
             <button type="button" onClick={() => remove(index)}></button>
           </div>
         ))}
+        <br />
         <button
           type="button"
           onClick={() => append({ language: "", name: "", description: "" })}
@@ -105,6 +119,8 @@ export const ExercisePage = (props: Props) => {
           {" "}
           add new translation
         </button>
+        {errors.translations ? <p>{errors.translations.message}</p> : ""}
+        <br />
         <br />
         <button type="submit">Save</button>
       </form>

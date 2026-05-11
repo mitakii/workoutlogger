@@ -19,7 +19,7 @@ type Props = {
 type WorkoutContextType = {
   session: UserSession | null;
   refreshSession: (workoutId: string) => void;
-  createNewSession: () => Promise<any>;
+  createNewSession: () => Promise<UserSession>;
 };
 
 export type UserSession = {
@@ -34,8 +34,6 @@ export type UserSession = {
 export type UserExercise = {
   id: string;
   exerciseName: string;
-  userExerciseId: string;
-  exerciseId: string;
   order: number;
   exerciseDescription: string;
   imageUrl: string;
@@ -59,7 +57,7 @@ const WorkoutProvider = ({ children }: Props) => {
     const checkLastWorkout = async () => {
       try {
         const res = await lastSession();
-        setSession(res.data);
+        setSession(res);
       } catch (e) {
         setSession(null);
       }
@@ -75,20 +73,22 @@ const WorkoutProvider = ({ children }: Props) => {
 
   const refreshSession = async (workoutId: string) => {
     try {
-      const res = await getSession(workoutId);
-      setSession(res.data);
+      const res: UserSession = await getSession(workoutId);
+      setSession(res);
+      return;
     } catch (e) {
       console.log(e);
     }
   };
 
-  const createNewSession = async () => {
+  const createNewSession = async (): Promise<UserSession> => {
     try {
       const res = await createSession();
-      setSession(res.data);
-      return res.data;
+      setSession(res);
+      return res;
     } catch (e) {
       console.log(e);
+      throw e;
     }
   };
 

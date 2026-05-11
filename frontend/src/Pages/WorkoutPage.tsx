@@ -6,6 +6,7 @@ import { addUserExercise } from "../Services/UserExerciseService";
 import { useWorkoutContext } from "../Context/WorkoutContext";
 import type { UserExercise } from "../Context/WorkoutContext";
 import { searchExercise } from "../Services/ExerciseService";
+import { Link } from "react-router-dom";
 
 export type Exercise = {
   name: string;
@@ -19,31 +20,16 @@ type Props = {};
 const WorkoutPage = (props: Props) => {
   const { user } = useUserContext();
   const { session, refreshSession } = useWorkoutContext();
-  const [userExercises, setUserExercises] = useState<UserExercise[]>([]);
-  const [exercises, setExercises] = useState<Exercise[]>([]);
 
-  const handleSearch = async (debounceValue: string) => {
-    try {
-      const result = await searchExercise(debounceValue, 10, 1);
-      setExercises(result);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const handleAddExercise = async (exercise: Exercise) => {
-    if (!session) return;
-    try {
-      const res = await addUserExercise(session?.workoutId, exercise.id);
-      setUserExercises((prev) => [...prev, res]);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  if (!session) {
+    return <div>workout loading</div>;
+  }
 
   return (
     <div>
-      <ExerciseSearch onSearch={handleSearch} />
+      <Link to={"/search"}>
+        <button type="button">Add Exercise</button>
+      </Link>
       <SessionExerciseList
         exercises={session?.userExercises}
         sessionId={session?.workoutId}
