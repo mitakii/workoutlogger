@@ -74,7 +74,7 @@ public class WorkoutService : IWorkoutService
     {
         var workout = await _context.Workouts
             .AsNoTracking()
-            .Where(w => w.UserId == Guid.Parse(workoutId))
+            .Where(w => w.Id == Guid.Parse(workoutId))
             .Select(w => new
             {
                 w.Id,
@@ -167,7 +167,7 @@ public class WorkoutService : IWorkoutService
            .Any(ueid => ueid == Guid.Parse(exerciseId)))
             return Result<UserExerciseGetResponse>.Failed(ErrorCode.BadRequest, "Exercise already exists");
 
-        var exercise = await _context.Exercises.FindAsync(exerciseId);
+        var exercise = await _context.Exercises.FindAsync(Guid.Parse(exerciseId));
         if(exercise == null)
             return  Result<UserExerciseGetResponse>.Failed(ErrorCode.NotFound,"Exercise not found");
         
