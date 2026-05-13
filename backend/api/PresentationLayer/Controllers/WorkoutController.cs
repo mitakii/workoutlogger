@@ -64,8 +64,6 @@ public class WorkoutController : ControllerBase
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
     
-    
-    [Authorize]
     [HttpGet("{workoutId}")]
     public async Task<IActionResult> GetWorkout(string workoutId)
     {

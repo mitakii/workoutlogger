@@ -72,9 +72,13 @@ public class WorkoutService : IWorkoutService
 
     public async Task<Result<WorkoutResponse>> GetByIdAsync(string workoutId, string language)
     {
+
+        if (!Guid.TryParse(workoutId, out var workoutGuid))
+            return Result<WorkoutResponse>.Failed(ErrorCode.BadRequest,"Bad workout Id");
+        
         var workout = await _context.Workouts
             .AsNoTracking()
-            .Where(w => w.Id == Guid.Parse(workoutId))
+            .Where(w => w.Id == workoutGuid)
             .Select(w => new
             {
                 w.Id,
@@ -87,6 +91,7 @@ public class WorkoutService : IWorkoutService
                 {
                     ue.RefExerciseId,
                     RefExerciseMediaUrl = ue.RefExercise.MediaUrl,
+                    ue.Order,
                     UserExerciseSets = ue.UserExerciseSets.Select(s => new 
                     {
                         s.Id,
@@ -120,6 +125,7 @@ public class WorkoutService : IWorkoutService
                 ExerciseName = translation[e.RefExerciseId].Name,
                 ExerciseDescription = translation[e.RefExerciseId].Description,
                 ImageUrl = e.RefExerciseMediaUrl,
+                Order = e.Order,
                 Sets = e.UserExerciseSets.Select(s => new UserExerciseSetResponse
                 {
                     Reps = s.Reps,
@@ -133,24 +139,24 @@ public class WorkoutService : IWorkoutService
 
     public async Task<Result<WorkoutResponse>> GetLastWorkoutAsync(string userId, string language)
     {
+        if(!Guid.TryParse(userId, out var workoutGuid))
+            return Result<WorkoutResponse>.Failed(ErrorCode.NotFound,"Bad workout Id");
+
         var lastWorkout = await _context.Workouts
             .Where(w => w.UserId == Guid.Parse(userId))
             .OrderByDescending(w => w.DateStarted)
-            .Include(w => w.UserExercises)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if(lastWorkout == null)
             return  Result<WorkoutResponse>.Failed(ErrorCode.NotFound,"Workout not found");
-            
-        return Result<WorkoutResponse>.Success(new WorkoutResponse
-        {
-            StartTime =  lastWorkout.DateStarted,
-            UserId = userId,
-            WorkoutId = lastWorkout.Id.ToString(),
-            WorkoutName = lastWorkout.Name,
-            WorkoutNotes = lastWorkout.Notes,
-        });
+
+        var result = await GetByIdAsync(lastWorkout.Id.ToString(), language);
+        
+        if (!result.Succeeded)
+            return Result<WorkoutResponse>.Failed(result.Code, result.ErrorMessages);
+        
+        return Result<WorkoutResponse>.Success(result.Data);
     }
 
     public async Task<Result<UserExerciseGetResponse>> AddUserExerciseAsync(string workoutId, string exerciseId, string language)
