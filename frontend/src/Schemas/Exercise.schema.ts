@@ -2,8 +2,8 @@ import z from "zod";
 
 export const UserSetScheme = z.object({
   id: z.string(),
-  weight: z.number(),
-  reps: z.number(),
+  weight: z.string(),
+  reps: z.string(),
   order: z.number(),
 });
 

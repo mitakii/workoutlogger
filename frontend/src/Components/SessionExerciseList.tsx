@@ -22,6 +22,7 @@ const SessionExerciseList = ({ exercises }: Props) => {
         <div key={e.id}>
           {" "}
           <UserExerciseTile userExercise={e} />
+          <br />
         </div>
       ))}
     </div>

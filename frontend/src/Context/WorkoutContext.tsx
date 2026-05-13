@@ -37,13 +37,13 @@ export type UserExercise = {
   order: number;
   exerciseDescription: string;
   imageUrl: string;
-  userSets: UserSet[];
+  userSets: UserSet[] | undefined;
 };
 
 export type UserSet = {
   id: string;
-  weight: number;
-  reps: number;
+  weight: string;
+  reps: string;
   order: number;
 };
 

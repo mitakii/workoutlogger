@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Exercise } from "../Pages/WorkoutPage";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   exercise: Exercise;
@@ -7,11 +8,26 @@ type Props = {
 };
 
 export const ExerciseTile = ({ exercise, addExercise }: Props) => {
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const handleAddExercise = async () => {
+    try {
+      await addExercise(exercise);
+
+      navigate(-1);
+    } catch (e) {
+      console.log(e);
+      setError("exercise already exist");
+    }
+  };
+
   return (
     <div>
-      $`{exercise.name}`
+      {error ?? <div> $`{error}`</div>}
+      <br />
+      {exercise.name}
       <div>
-        <button onClick={() => addExercise(exercise)}>addExercise</button>
+        <button onClick={handleAddExercise}>addExercise</button>
       </div>
     </div>
   );

@@ -4,11 +4,12 @@ import { api } from "../Api/api";
 export const lastSession = async () => {
   try {
     const res = await axios.get(
-      "http://localhost:5241/api/workout/lastWorkout",
+      "http://localhost:5241/api/workout/lastWorkoutId",
       {
         withCredentials: true,
       }
     );
+
     return {
       ...res.data,
       userExercises: res.data.userExercises ?? [],
