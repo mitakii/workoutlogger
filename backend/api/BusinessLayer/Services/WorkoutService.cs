@@ -129,9 +129,9 @@ public class WorkoutService : IWorkoutService
                 Sets = e.UserExerciseSets.Select(s => new UserExerciseSetResponse
                 {
                     Reps = s.Reps,
-                    Weigth = s.Weight,
+                    Weight = s.Weight,
                     Order = s.Order,
-                    Id = s.Id
+                    Id = s.Id.ToString()
                 }).OrderBy(s => s.Order).ToList()
             }).OrderBy(ue => ue.Order).ToList()
         });
@@ -176,15 +176,27 @@ public class WorkoutService : IWorkoutService
         var exercise = await _context.Exercises.FindAsync(Guid.Parse(exerciseId));
         if(exercise == null)
             return  Result<UserExerciseGetResponse>.Failed(ErrorCode.NotFound,"Exercise not found");
-        
+
+
+            
         var userExercise = new UserExercise
         {
             RefExercise = exercise,
             Workout = workout,
             Order = workout.UserExercises.Count(),
         };
-        
         workout.UserExercises.Add(userExercise);
+
+        var newset = new UserExerciseSet()
+        {
+            Exercise = userExercise,
+            ExerciseId = userExercise.Id,
+            Order = 1,
+            Reps = 0,
+            Weight = 0,
+        };
+        
+        userExercise.UserExerciseSets.Add(newset);
         
         await _context.SaveChangesAsync();
         var translation = await _translationRepo.GetExerciseTranslationAsync(exercise.Id, language);
@@ -195,7 +207,16 @@ public class WorkoutService : IWorkoutService
             Id = userExercise.Id.ToString(),
             ImageUrl = "",
             Order =  userExercise.Order,
-            Sets = new List<UserExerciseSetResponse>()
+            Sets = userExercise.UserExerciseSets.Select(s =>
+            
+                new UserExerciseSetResponse()
+                {
+                    Id = s.Id.ToString(),
+                    Order = s.Order,
+                    Reps = s.Reps,
+                    Weight = s.Weight
+                }
+            ).ToList()
         });
     }
 
@@ -241,9 +262,9 @@ public class WorkoutService : IWorkoutService
             Sets = e.UserExerciseSets.Select(s => new UserExerciseSetResponse
             {
                 Reps = s.Reps,
-                Weigth = s.Weight,
+                Weight = s.Weight,
                 Order = s.Order,
-                Id = s.Id
+                Id = s.Id.ToString()
             }).OrderBy(s => s.Order).ToList()
         }).OrderBy(ue => ue.Order).ToList();
 
@@ -307,9 +328,9 @@ public class WorkoutService : IWorkoutService
                 Sets = e.UserExerciseSets.Select(s => new UserExerciseSetResponse
                 {
                     Reps = s.Reps,
-                    Weigth = s.Weight,
+                    Weight = s.Weight,
                     Order = s.Order,
-                    Id = s.Id
+                    Id = s.Id.ToString()
                 }).OrderBy(s => s.Order).ToList()
             }).OrderBy(e => e.Order).ToList(),
         }).OrderBy(w => w.StartTime).ToList();

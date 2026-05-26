@@ -48,7 +48,7 @@ public class ExerciseController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    //later move to separate controller 
+    //todo: later move to separate controller 
     [HttpPost("translations")]
     public async Task<IActionResult> AddTranslation(ExerciseTranslationCreateRequest request)
     {
