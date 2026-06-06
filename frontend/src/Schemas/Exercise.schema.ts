@@ -2,8 +2,8 @@ import z from "zod";
 
 export const UserSetScheme = z.object({
   id: z.string(),
-  weight: z.string(),
-  reps: z.string(),
+  weight: z.number(),
+  reps: z.number(),
   order: z.number(),
 });
 
@@ -25,7 +25,7 @@ export const UserExerciseSchema = BackendUserExerciseSchema.transform(
     imageUrl: data.imageUrl,
     exerciseDescription: data.exerciseDescription,
 
-    userSets: data.sets,
+    sets: data.sets,
   })
 );
 

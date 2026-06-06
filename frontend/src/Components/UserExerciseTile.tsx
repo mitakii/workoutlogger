@@ -1,13 +1,13 @@
 import React from "react";
-import type { UserExercise } from "../Context/WorkoutContext";
 import { UserSetTile } from "./UserSetTile";
+import type { UserExercise } from "../types/types";
 
 type Props = {
   userExercise: UserExercise;
 };
 
 export const UserExerciseTile = ({ userExercise }: Props) => {
-  const onSetFinish = async (reps: string, weight: string) => {
+  const onSetFinish = async (reps: number, weight: number) => {
     try {
       console.log(reps, weight);
     } catch (e) {
@@ -20,13 +20,12 @@ export const UserExerciseTile = ({ userExercise }: Props) => {
     <div>
       <div> {userExercise.exerciseName}</div>
       <div>{userExercise.exerciseDescription}</div>
-      <div>
-        {userExercise.userSets?.map((s) => (
-          <div key={s.id}>
-            <UserSetTile userSet={s} onSetFinish={onSetFinish} />
-          </div>
-        )) ?? <button type="button"> add exercise </button>}
-      </div>
+
+      {userExercise.sets?.map((s) => (
+        <div key={s.id}>
+          <UserSetTile userSet={s} onSetFinish={onSetFinish} />
+        </div>
+      )) ?? <button type="button"> add exercise set </button>}
     </div>
   );
 };

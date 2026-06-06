@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import ExerciseSearch from "../Components/ExerciseSearch";
-import { addUserExercise } from "../Services/UserExerciseService";
 import type { Exercise } from "./WorkoutPage";
 import { searchExercise } from "../Services/ExerciseService";
-import {
-  useWorkoutContext,
-  type UserExercise,
-} from "../Context/WorkoutContext";
 import { useUserContext } from "../Context/UserContext";
 import { ExerciseList } from "../Components/ExerciseList";
 

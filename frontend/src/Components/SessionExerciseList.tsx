@@ -1,7 +1,8 @@
 import React from "react";
-import type { UserExercise } from "../Context/WorkoutContext";
-import { useWorkoutContext } from "../Context/WorkoutContext";
+
 import { UserExerciseTile } from "./UserExerciseTile";
+import type { UserExercise } from "../types/types";
+import { useLastSession } from "../hooks/react-query";
 
 type Props = {
   exercises: UserExercise[] | undefined;
@@ -9,7 +10,7 @@ type Props = {
 };
 
 const SessionExerciseList = ({ exercises }: Props) => {
-  const { session } = useWorkoutContext();
+  const { data: session } = useLastSession();
 
   if (!session) {
     return <div> No active session</div>;

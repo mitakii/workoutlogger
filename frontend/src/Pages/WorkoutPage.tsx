@@ -2,11 +2,12 @@ import React, { useEffect, useInsertionEffect, useState } from "react";
 import ExerciseSearch from "../Components/ExerciseSearch";
 import SessionExerciseList from "../Components/SessionExerciseList";
 import { useUserContext } from "../Context/UserContext";
-import { addUserExercise } from "../Services/UserExerciseService";
-import { useWorkoutContext } from "../Context/WorkoutContext";
-import type { UserExercise } from "../Context/WorkoutContext";
 import { searchExercise } from "../Services/ExerciseService";
-import { Link } from "react-router-dom";
+import { isRouteErrorResponse, Link } from "react-router-dom";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { api } from "../Api/api";
+import type { UserSession } from "../types/types";
+import { useLastSession } from "../hooks/react-query";
 
 export type Exercise = {
   name: string;
@@ -19,9 +20,10 @@ type Props = {};
 
 const WorkoutPage = (props: Props) => {
   const { user } = useUserContext();
-  const { session, refreshSession } = useWorkoutContext();
 
-  if (!session) {
+  const { data: workout, isLoading, error, isError } = useLastSession();
+
+  if (isLoading) {
     return <div>workout loading</div>;
   }
 
@@ -31,8 +33,8 @@ const WorkoutPage = (props: Props) => {
         <button type="button">Add Exercise</button>
       </Link>
       <SessionExerciseList
-        exercises={session?.userExercises}
-        sessionId={session?.workoutId}
+        exercises={workout?.userExercises}
+        sessionId={workout?.workoutId}
       />
     </div>
   );

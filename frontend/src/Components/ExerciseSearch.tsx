@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "../index.css";
 import { searchExercise } from "../Services/ExerciseService";
 import { useUserContext } from "../Context/UserContext";
-import type { UserExercise } from "../Context/WorkoutContext";
 import type { Exercise } from "../Pages/WorkoutPage";
 import { useDebounce } from "react-use";
 

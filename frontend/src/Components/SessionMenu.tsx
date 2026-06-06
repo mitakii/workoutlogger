@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { data, Link, Navigate, useNavigate } from "react-router-dom";
-import { lastSession, createSession } from "../Services/WorkoutService";
 import { useUserContext } from "../Context/UserContext";
-import { useWorkoutContext } from "../Context/WorkoutContext";
-import type { UserSession } from "../Context/WorkoutContext";
+import { useCreateSession } from "../hooks/react-query";
 
 type Props = {};
 
 const SessionMenu = (props: Props) => {
   const { isLoggedIn } = useUserContext();
-  const { session, createNewSession } = useWorkoutContext();
   const navigate = useNavigate();
+  const { mutateAsync: createSession, data: session } = useCreateSession();
 
   const handleCreateSession = async () => {
     if (!isLoggedIn()) {
@@ -19,7 +17,7 @@ const SessionMenu = (props: Props) => {
     }
 
     try {
-      const newSession = await createNewSession();
+      const newSession = await createSession();
       navigate(`/session/${newSession.workoutId}`);
 
       return;

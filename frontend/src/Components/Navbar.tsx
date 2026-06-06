@@ -1,11 +1,9 @@
 import { Link } from "react-router";
 import "../index.css";
 import { useUserContext } from "../Context/UserContext";
-import { useWorkoutContext } from "../Context/WorkoutContext";
 
 const Navbar = () => {
   const { isLoggedIn, logout, user } = useUserContext();
-  const { session } = useWorkoutContext();
 
   const logoutUser = () => {
     logout();
@@ -14,11 +12,7 @@ const Navbar = () => {
   return (
     <nav className="bg-gray-900 text-white px-6 py-4">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <Link
-          to={"/"}
-          className="text-xl font-bold"
-          onClick={() => console.log(session)}
-        >
+        <Link to={"/"} className="text-xl font-bold">
           logo
         </Link>
         <div className="flex items-center gap-4">

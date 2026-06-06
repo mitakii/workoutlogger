@@ -1,20 +1,23 @@
 import React from "react";
 import type { Exercise } from "../Pages/WorkoutPage";
 import ExerciseTile from "./ExerciseTile";
-import { useWorkoutContext } from "../Context/WorkoutContext";
-import { addUserExercise } from "../Services/UserExerciseService";
+import { useAddUserExercise, useLastSession } from "../hooks/react-query";
 
 type Props = {
   exercises: Exercise[];
 };
 
 export const ExerciseList = ({ exercises }: Props) => {
-  const { session, refreshSession } = useWorkoutContext();
+  const { data: session } = useLastSession();
+  const { mutateAsync: addUserExercise } = useAddUserExercise();
   const handleAddExercise = async (exercise: Exercise) => {
     if (!session) return;
     try {
-      const res = await addUserExercise(session.workoutId, exercise.id);
-      await refreshSession(session.workoutId);
+      const res = await addUserExercise({
+        workoutId: session.workoutId,
+        exerciseId: exercise.id,
+      });
+      //await refreshSession(session.workoutId);
     } catch (e) {
       console.log(e);
       throw e;

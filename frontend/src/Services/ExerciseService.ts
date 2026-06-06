@@ -1,5 +1,4 @@
 import { api } from "../Api/api";
-import type { UserExercise } from "../Context/WorkoutContext";
 import z, { string } from "zod";
 import { ExerciseSchema, UserExerciseSchema } from "../Schemas/Exercise.schema";
 import type { Exercise } from "../Pages/WorkoutPage";

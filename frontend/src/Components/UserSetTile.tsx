@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import type { UserSet } from "../Context/WorkoutContext";
+import type { UserSet } from "../types/types";
 
 type Props = {
   userSet: UserSet;
-  onSetFinish: (reps: string, weight: string) => void;
+  onSetFinish: (reps: number, weight: number) => void;
 };
 
 export const UserSetTile = ({ userSet, onSetFinish }: Props) => {
@@ -26,14 +26,14 @@ export const UserSetTile = ({ userSet, onSetFinish }: Props) => {
         value={reps}
         type="text"
         onChange={(e) => {
-          setReps(e.target.value);
+          setReps(Number(e.target.value));
         }}
       />
       <input
         value={weight}
         type="text"
         onChange={(e) => {
-          setWeight(e.target.value);
+          setWeight(Number(e.target.value));
         }}
       />
       <button type="button" onClick={handleSubmit}>
