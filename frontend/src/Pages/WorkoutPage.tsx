@@ -2,7 +2,6 @@ import React, { useEffect, useInsertionEffect, useState } from "react";
 import ExerciseSearch from "../Components/ExerciseSearch";
 import SessionExerciseList from "../Components/SessionExerciseList";
 import { useUserContext } from "../Context/UserContext";
-import { searchExercise } from "../Services/ExerciseService";
 import { isRouteErrorResponse, Link } from "react-router-dom";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { api } from "../Api/api";

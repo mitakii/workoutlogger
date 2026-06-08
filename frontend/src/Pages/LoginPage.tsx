@@ -3,10 +3,11 @@ import { useUserContext } from "../Context/UserContext";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
-  password: z.string().min(8, "Password is required"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export type LoginFormInput = z.infer<typeof loginSchema>;
@@ -30,13 +31,17 @@ export const Login = () => {
   const handleLogin = async (form: LoginFormInput) => {
     try {
       await loginUser(form.username, form.password);
-    } catch (e: any) {
-      if (e.status === 400) {
+      console.log("login");
+    } catch (e) {
+      if (
+        axios.isAxiosError(e) &&
+        (e.response?.status == 400 || e.response?.status == 401)
+      ) {
         setError("invalid credentials");
+        console.log(e);
       } else {
         console.log(e);
       }
-      console.log(e);
       reset();
     }
   };

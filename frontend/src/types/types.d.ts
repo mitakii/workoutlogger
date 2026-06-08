@@ -22,3 +22,14 @@ export type UserSet = {
   reps: number;
   order: number;
 };
+
+export type Translation = {
+  language: string;
+  name: string;
+  description: string;
+};
+
+export type UserProfile = {
+  username: string;
+  email: string;
+};

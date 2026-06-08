@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import ExerciseSearch from "../Components/ExerciseSearch";
 import type { Exercise } from "./WorkoutPage";
-import { searchExercise } from "../Services/ExerciseService";
 import { useUserContext } from "../Context/UserContext";
 import { ExerciseList } from "../Components/ExerciseList";
+import { useSearchExercise } from "../hooks/react-query";
 
 type Props = {};
 
 const SearchExercisePage = (props: Props) => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [searching, setSearching] = useState(false);
+  const { mutateAsync: searchExercise } = useSearchExercise(10, 1);
 
   const handleSearch = async (debounceValue: string) => {
     try {
       setSearching(true);
-      const result = await searchExercise(debounceValue, 10, 1);
+      const result = await searchExercise(debounceValue);
       setExercises(result);
     } catch (e) {
       console.log(e);

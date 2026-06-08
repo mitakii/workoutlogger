@@ -1,31 +1,26 @@
 import React, { useState } from "react";
 import z from "zod";
-import { addExercise } from "../Services/ExerciseService";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { AxiosError } from "axios";
+import { useAddExercise } from "../hooks/react-query";
+import type { Translation } from "../types/types";
+import { TranslationSchema } from "../Schemas/Exercise.schema";
 
 type Props = {};
 const exerciseScheme = z.object({
   nameTag: z.string().min(4, "name tag to short"),
   mediaUrl: z.string(),
   translations: z
-    .array(
-      z.object({
-        language: z
-          .string()
-          .min(2, "Language is required")
-          .max(4, "language too long"),
-        description: z.string().min(1, "Description required").max(200),
-        name: z.string().min(1, "Name required"),
-      })
-    )
+    .array(TranslationSchema)
     .min(1, "At least one translation is required"),
 });
 
 type ExerciseFormInput = z.infer<typeof exerciseScheme>;
 
 export const AddExercisePage = (props: Props) => {
+  const { mutateAsync: addExercise } = useAddExercise();
+
   const {
     register,
     control,
@@ -55,7 +50,7 @@ export const AddExercisePage = (props: Props) => {
 
   const handleExercisePost = async (form: ExerciseFormInput) => {
     try {
-      await addExercise(form.nameTag, form.mediaUrl, form.translations);
+      await addExercise(form);
       reset();
     } catch (e: any) {
       const apiError = e.response?.data;
@@ -101,6 +96,7 @@ export const AddExercisePage = (props: Props) => {
             )}
             <input
               type="text"
+              placeholder="description"
               {...register(`translations.${index}.description`)}
             />
             {errors.translations?.[index]?.description ? (

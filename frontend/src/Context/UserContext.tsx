@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import type { UserProfile } from "../types/types";
 import {
-  loginApi,
-  logoutApi,
-  statusApi,
-  registerApi,
-} from "../Services/AuthService";
+  useLogin,
+  useLogout,
+  useRegister,
+  useStatus,
+} from "../hooks/react-query";
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
@@ -26,36 +27,14 @@ type UserContextType = {
   isLoggedIn: () => boolean;
 };
 
-type UserProfile = {
-  username: string;
-  email: string;
-};
-
 const UserProvider = ({ children }: Props) => {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [isReady, setIsReady] = useState(false);
   const navigate = useNavigate();
+  const { data: user, isLoading } = useStatus();
+  const { mutateAsync: registerApi } = useRegister();
+  const { mutateAsync: loginApi } = useLogin();
+  const { mutateAsync: logoutApi } = useLogout();
 
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const res = await statusApi();
-        const userObj: UserProfile = {
-          username: res?.data.userName,
-          email: res?.data.email,
-        };
-        setUser(userObj);
-      } catch (e) {
-        console.log(e);
-        setUser(null);
-      }
-      setIsReady(true);
-    };
-
-    checkUser();
-  }, []);
-
-  const isLoggedIn = () => !!user;
+  const isLoggedIn = () => user != null;
 
   const registerUser = async (
     username: string,
@@ -64,7 +43,7 @@ const UserProvider = ({ children }: Props) => {
     language: string
   ) => {
     try {
-      const res = await registerApi(username, email, password, language);
+      const res = await registerApi({ username, email, password, language });
       navigate("/");
     } catch (e) {
       console.log(e);
@@ -73,12 +52,8 @@ const UserProvider = ({ children }: Props) => {
 
   const loginUser = async (username: string, password: string) => {
     try {
-      const res = await loginApi(username, password);
-      const userObj = {
-        username: res?.userName,
-        email: res?.email,
-      };
-      setUser(userObj);
+      console.log({ username, password });
+      const res = await loginApi({ username, password });
       navigate("/");
     } catch (e) {
       throw e;
@@ -88,7 +63,7 @@ const UserProvider = ({ children }: Props) => {
   const logout = async () => {
     try {
       const res = await logoutApi();
-      setUser(null);
+      navigate("/");
     } catch (e) {
       console.log(e);
     }
@@ -97,14 +72,14 @@ const UserProvider = ({ children }: Props) => {
   return (
     <UserContext.Provider
       value={{
-        user,
+        user: user ?? null,
         loginUser,
         registerUser,
         isLoggedIn,
         logout,
       }}
     >
-      {isReady ? children : <div>Is loading...</div>}
+      {!isLoading ? children : <div>Is loading...</div>}
     </UserContext.Provider>
   );
 };

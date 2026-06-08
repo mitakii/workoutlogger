@@ -37,3 +37,12 @@ export const ExerciseSchema = z.array(
     imageUrl: z.nullable(z.string()),
   })
 );
+
+export const TranslationSchema = z.object({
+  language: z
+    .string()
+    .min(2, "Language is required")
+    .max(4, "language too long"),
+  description: z.string().min(1, "Description required").max(200),
+  name: z.string().min(1, "Name required"),
+});
