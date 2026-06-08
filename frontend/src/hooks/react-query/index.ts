@@ -20,6 +20,7 @@ export const useLastSession = () => {
     queryKey: ["lastSession"],
     queryFn: getLastSession,
     retry: false,
+    staleTime: 5 * 60 * 1000,
   });
 };
 

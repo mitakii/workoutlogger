@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { data, Link, Navigate, useNavigate } from "react-router-dom";
 import { useUserContext } from "../Context/UserContext";
-import { useCreateSession } from "../hooks/react-query";
+import { useCreateSession, useLastSession } from "../hooks/react-query";
 
 type Props = {};
 
 const SessionMenu = (props: Props) => {
   const { isLoggedIn } = useUserContext();
   const navigate = useNavigate();
+  const { data: lastSession } = useLastSession();
   const { mutateAsync: createSession, data: session } = useCreateSession();
 
   const handleCreateSession = async () => {
@@ -28,8 +29,8 @@ const SessionMenu = (props: Props) => {
 
   return (
     <div className="grid-rows-2 justify-center p-4">
-      {isLoggedIn() && session !== null && (
-        <Link to={`/session/${session?.workoutId}`}>
+      {isLoggedIn() && lastSession !== null && (
+        <Link to={`/session/${lastSession?.workoutId}`}>
           <div className="m-4">open last session</div>
         </Link>
       )}
