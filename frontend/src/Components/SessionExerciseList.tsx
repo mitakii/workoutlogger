@@ -22,7 +22,7 @@ const SessionExerciseList = ({ exercises }: Props) => {
       {session.userExercises.map((e) => (
         <div key={e.id}>
           {" "}
-          <UserExerciseTile userExercise={e} />
+          <UserExerciseTile userExercise={e} sessionId={session.workoutId} />
           <br />
         </div>
       ))}

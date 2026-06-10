@@ -1,24 +1,55 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { UserSet } from "../types/types";
+import { useDebounce } from "react-use";
+import { useDeleteUserSet, useUpdateUserSet } from "../hooks/react-query";
 
 type Props = {
+  sessionId: string;
   userSet: UserSet;
-  onSetFinish: (reps: number, weight: number) => void;
 };
 
-export const UserSetTile = ({ userSet, onSetFinish }: Props) => {
-  const [reps, setReps] = useState(userSet.reps);
-  const [weight, setWeight] = useState(userSet.weight);
+export const UserSetTile = ({ sessionId, userSet }: Props) => {
+  const [reps, setReps] = useState<number>(userSet.reps);
+  const [weight, setWeight] = useState<number>(userSet.weight);
   const [finished, setFinished] = useState(false);
+  const isHydrated = useRef(false);
 
-  const handleSubmit = async () => {
+  const { mutateAsync: updateSet } = useUpdateUserSet(sessionId, userSet);
+  const { mutateAsync: deleteSet } = useDeleteUserSet(sessionId);
+
+  const handleSetFinished = async () => {
     try {
-      await onSetFinish(reps, weight);
       setFinished(true);
     } catch (e) {
       console.log(e);
     }
   };
+
+  const handleSetDelete = async () => {
+    try {
+      await deleteSet(userSet);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useDebounce(
+    async () => {
+      if (!isHydrated.current) {
+        isHydrated.current = true;
+        return;
+      }
+      if (reps === 0 && weight === 0) return;
+      await updateSet({
+        reps: reps,
+        weight: weight,
+        id: userSet.id,
+        order: userSet.order,
+      } as UserSet);
+    },
+    500,
+    [reps, weight]
+  );
 
   return (
     <div>
@@ -36,8 +67,12 @@ export const UserSetTile = ({ userSet, onSetFinish }: Props) => {
           setWeight(Number(e.target.value));
         }}
       />
-      <button type="button" onClick={handleSubmit}>
+      <button type="button" onClick={handleSetFinished}>
         Finished
+      </button>
+
+      <button type="button" onClick={handleSetDelete}>
+        Delete
       </button>
     </div>
   );

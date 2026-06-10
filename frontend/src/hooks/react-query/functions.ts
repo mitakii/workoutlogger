@@ -136,6 +136,26 @@ export const addUserSet = async (userSet: UserSet, userExerciseId: string) => {
   }
 };
 
+export const updateUserSet = async (userSet: UserSet) => {
+  try {
+    const res = await api.patch(`/UserExercise/userSet/${userSet.id}`, userSet);
+    return res.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const deleteUserSet = async (userSet: UserSet) => {
+  try {
+    const res = await api.delete(`/UserExercise/userSet/${userSet.id}`);
+    return res.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
 // auth
 
 type ApiError = {

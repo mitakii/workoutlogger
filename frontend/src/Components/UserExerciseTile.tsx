@@ -1,22 +1,25 @@
 import React from "react";
 import { UserSetTile } from "./UserSetTile";
 import type { UserExercise, UserSet } from "../types/types";
-import { useAddUserSet } from "../hooks/react-query";
+import { useAddUserSet, useUpdateUserSet } from "../hooks/react-query";
+import { useUpdate } from "react-use";
 
 type Props = {
+  sessionId: string;
   userExercise: UserExercise;
 };
 
-export const UserExerciseTile = ({ userExercise }: Props) => {
+export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
   const { mutateAsync: addSet } = useAddUserSet(userExercise.id);
-  const onSetFinish = async (reps: number, weight: number) => {
+
+  const handleAddSet = async () => {
     try {
       console.log(userExercise);
       const newSet: UserSet = {
-        id: "",
-        weight: weight,
-        reps: reps,
-        order: 0,
+        id: ``,
+        weight: 0,
+        reps: 0,
+        order: userExercise.sets?.length ?? 0,
       };
 
       await addSet(newSet);
@@ -33,9 +36,13 @@ export const UserExerciseTile = ({ userExercise }: Props) => {
 
       {userExercise.sets?.map((s) => (
         <div key={s.id}>
-          <UserSetTile userSet={s} onSetFinish={onSetFinish} />
+          <UserSetTile userSet={s} sessionId={sessionId} />
         </div>
-      )) ?? <button type="button"> add exercise set </button>}
+      ))}
+      <button type="button" onClick={handleAddSet}>
+        {" "}
+        add exercise set{" "}
+      </button>
     </div>
   );
 };

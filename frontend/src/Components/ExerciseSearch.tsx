@@ -1,20 +1,18 @@
 import React, { useState } from "react";
 import "../index.css";
-import { useUserContext } from "../Context/UserContext";
-import type { Exercise } from "../Pages/WorkoutPage";
 import { useDebounce } from "react-use";
 
 type SearchBarProps = {
-  onSearch: (query: string) => void;
+  onSearch: (query: string) => Promise<void>;
 };
 
 const ExerciseSeaerch: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState("");
 
   useDebounce(
-    () => {
+    async () => {
       if (query === "") return;
-      onSearch(query);
+      await onSearch(query);
     },
     200,
     [query]

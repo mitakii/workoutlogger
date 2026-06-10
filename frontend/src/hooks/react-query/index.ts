@@ -12,12 +12,20 @@ import {
   registerApi,
   logoutApi,
   statusApi,
+  updateUserSet,
+  deleteUserSet,
 } from "./functions";
-import type { Translation, UserProfile, UserSet } from "../../types/types";
+import {
+  type Translation,
+  type UserExercise,
+  type UserProfile,
+  type UserSession,
+  type UserSet,
+} from "../../types/types.d";
 
 export const useLastSession = () => {
   return useQuery({
-    queryKey: ["lastSession"],
+    queryKey: ["workout-session"],
     queryFn: getLastSession,
     retry: false,
     staleTime: 5 * 60 * 1000,
@@ -26,7 +34,6 @@ export const useLastSession = () => {
 
 export const useGetSessionById = (sessionId: string) => {
   return useMutation({
-    mutationKey: ["session", sessionId],
     mutationFn: () => getSession(sessionId),
   });
 };
@@ -38,7 +45,7 @@ export const useCreateSession = () => {
     mutationFn: () => createSession(),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["lastSession"],
+        queryKey: ["workout-session"],
       });
     },
   });
@@ -56,7 +63,7 @@ export const useAddUserExercise = () => {
       exerciseId: string;
     }) => addUserExercise(workoutId, exerciseId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lastSession"] });
+      queryClient.invalidateQueries({ queryKey: ["workout-session"] });
     },
   });
 };
@@ -96,7 +103,63 @@ export const useAddUserSet = (userExerciseId: string) => {
   return useMutation({
     mutationFn: (userSet: UserSet) => addUserSet(userSet, userExerciseId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lastSession"] });
+      queryClient.invalidateQueries({ queryKey: ["workout-session"] });
+    },
+  });
+};
+
+export const useUpdateUserSet = (sessionId: string, userSet: UserSet) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userSet: UserSet) => updateUserSet(userSet),
+
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: ["workout-session", sessionId],
+      });
+
+      const previous = queryClient.getQueryData<UserSession>([
+        "workout-session",
+        sessionId,
+      ]);
+
+      queryClient.setQueryData(
+        ["workout-session", sessionId],
+        (old: UserSession) => {
+          if (!old) return old;
+          return {
+            ...old,
+            userExercises: old.userExercises.map((exercise: UserExercise) => ({
+              ...exercise,
+              sets: exercise.sets?.map((set) =>
+                set.id === userSet.id
+                  ? { ...set, weightL: userSet.weight }
+                  : set
+              ),
+            })),
+          };
+        }
+      );
+      return { previous };
+    },
+
+    onError: (_, __, context) => {
+      queryClient.setQueryData(
+        ["workout-session", sessionId],
+        context?.previous
+      );
+    },
+  });
+};
+
+export const useDeleteUserSet = (sessionId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userSet: UserSet) => deleteUserSet(userSet),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["workout-session"],
+      });
     },
   });
 };
