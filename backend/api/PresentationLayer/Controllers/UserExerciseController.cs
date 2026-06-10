@@ -1,3 +1,4 @@
+using BusinessLayer.DTO;
 using BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Extensions;
@@ -16,7 +17,7 @@ public class UserExerciseController : ControllerBase
     [HttpGet("userSet/{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        if(Guid.TryParse(id.ToString(), out Guid guid))
+        if(!Guid.TryParse(id.ToString(), out Guid guid))
             return BadRequest("id must be a valid guid");
         
         var result = await _userSetService.GetUserSetAsync(guid);
@@ -26,7 +27,7 @@ public class UserExerciseController : ControllerBase
     [HttpPost("{exerciseId}")]
     public async Task<IActionResult> AddSet(string exerciseId, double weight, int reps)
     {
-        if(Guid.TryParse(exerciseId, out Guid exerciseGuid))
+        if(!Guid.TryParse(exerciseId, out Guid exerciseGuid))
             return  BadRequest("id must be a valid guid");
         
         var result = await _userSetService.CreateUserSetAsync(exerciseGuid, weight, reps);
@@ -36,7 +37,7 @@ public class UserExerciseController : ControllerBase
     [HttpGet("userSets/{exerciseId}")]
     public async Task<IActionResult> GetAllSets(string exerciseId)
     {
-        if(Guid.TryParse(exerciseId, out Guid exerciseGuid))
+        if(!Guid.TryParse(exerciseId, out Guid exerciseGuid))
             return BadRequest("id must be a valid guid");
         
         var result = await _userSetService.GetUserSetsAsync(exerciseGuid);
@@ -47,7 +48,7 @@ public class UserExerciseController : ControllerBase
     [HttpDelete("userSet/{setId}")]
     public async Task<IActionResult> DeleteSet(string setId)
     {
-        if(Guid.TryParse(setId, out Guid setGuid))
+        if(!Guid.TryParse(setId, out Guid setGuid))
             return BadRequest("id must be a valid guid");
 
         var result = await  _userSetService.DeleteUserSetAsync(setGuid);
@@ -56,12 +57,12 @@ public class UserExerciseController : ControllerBase
 
     [HttpPatch("userSet/{setId}")]
     public async Task<IActionResult> UpdateSet
-        (string setId, [FromBody] double weight,[FromBody] int reps)
+        (string setId, [FromBody] UserExerciseSetRequest request)
     {
-        if(Guid.TryParse(setId, out Guid setGuid))
+        if(!Guid.TryParse(setId, out Guid setGuid))
             return BadRequest("id must be a valid guid");
         
-        var result = await _userSetService.UpdateUserSetAsync(setGuid, weight, reps);
+        var result = await _userSetService.UpdateUserSetAsync(setGuid, request.Weight, request.Reps);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 }

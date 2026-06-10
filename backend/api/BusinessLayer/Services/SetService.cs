@@ -19,7 +19,7 @@ public class SetService : IUserSetService
     
     public async Task<Result<UserSetGetResponse>> GetUserSetAsync(Guid setId)
     {
-        var set = _context.UserExerciseSets.FirstOrDefault(ue => ue.Id == setId);
+        var set = await _context.UserExerciseSet.FirstOrDefaultAsync(ue => ue.Id == setId);
         if(set == null)
             return Result<UserSetGetResponse>.Failed(ErrorCode.NotFound, "Exercise set not found");
 
@@ -87,14 +87,14 @@ public class SetService : IUserSetService
 
     public async Task<Result<UserSetGetResponse>> UpdateUserSetAsync(Guid setId, double Weight, int Reps)
     {
-        var set = await _context.UserExerciseSets.FindAsync(setId);
+        var set = await _context.UserExerciseSet.FindAsync(setId);
         if(set == null)
             return Result<UserSetGetResponse>.Failed(ErrorCode.NotFound, "Set not found");
         
         set.Weight = Weight;
         set.Reps = Reps;
 
-        _context.UserExerciseSets.Update(set);
+        _context.UserExerciseSet.Update(set);
         await _context.SaveChangesAsync();
         return Result<UserSetGetResponse>.Success(new()
         {
@@ -108,10 +108,10 @@ public class SetService : IUserSetService
 
     public async Task<Result<string>> DeleteUserSetAsync(Guid setId)
     {
-        var set = await _context.UserExerciseSets.FindAsync(setId);
+        var set = await _context.UserExerciseSet.FindAsync(setId);
         if(set == null)
             return Result<string>.Failed(ErrorCode.NotFound, "Set not found");
-        _context.UserExerciseSets.Remove(set);
+        _context.UserExerciseSet.Remove(set);
         await _context.SaveChangesAsync();
          return Result<string>.Success("Set has been deleted");
     }

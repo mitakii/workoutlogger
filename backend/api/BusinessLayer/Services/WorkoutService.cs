@@ -89,6 +89,7 @@ public class WorkoutService : IWorkoutService
                 w.Name,
                 UserExercises =  w.UserExercises.Select(ue => new
                 {
+                    ue.Id,
                     ue.RefExerciseId,
                     RefExerciseMediaUrl = ue.RefExercise.MediaUrl,
                     ue.Order,
@@ -122,6 +123,7 @@ public class WorkoutService : IWorkoutService
             WorkoutName = workout.Name,
             UserExercises = workout.UserExercises.Select(e => new UserExerciseGetResponse
             {
+                Id = e.Id.ToString(),
                 ExerciseName = translation[e.RefExerciseId].Name,
                 ExerciseDescription = translation[e.RefExerciseId].Description,
                 ImageUrl = e.RefExerciseMediaUrl,
@@ -191,7 +193,7 @@ public class WorkoutService : IWorkoutService
         {
             Exercise = userExercise,
             ExerciseId = userExercise.Id,
-            Order = 1,
+            Order = 0,
             Reps = 0,
             Weight = 0,
         };
