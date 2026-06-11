@@ -1,10 +1,7 @@
-import React, { useState } from "react";
 import z from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { AxiosError } from "axios";
 import { useAddExercise } from "../hooks/react-query";
-import type { Translation } from "../types/types";
 import { TranslationSchema } from "../Schemas/Exercise.schema";
 
 type Props = {};

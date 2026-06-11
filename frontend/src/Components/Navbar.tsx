@@ -1,18 +1,23 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import "../index.css";
 import { useUserContext } from "../Context/UserContext";
 
 const Navbar = () => {
   const { isLoggedIn, logout, user } = useUserContext();
-
+  const navigate = useNavigate();
   const logoutUser = () => {
     logout();
+    navigate("/");
   };
 
   return (
     <nav className="bg-gray-900 text-white px-6 py-4">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <Link to={"/"} className="text-xl font-bold">
+        <Link
+          to={"/"}
+          className="text-xl font-bold"
+          onClick={() => console.log(user)}
+        >
           logo
         </Link>
         <div className="flex items-center gap-4">

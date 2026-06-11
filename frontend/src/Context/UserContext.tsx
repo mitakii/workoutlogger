@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import React, { createContext, useContext } from "react";
 import type { UserProfile } from "../types/types";
 import {
   useLogin,
@@ -28,7 +27,6 @@ type UserContextType = {
 };
 
 const UserProvider = ({ children }: Props) => {
-  const navigate = useNavigate();
   const { data: user, isLoading } = useStatus();
   const { mutateAsync: registerApi } = useRegister();
   const { mutateAsync: loginApi } = useLogin();
@@ -44,7 +42,6 @@ const UserProvider = ({ children }: Props) => {
   ) => {
     try {
       const res = await registerApi({ username, email, password, language });
-      navigate("/");
     } catch (e) {
       console.log(e);
     }
@@ -54,7 +51,6 @@ const UserProvider = ({ children }: Props) => {
     try {
       console.log({ username, password });
       const res = await loginApi({ username, password });
-      navigate("/");
     } catch (e) {
       throw e;
     }
@@ -63,7 +59,6 @@ const UserProvider = ({ children }: Props) => {
   const logout = async () => {
     try {
       const res = await logoutApi();
-      navigate("/");
     } catch (e) {
       console.log(e);
     }

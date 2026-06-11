@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { UserSet } from "../types/types";
 import { useDebounce } from "react-use";
 import { useDeleteUserSet, useUpdateUserSet } from "../hooks/react-query";
@@ -53,6 +53,9 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
 
   return (
     <div>
+      <button type="button" onClick={handleSetFinished}>
+        Finished
+      </button>
       <input
         value={reps}
         type="text"
@@ -67,9 +70,6 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
           setWeight(Number(e.target.value));
         }}
       />
-      <button type="button" onClick={handleSetFinished}>
-        Finished
-      </button>
 
       <button type="button" onClick={handleSetDelete}>
         Delete

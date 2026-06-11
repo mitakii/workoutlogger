@@ -1,5 +1,3 @@
-import React from "react";
-
 import { UserExerciseTile } from "./UserExerciseTile";
 import type { UserExercise } from "../types/types";
 import { useLastSession } from "../hooks/react-query";

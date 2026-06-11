@@ -13,7 +13,6 @@ import {
 } from "../../Schemas/Exercise.schema";
 import type { Exercise } from "../../Pages/WorkoutPage";
 import type { Session } from "react-router-dom";
-import UserProvider from "../../Context/UserContext";
 
 export const getLastSession = async (): Promise<UserSession> => {
   try {
@@ -158,11 +157,6 @@ export const deleteUserSet = async (userSet: UserSet) => {
 
 // auth
 
-type ApiError = {
-  message: string;
-  field?: "username" | "password";
-};
-
 export const loginApi = async (
   username: string,
   password: string
@@ -221,7 +215,13 @@ export const statusApi = async (): Promise<UserProfile | null> => {
         withCredentials: true,
       }
     );
-    return res.data;
+    console.log(res.data);
+    const user: UserProfile = {
+      username: res.data.username,
+      email: res.data.email,
+      role: res.data.role,
+    };
+    return user;
   } catch (e) {
     console.log(e);
     if (axios.isAxiosError(e) && e.response?.status == 401) {

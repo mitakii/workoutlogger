@@ -6,6 +6,8 @@ import { Register } from "../Pages/RegisterPage";
 import WorkoutPage from "../Pages/WorkoutPage";
 import { AddExercisePage } from "../Pages/AddExercisePage";
 import SearchExercisePage from "../Pages/SearchExercisePage";
+import AdminRoute from "./AdminRoute";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -15,9 +17,19 @@ export const router = createBrowserRouter([
       { path: "", element: <Home /> },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
-      { path: "session/:token", element: <WorkoutPage /> },
-      { path: "addexercise", element: <AddExercisePage /> },
-      { path: "search", element: <SearchExercisePage /> },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          { path: "session/:token", element: <WorkoutPage /> },
+          { path: "search", element: <SearchExercisePage /> },
+        ],
+      },
+
+      {
+        path: "admin",
+        element: <AdminRoute />,
+        children: [{ path: "addexercise", element: <AddExercisePage /> }],
+      },
     ],
   },
 ]);

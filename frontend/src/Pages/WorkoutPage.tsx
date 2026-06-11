@@ -1,11 +1,5 @@
-import React, { useEffect, useInsertionEffect, useState } from "react";
-import ExerciseSearch from "../Components/ExerciseSearch";
 import SessionExerciseList from "../Components/SessionExerciseList";
-import { useUserContext } from "../Context/UserContext";
-import { isRouteErrorResponse, Link } from "react-router-dom";
-import { useQueries, useQuery } from "@tanstack/react-query";
-import { api } from "../Api/api";
-import type { UserSession } from "../types/types";
+import { Link } from "react-router-dom";
 import { useLastSession } from "../hooks/react-query";
 
 export type Exercise = {
@@ -18,9 +12,7 @@ export type Exercise = {
 type Props = {};
 
 const WorkoutPage = (props: Props) => {
-  const { user } = useUserContext();
-
-  const { data: workout, isLoading, error, isError } = useLastSession();
+  const { data: workout, isLoading } = useLastSession();
 
   if (isLoading) {
     return <div>workout loading</div>;

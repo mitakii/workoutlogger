@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -13,6 +14,7 @@ const loginSchema = z.object({
 export type LoginFormInput = z.infer<typeof loginSchema>;
 
 export const Login = () => {
+  const navigate = useNavigate();
   const { loginUser } = useUserContext();
   const {
     register,
@@ -31,6 +33,7 @@ export const Login = () => {
   const handleLogin = async (form: LoginFormInput) => {
     try {
       await loginUser(form.username, form.password);
+      navigate("/");
       console.log("login");
     } catch (e) {
       if (

@@ -1,15 +1,11 @@
-import { Outlet, Route, Routes } from "react-router-dom";
-import UserProvider from "./Context/UserContext";
+import { Outlet } from "react-router-dom";
 import Navbar from "./Components/Navbar";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const App = () => {
   return (
     <>
-      <UserProvider>
-        <Navbar />
-        <Outlet />
-      </UserProvider>
+      <Navbar />
+      <Outlet />
     </>
   );
 };

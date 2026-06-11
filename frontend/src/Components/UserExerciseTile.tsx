@@ -1,8 +1,6 @@
-import React from "react";
 import { UserSetTile } from "./UserSetTile";
 import type { UserExercise, UserSet } from "../types/types";
-import { useAddUserSet, useUpdateUserSet } from "../hooks/react-query";
-import { useUpdate } from "react-use";
+import { useAddUserSet } from "../hooks/react-query";
 
 type Props = {
   sessionId: string;

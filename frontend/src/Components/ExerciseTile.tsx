@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import type { Exercise } from "../Pages/WorkoutPage";
 import { useNavigate } from "react-router-dom";
 

@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { useUserContext } from "../Context/UserContext";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 
 const registerSchema = z.object({
   userName: z.string().min(4, "Username is required"),
@@ -15,6 +15,7 @@ export type RegisterFormInput = z.infer<typeof registerSchema>;
 
 export const Register = () => {
   const { registerUser } = useUserContext();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -23,6 +24,7 @@ export const Register = () => {
 
   const handleRegister = (form: RegisterFormInput) => {
     registerUser(form.userName, form.email, form.password, form.language);
+    navigate("/");
   };
 
   return (
