@@ -7,9 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-
 using PresentationLayer.Extensions;
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace PresentationLayer.Controllers;
 
@@ -37,23 +35,20 @@ public class AuthController : ControllerBase
     [HttpGet("status")]
     public async Task<IActionResult> Status()
     {
-        string userId = null;
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        if (identity != null)
-        {
-            userId = identity.FindFirst(ClaimTypes.Sid)?.Value;
-        }
-        else return Unauthorized();
+        string userId = User.FindFirstValue(ClaimTypes.Sid);
         
         var user = await _userManager.FindByIdAsync(userId);
         if(user == null) return NotFound("user not found ");
-        
+
+        var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+        var role = isAdmin ? "Admin" : "User";
         return Ok(new
         {
-            user.UserName,
+            username = user.UserName,
             user.Email,
             user.Id,
-            user.Language
+            user.Language,
+            role
         });
     }
     
@@ -131,12 +126,7 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        string userId = null;
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        if (identity != null)
-        {
-            userId = identity.FindFirst(ClaimTypes.Sid)?.Value;
-        }
+        string userId = User.FindFirstValue(ClaimTypes.Sid);
         await _tokenService.RevokeRefreshTokenByUIdAsync(userId);
         
         new TokenDTO{AccessToken = "", RefreshToken = ""}.SetTokenToCookie(HttpContext, _jwtOptions);

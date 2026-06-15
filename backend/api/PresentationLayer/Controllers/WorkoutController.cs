@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using BusinessLayer.DTO;
 using BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -18,17 +19,11 @@ public class WorkoutController : ControllerBase
         _workoutService = workoutService;
     }
     
-   
     [Authorize]
     [HttpPost("start")]
     public async Task<IActionResult> Start()
     {
-        string userId = null;
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        if (identity != null)
-        {
-            userId = identity.FindFirst(ClaimTypes.Sid)?.Value;
-        }
+        var userId = User.FindFirstValue(ClaimTypes.Sid);
         if (userId == null)
             return NotFound("user is not found");
         
@@ -40,24 +35,13 @@ public class WorkoutController : ControllerBase
     [HttpGet("lastWorkout")]
     public async Task<IActionResult> GetLastWorkout()
     {
-        string userId = null;
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        if (identity != null)
-        {
-            userId = identity.FindFirst(ClaimTypes.Sid)?.Value;
-        }
+        var userId = User.FindFirstValue(ClaimTypes.Sid);
         if (userId == null)
             return NotFound("user is not found");
 
         
-        string language = null;
-        if (identity != null)
-        {
-            language = identity.FindFirst(ClaimTypes.Locality)?.Value;
-        }
-        else return Unauthorized();
-        
-        if (language == null)
+        var language = User.FindFirstValue(ClaimTypes.Locality);
+        if(language == null)
             return BadRequest("unknown language");
         
         var result  = await _workoutService.GetLastWorkoutAsync(userId, language);
@@ -71,6 +55,8 @@ public class WorkoutController : ControllerBase
             return BadRequest();
         
         var language = User.FindFirst(ClaimTypes.Locality)?.Value;
+        if(language == null)
+            return BadRequest("unknown language");
         
         var result = await _workoutService.GetByIdAsync(workoutId, language);
         
@@ -94,16 +80,11 @@ public class WorkoutController : ControllerBase
     {
         if (string.IsNullOrEmpty(workoutId) || string.IsNullOrEmpty(exerciseId))
             return BadRequest();
-
-        string language = null;
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        if (identity != null)
-        {
-            language = identity.FindFirst(ClaimTypes.Locality)?.Value;
-        }
-        else return Unauthorized();
+        
+        var language = User.FindFirstValue(ClaimTypes.Locality);
         if(language == null)
             return BadRequest("unknown language");
+        
         var result = await _workoutService.AddUserExerciseAsync(workoutId, exerciseId, language);
         
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
@@ -120,8 +101,7 @@ public class WorkoutController : ControllerBase
         
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
-
-
+    
     [Authorize]
     [HttpGet("{workoutId}/exercises")]
     public async Task<IActionResult> GetWorkoutExercises(string workoutId)
@@ -129,19 +109,31 @@ public class WorkoutController : ControllerBase
         if(string.IsNullOrEmpty(workoutId))
             return BadRequest("id cant be empty");
         
-        //todo: refactor ts
-        string language = null;
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        if (identity != null)
-        {
-            language = identity.FindFirst(ClaimTypes.Locality)?.Value;
-        }
-        else return Unauthorized();
+        var language = User.FindFirstValue(ClaimTypes.Locality);
         if(language == null)
             return BadRequest("unknown language");
 
         var result = await _workoutService.GetAllExercisesAsync(workoutId, language);
         
         return result.Succeeded ? Ok(result) : result.ToIActionResultErrors();
+    }
+
+    [Authorize]
+    [HttpGet("userWorkouts")]
+    public async Task<IActionResult> GetUserWorkouts([FromBody]WorkoutsGetRequest request)
+    {
+        if (request.PageSize <= 0 |  request.Page < 1)
+            return BadRequest();
+
+        var language = User.FindFirstValue(ClaimTypes.Locality);
+        if(language == null)
+            return BadRequest("unknown language");
+        
+        var result = await _workoutService.GetAllUserWorkoutsAsync(request, language);
+
+        if (!result.Succeeded)
+            return result.ToIActionResultErrors();
+        
+        return Ok(result.Data);
     }
 }

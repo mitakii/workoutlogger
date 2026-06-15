@@ -189,7 +189,7 @@ public class WorkoutService : IWorkoutService
         };
         workout.UserExercises.Add(userExercise);
 
-        var newset = new UserExerciseSet()
+        var newSet = new UserExerciseSet()
         {
             Exercise = userExercise,
             ExerciseId = userExercise.Id,
@@ -198,7 +198,7 @@ public class WorkoutService : IWorkoutService
             Weight = 0,
         };
         
-        userExercise.UserExerciseSets.Add(newset);
+        userExercise.UserExerciseSets.Add(newSet);
         
         await _context.SaveChangesAsync();
         var translation = await _translationRepo.GetExerciseTranslationAsync(exercise.Id, language);
@@ -273,11 +273,11 @@ public class WorkoutService : IWorkoutService
         return Result<ICollection<UserExerciseGetResponse>>.Success(result);
     }
     
-    public async Task<Result<PagedResult<WorkoutResponse>>> GetAllUserWorkoutsAsync(WorkoutGetRequest request, string lang = "")
+    public async Task<Result<PagedResult<WorkoutResponse>>> GetAllUserWorkoutsAsync(WorkoutsGetRequest request, string lang = "")
     {
         var workout = await _context.Workouts
             .AsNoTracking()
-            .Where(w => w.UserId == Guid.Parse(request.UserId))
+            .Where(w => w.UserId == request.UserId)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(w => new

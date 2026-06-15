@@ -15,9 +15,9 @@ public class UserExerciseController : ControllerBase
     }
     
     [HttpGet("userSet/{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(string id)
     {
-        if(!Guid.TryParse(id.ToString(), out Guid guid))
+        if(!Guid.TryParse(id, out Guid guid))
             return BadRequest("id must be a valid guid");
         
         var result = await _userSetService.GetUserSetAsync(guid);

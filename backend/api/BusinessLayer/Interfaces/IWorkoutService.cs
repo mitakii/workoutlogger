@@ -15,7 +15,7 @@ public interface IWorkoutService
     
     public Task<Result<UserExerciseGetResponse>> AddUserExerciseAsync(string workoutId, string exerciseId, string language);
     public Task<Result<ICollection<UserExerciseGetResponse>>> GetAllExercisesAsync(string workoutId, string language);
-    public Task<Result<PagedResult<WorkoutResponse>>> GetAllUserWorkoutsAsync(WorkoutGetRequest request, string lang);
+    public Task<Result<PagedResult<WorkoutResponse>>> GetAllUserWorkoutsAsync(WorkoutsGetRequest request, string lang);
     public Task<Result<bool>> RemoveUserExerciseAsync(string exerciseId);
     
     public Task<Result<ICollection<UserExercise>>> AddWorkoutFromTemplateAsync(string workoutId);

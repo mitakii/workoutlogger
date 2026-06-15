@@ -1,15 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using BusinessLayer.DTO;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
 namespace PresentationLayer.Controllers;
 
 [ApiController]
@@ -43,7 +37,9 @@ public class UserController : ControllerBase
             return BadRequest();
         
         var userId = User.FindFirst(JwtRegisteredClaimNames.NameId)?.Value;
-            
+        if(string.IsNullOrEmpty(userId))
+            return NotFound("User not found");
+        
         var result = await _userService.ChangeUserLanguageAsync(userId, language);
         return result.Succeeded ? Ok(result.Data) : NotFound();
     }
