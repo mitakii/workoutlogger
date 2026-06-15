@@ -2,7 +2,7 @@ import z from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAddExercise } from "../hooks/react-query";
-import { TranslationSchema } from "../Schemas/Exercise.schema";
+import { TranslationSchema } from "../schemas/Exercise.schema";
 
 type Props = {};
 const exerciseScheme = z.object({

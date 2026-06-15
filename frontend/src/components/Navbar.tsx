@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router";
 import "../index.css";
-import { useUserContext } from "../Context/UserContext";
+import { useUserContext } from "../context/UserContext";
 
 const Navbar = () => {
   const { isLoggedIn, logout, user } = useUserContext();

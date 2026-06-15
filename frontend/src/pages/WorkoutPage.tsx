@@ -1,4 +1,4 @@
-import SessionExerciseList from "../Components/SessionExerciseList";
+import SessionExerciseList from "../components/SessionExerciseList";
 import { Link } from "react-router-dom";
 import { useLastSession } from "../hooks/react-query";
 

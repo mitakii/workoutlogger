@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useUserContext } from "../Context/UserContext";
+import { useUserContext } from "../context/UserContext";
 import { useCreateSession, useLastSession } from "../hooks/react-query";
 
 const SessionMenu = () => {

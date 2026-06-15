@@ -1,6 +1,13 @@
-import { UserSetTile } from "./UserSetTile";
+import { UserSetTile } from "../components/UserSetTile";
 import type { UserExercise, UserSet } from "../types/types";
 import { useAddUserSet } from "../hooks/react-query";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 
 type Props = {
   sessionId: string;
@@ -28,19 +35,22 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
   };
 
   return (
-    <div>
-      <div> {userExercise.exerciseName}</div>
-      <div>{userExercise.exerciseDescription}</div>
-
-      {userExercise.sets?.map((s) => (
-        <div key={s.id}>
-          <UserSetTile userSet={s} sessionId={sessionId} />
+    <Card>
+      <CardHeader>
+        <div>
+          <CardTitle>{userExercise.exerciseName} </CardTitle>
+          <CardDescription>{userExercise.exerciseDescription}</CardDescription>
         </div>
-      ))}
-      <button type="button" onClick={handleAddSet}>
-        {" "}
-        add exercise set{" "}
-      </button>
-    </div>
+      </CardHeader>
+
+      <CardContent>
+        {userExercise.sets?.map((s) => (
+          <UserSetTile key={s.id} userSet={s} sessionId={sessionId} />
+        ))}
+        <button type="button" onClick={handleAddSet}>
+          add exercise set
+        </button>
+      </CardContent>
+    </Card>
   );
 };

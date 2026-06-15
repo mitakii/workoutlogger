@@ -1,10 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useUserContext } from "../Context/UserContext";
+import { useUserContext } from "../context/UserContext";
 
 const AdminRoute = () => {
   const { user, isLoggedIn } = useUserContext();
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn()) {
     return <Navigate to="/login" replace />;
   }
 

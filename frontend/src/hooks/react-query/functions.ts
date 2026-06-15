@@ -6,12 +6,12 @@ import type {
   UserSession,
   UserSet,
 } from "../../types/types";
-import { api } from "../../Api/api";
+import { api } from "../../api/api";
 import {
   ExerciseSchema,
   UserExerciseSchema,
-} from "../../Schemas/Exercise.schema";
-import type { Exercise } from "../../Pages/WorkoutPage";
+} from "../../schemas/Exercise.schema";
+import type { Exercise } from "../../pages/WorkoutPage";
 import type { Session } from "react-router-dom";
 
 export const getLastSession = async (): Promise<UserSession> => {

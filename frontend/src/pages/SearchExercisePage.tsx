@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import ExerciseSearch from "../Components/ExerciseSearch";
+import ExerciseSearch from "../components/ExerciseSearch";
 import type { Exercise } from "./WorkoutPage";
-import { useUserContext } from "../Context/UserContext";
-import { ExerciseList } from "../Components/ExerciseList";
+import { useUserContext } from "../context/UserContext";
+import { ExerciseList } from "../components/ExerciseList";
 import { useSearchExercise } from "../hooks/react-query";
 
 type Props = {};

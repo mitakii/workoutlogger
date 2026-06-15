@@ -1,5 +1,5 @@
-import SessionMenu from "../Components/SessionMenu";
-import LiderBoard from "../Components/LiderBoard";
+import SessionMenu from "../components/SessionMenu";
+import LiderBoard from "../components/LiderBoard";
 import "../index.css";
 
 export const Home = () => {

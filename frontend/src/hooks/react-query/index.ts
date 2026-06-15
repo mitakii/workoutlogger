@@ -132,9 +132,7 @@ export const useUpdateUserSet = (sessionId: string, userSet: UserSet) => {
             userExercises: old.userExercises.map((exercise: UserExercise) => ({
               ...exercise,
               sets: exercise.sets?.map((set) =>
-                set.id === userSet.id
-                  ? { ...set, weightL: userSet.weight }
-                  : set
+                set.id === userSet.id ? { ...set, weight: userSet.weight } : set
               ),
             })),
           };

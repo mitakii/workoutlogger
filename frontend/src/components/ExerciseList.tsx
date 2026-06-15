@@ -1,4 +1,4 @@
-import type { Exercise } from "../Pages/WorkoutPage";
+import type { Exercise } from "../pages/WorkoutPage";
 import ExerciseTile from "./ExerciseTile";
 import { useAddUserExercise, useLastSession } from "../hooks/react-query";
 
@@ -25,9 +25,7 @@ export const ExerciseList = ({ exercises }: Props) => {
   return (
     <div>
       {exercises.map((e) => (
-        <div key={e.id}>
-          <ExerciseTile exercise={e} addExercise={handleAddExercise} />
-        </div>
+        <ExerciseTile key={e.id} exercise={e} addExercise={handleAddExercise} />
       ))}
     </div>
   );

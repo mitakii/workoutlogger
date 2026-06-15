@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Home } from "../Pages/HomePage";
+import { Home } from "../pages/HomePage";
 import App from "../App";
-import { Login } from "../Pages/LoginPage";
-import { Register } from "../Pages/RegisterPage";
-import WorkoutPage from "../Pages/WorkoutPage";
-import { AddExercisePage } from "../Pages/AddExercisePage";
-import SearchExercisePage from "../Pages/SearchExercisePage";
+import { Login } from "../pages/LoginPage";
+import { Register } from "../pages/RegisterPage";
+import WorkoutPage from "../pages/WorkoutPage";
+import { AddExercisePage } from "../pages/AddExercisePage";
+import SearchExercisePage from "../pages/SearchExercisePage";
 import AdminRoute from "./AdminRoute";
 import { ProtectedRoute } from "./ProtectedRoute";
 

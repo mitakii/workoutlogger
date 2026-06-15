@@ -2,6 +2,9 @@ import { useRef, useState } from "react";
 import type { UserSet } from "../types/types";
 import { useDebounce } from "react-use";
 import { useDeleteUserSet, useUpdateUserSet } from "../hooks/react-query";
+import { Card } from "./ui/card";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 type Props = {
   sessionId: string;
@@ -52,18 +55,18 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
   );
 
   return (
-    <div>
-      <button type="button" onClick={handleSetFinished}>
+    <Card className="flex flex-row justify-between">
+      <Button variant="outline" type="button" onClick={handleSetFinished}>
         Finished
-      </button>
-      <input
+      </Button>
+      <Input
         value={reps}
         type="text"
         onChange={(e) => {
           setReps(Number(e.target.value));
         }}
       />
-      <input
+      <Input
         value={weight}
         type="text"
         onChange={(e) => {
@@ -71,9 +74,9 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
         }}
       />
 
-      <button type="button" onClick={handleSetDelete}>
+      <Button variant="outline" type="button" onClick={handleSetDelete}>
         Delete
-      </button>
-    </div>
+      </Button>
+    </Card>
   );
 };

@@ -1,6 +1,8 @@
 import { useState } from "react";
-import type { Exercise } from "../Pages/WorkoutPage";
+import type { Exercise } from "../pages/WorkoutPage";
 import { useNavigate } from "react-router-dom";
+import { Card, CardHeader } from "./ui/card";
+import { Button } from "./ui/button";
 
 type Props = {
   exercise: Exercise;
@@ -22,14 +24,12 @@ export const ExerciseTile = ({ exercise, addExercise }: Props) => {
   };
 
   return (
-    <div>
+    <Card>
       {error ?? <div> $`{error}`</div>}
-      <br />
-      {exercise.name}
-      <div>
-        <button onClick={handleAddExercise}>addExercise</button>
-      </div>
-    </div>
+      <CardHeader>{exercise.name}</CardHeader>
+
+      <Button onClick={handleAddExercise}>addExercise</Button>
+    </Card>
   );
 };
 
