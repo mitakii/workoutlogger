@@ -55,9 +55,9 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
   );
 
   return (
-    <Card className="flex flex-row justify-between">
-      <Button variant="outline" type="button" onClick={handleSetFinished}>
-        Finished
+    <Card className="flex flex-row justify-between p-2 mt-1.5">
+      <Button variant="default" type="button" onClick={handleSetFinished}>
+        Finish
       </Button>
       <Input
         value={reps}
@@ -74,7 +74,7 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
         }}
       />
 
-      <Button variant="outline" type="button" onClick={handleSetDelete}>
+      <Button variant="default" onClick={handleSetDelete}>
         Delete
       </Button>
     </Card>

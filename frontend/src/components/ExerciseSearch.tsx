@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import "../index.css";
 import { useDebounce } from "react-use";
+import { Input } from "./ui/input";
 
 type SearchBarProps = {
-  onSearch: (query: string) => Promise<void>;
+  onSearch: (query: string) => void;
 };
 
 const ExerciseSeaerch: React.FC<SearchBarProps> = ({ onSearch }) => {
@@ -12,7 +13,7 @@ const ExerciseSeaerch: React.FC<SearchBarProps> = ({ onSearch }) => {
   useDebounce(
     async () => {
       if (query === "") return;
-      await onSearch(query);
+      onSearch(query);
     },
     200,
     [query]
@@ -20,10 +21,12 @@ const ExerciseSeaerch: React.FC<SearchBarProps> = ({ onSearch }) => {
 
   return (
     <div>
-      <input
+      <Input
         type="text"
-        onChange={({ currentTarget }) => {
-          setQuery(currentTarget.value);
+        value={query}
+        placeholder="Search..."
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setQuery(e.currentTarget.value);
         }}
       />
     </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Exercise } from "../pages/WorkoutPage";
 import { useNavigate } from "react-router-dom";
-import { Card, CardHeader } from "./ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "./ui/card";
 import { Button } from "./ui/button";
 
 type Props = {
@@ -24,11 +24,13 @@ export const ExerciseTile = ({ exercise, addExercise }: Props) => {
   };
 
   return (
-    <Card>
+    <Card className="p-2 mt-2">
       {error ?? <div> $`{error}`</div>}
-      <CardHeader>{exercise.name}</CardHeader>
-
-      <Button onClick={handleAddExercise}>addExercise</Button>
+      <CardHeader className="pl-2">{exercise.name}</CardHeader>
+      <CardDescription className="pl-2">{exercise.description}</CardDescription>
+      <Button className="m-2" onClick={handleAddExercise}>
+        addExercise
+      </Button>
     </Card>
   );
 };

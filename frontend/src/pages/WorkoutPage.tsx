@@ -1,6 +1,7 @@
 import SessionExerciseList from "../components/SessionExerciseList";
 import { Link } from "react-router-dom";
 import { useLastSession } from "../hooks/react-query";
+import { Button } from "@/components/ui/button";
 
 export type Exercise = {
   name: string;
@@ -19,10 +20,13 @@ const WorkoutPage = (props: Props) => {
   }
 
   return (
-    <div>
-      <Link to={"/search"}>
-        <button type="button">Add Exercise</button>
-      </Link>
+    <div className="flex flex-col m-2">
+      <Button asChild>
+        <Link to={"/search"}>
+          <div>Add Exercise</div>
+        </Link>
+      </Button>
+
       <SessionExerciseList
         exercises={workout?.userExercises}
         sessionId={workout?.workoutId}

@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import { useCreateSession, useLastSession } from "../hooks/react-query";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
 
 const SessionMenu = () => {
   const { isLoggedIn } = useUserContext();
@@ -25,14 +27,17 @@ const SessionMenu = () => {
   };
 
   return (
-    <div className="grid-rows-2 justify-center p-4">
+    <Card className="grid-rows-2 justify-center p-4">
       {isLoggedIn() && lastSession && (
-        <Link to={`/session/${lastSession?.workoutId}`}>
-          <div className="m-4">open last session</div>
-        </Link>
+        <Button asChild>
+          <Link to={`/session/${lastSession?.workoutId}`}>
+            <div className="">open last session</div>
+          </Link>
+        </Button>
       )}
-      <button onClick={handleCreateSession}>Start new session</button>
-    </div>
+
+      <Button onClick={handleCreateSession}>Start new session</Button>
+    </Card>
   );
 };
 

@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { Button } from "./ui/button";
 
 type Props = {
   sessionId: string;
@@ -35,7 +36,7 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
   };
 
   return (
-    <Card>
+    <Card className="mt-2">
       <CardHeader>
         <div>
           <CardTitle>{userExercise.exerciseName} </CardTitle>
@@ -43,13 +44,17 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="flex flex-col justify-center">
         {userExercise.sets?.map((s) => (
           <UserSetTile key={s.id} userSet={s} sessionId={sessionId} />
         ))}
-        <button type="button" onClick={handleAddSet}>
+        <Button
+          variant="default"
+          className="m-2 ml-0 mr-0"
+          onClick={handleAddSet}
+        >
           add exercise set
-        </button>
+        </Button>
       </CardContent>
     </Card>
   );
