@@ -13,10 +13,12 @@ namespace PresentationLayer.Controllers;
 public class WorkoutController : ControllerBase
 {
     private readonly IWorkoutService _workoutService;
+    private readonly IUserService _userService;
 
-    public WorkoutController(IWorkoutService workoutService)
+    public WorkoutController(IWorkoutService workoutService,  IUserService userService)
     {
         _workoutService = workoutService;
+        _userService = userService;
     }
     
     [Authorize]
@@ -120,7 +122,7 @@ public class WorkoutController : ControllerBase
 
     [Authorize]
     [HttpGet("userWorkouts")]
-    public async Task<IActionResult> GetUserWorkouts([FromBody]WorkoutsGetRequest request)
+    public async Task<IActionResult> GetUserWorkouts([FromQuery]WorkoutsGetRequest request)
     {
         if (request.PageSize <= 0 |  request.Page < 1)
             return BadRequest();

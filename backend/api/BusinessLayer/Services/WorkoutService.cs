@@ -142,7 +142,7 @@ public class WorkoutService : IWorkoutService
     public async Task<Result<WorkoutResponse>> GetLastWorkoutAsync(string userId, string language)
     {
         if(!Guid.TryParse(userId, out var workoutGuid))
-            return Result<WorkoutResponse>.Failed(ErrorCode.NotFound,"Bad workout Id");
+            return Result<WorkoutResponse>.Failed(ErrorCode.BadRequest,"Bad workout Id");
 
         var lastWorkout = await _context.Workouts
             .Where(w => w.UserId == Guid.Parse(userId))
@@ -277,7 +277,8 @@ public class WorkoutService : IWorkoutService
     {
         var workout = await _context.Workouts
             .AsNoTracking()
-            .Where(w => w.UserId == request.UserId)
+            .OrderByDescending(w => w.DateStarted)
+            .Where(w => w.User.UserName == request.Username)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(w => new

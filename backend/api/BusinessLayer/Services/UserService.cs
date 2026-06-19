@@ -61,7 +61,7 @@ public class UserService : IUserService
         {
             Id = user.Id.ToString(),
             Username = user.UserName,
-            Descrrpition = user.Description,
+            Description = user.Description,
             PfpUrl = user.UserPfpUrl
         };
     }

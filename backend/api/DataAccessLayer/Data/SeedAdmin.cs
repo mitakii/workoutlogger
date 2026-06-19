@@ -19,7 +19,7 @@ public static class SeedAdmin
 
         if (await userManager.FindByNameAsync(user.UserName) == null)
         {
-            var result = await userManager.CreateAsync(user, "testQ123_sd");
+            var result = await userManager.CreateAsync(user, "`testQ123_sd`");
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(user, "Admin");

@@ -19,13 +19,23 @@ public class UserController : ControllerBase
         _userManager = userManager;
     }
     
-    [HttpGet("{userId}")]
-    public async Task<IActionResult> GetProfile(string userId)
+    [HttpGet("{userId:guid}")]
+    public async Task<IActionResult> GetProfileById(string userId)
     {
         if (string.IsNullOrEmpty(userId))
             return BadRequest();
 
         var result = await _userService.GetUserAsync(userId);
+        return result.Succeeded ? Ok(result.Data) : NotFound();
+    }
+    
+    [HttpGet("{username}")]
+    public async Task<IActionResult> GetProfileByName(string username)
+    {
+        if (string.IsNullOrEmpty(username))
+            return BadRequest();
+
+        var result = await _userService.GetUserByNameAsync(username);
         return result.Succeeded ? Ok(result.Data) : NotFound();
     }
 
