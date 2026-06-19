@@ -33,4 +33,6 @@ export type UserProfile = {
   username: string;
   email: string;
   role: "User" | "Admin";
+  description: string;
+  pfpUrl: string;
 };

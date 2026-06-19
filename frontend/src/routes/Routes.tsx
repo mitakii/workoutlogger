@@ -8,6 +8,7 @@ import { AddExercisePage } from "../pages/AddExercisePage";
 import SearchExercisePage from "../pages/SearchExercisePage";
 import AdminRoute from "./AdminRoute";
 import { ProtectedRoute } from "./ProtectedRoute";
+import UserProfilePage from "@/pages/UserProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
         children: [
           { path: "session/:token", element: <WorkoutPage /> },
           { path: "search", element: <SearchExercisePage /> },
+          { path: "u/:token", element: <UserProfilePage /> },
         ],
       },
 

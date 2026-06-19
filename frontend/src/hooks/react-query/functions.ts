@@ -13,6 +13,7 @@ import {
 } from "../../schemas/Exercise.schema";
 import type { Exercise } from "../../pages/WorkoutPage";
 import type { Session } from "react-router-dom";
+import type { GetSessionsApi } from ".";
 
 export const getLastSession = async (): Promise<UserSession> => {
   try {
@@ -125,6 +126,25 @@ export const getSession = async (id: string): Promise<Session> => {
   }
 };
 
+export const getUserSessions = async (
+  request: GetSessionsApi
+): Promise<UserSession[]> => {
+  try {
+    const res = await api.get(`/workout/userWorkouts`, {
+      params: {
+        username: request.username,
+        page: request.page,
+        pageSize: request.pageSize,
+      },
+    });
+    console.log(res);
+    return res.data.items;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
 export const addUserSet = async (userSet: UserSet, userExerciseId: string) => {
   try {
     const res = await api.post(`/UserExercise/${userExerciseId}`, userSet);
@@ -149,6 +169,26 @@ export const deleteUserSet = async (userSet: UserSet) => {
   try {
     const res = await api.delete(`/UserExercise/userSet/${userSet.id}`);
     return res.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+// user
+
+export const getUserByName = async (
+  username: string
+): Promise<UserProfile | null> => {
+  try {
+    const res = await api.get(`/User/${username}`);
+    const user: UserProfile = {
+      username: res.data.username,
+      email: res.data.email,
+      role: res.data.role,
+      description: res.data.description,
+      pfpUrl: res.data.pfpUrl,
+    };
+    return user;
   } catch (e) {
     console.log(e);
     throw e;
@@ -215,11 +255,12 @@ export const statusApi = async (): Promise<UserProfile | null> => {
         withCredentials: true,
       }
     );
-    console.log(res.data);
     const user: UserProfile = {
       username: res.data.username,
       email: res.data.email,
       role: res.data.role,
+      description: res.data.description,
+      pfpUrl: res.data.pfpUrl,
     };
     return user;
   } catch (e) {

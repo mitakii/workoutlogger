@@ -14,6 +14,8 @@ import {
   statusApi,
   updateUserSet,
   deleteUserSet,
+  getUserByName,
+  getUserSessions,
 } from "./functions";
 import {
   type Translation,
@@ -48,6 +50,26 @@ export const useCreateSession = () => {
         queryKey: ["workout-session"],
       });
     },
+  });
+};
+
+export type GetSessionsApi = {
+  username: string;
+  page: number;
+  pageSize: number;
+};
+
+export const useGetUserSessions = (request: GetSessionsApi) => {
+  return useQuery({
+    queryKey: [
+      "workout-session",
+      request.username,
+      request.page,
+      request.pageSize,
+    ],
+    queryFn: () => getUserSessions(request),
+    enabled: !!request.username,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -162,6 +184,16 @@ export const useDeleteUserSet = (sessionId: string) => {
   });
 };
 
+//user
+
+export const useGetUserByUsername = (username: string) => {
+  return useQuery({
+    queryKey: ["User", username],
+    queryFn: () => getUserByName(username),
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
 // auth
 
 type UserLogin = {
@@ -173,7 +205,7 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (login: UserLogin) => loginApi(login.username, login.password),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["User"] });
+      queryClient.invalidateQueries({ queryKey: ["User", "currentUser"] });
     },
   });
 };
@@ -202,15 +234,16 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: () => logoutApi(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["User"] });
+      queryClient.invalidateQueries({ queryKey: ["User", "currentUser"] });
     },
   });
 };
 
 export const useStatus = () => {
   return useQuery<UserProfile | null>({
-    queryKey: ["User"],
+    queryKey: ["User", "currentUser"],
     queryFn: statusApi,
     retry: false,
+    staleTime: 1000 * 60 * 5,
   });
 };
