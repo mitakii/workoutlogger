@@ -45,6 +45,10 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
       </CardHeader>
 
       <CardContent className="flex flex-col justify-center">
+        <div className="grid grid-cols-2 place-items-center mb-2">
+          <div className="pr-8">Weight</div>
+          <div className="pr-21">Reps</div>
+        </div>
         {userExercise.sets?.map((s) => (
           <UserSetTile key={s.id} userSet={s} sessionId={sessionId} />
         ))}
@@ -53,7 +57,7 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
           className="m-2 ml-0 mr-0"
           onClick={handleAddSet}
         >
-          add exercise set
+          Add set
         </Button>
       </CardContent>
     </Card>

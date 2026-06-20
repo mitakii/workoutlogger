@@ -20,7 +20,7 @@ const WorkoutPage = (props: Props) => {
   }
 
   return (
-    <div className="flex flex-col m-2">
+    <div className=" flex flex-col m-2 max-w-3xl mx-auto">
       <Button asChild>
         <Link to={"/search"}>
           <div>Add Exercise</div>

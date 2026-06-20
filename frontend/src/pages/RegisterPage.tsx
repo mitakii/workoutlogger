@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -53,7 +54,7 @@ export const Register = () => {
   };
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+    <div className="flex w-full items-center justify-center p-6 md:p-10">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Register</CardTitle>
@@ -106,9 +107,14 @@ export const Register = () => {
                 ></Controller>
                 <FieldError errors={[errors.language]}></FieldError>
               </Field>
-              <Button type="submit" className="w-full mt-2">
-                Register
-              </Button>
+              <Field>
+                <Button type="submit" className="w-full mt-2">
+                  Register
+                </Button>
+                <FieldDescription className="px-6 text-center">
+                  Already have an account? <a href="/login">Sign in</a>
+                </FieldDescription>
+              </Field>
             </form>
           </FieldGroup>
         </CardContent>

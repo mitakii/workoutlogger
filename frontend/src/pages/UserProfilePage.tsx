@@ -11,6 +11,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetUserByUsername, useGetUserSessions } from "@/hooks/react-query";
 import { cn } from "@/lib/utils";
@@ -26,14 +27,13 @@ const UserProfilePage = (props: Props) => {
   const { data: userProfile, isLoading } = useGetUserByUsername(token ?? "");
   const username = userProfile?.username;
   const [page, setPage] = useState<number>(1);
-  const { data: sessions } = useGetUserSessions({
+  const { data: sessions, isLoading: sessionsLoading } = useGetUserSessions({
     username: username ?? "",
     page,
     pageSize: 10,
   });
 
   if (isLoading) return <div>Loading user...</div>;
-  if (!sessions) return <div>No sessions yet</div>;
 
   return (
     <div className="max-w-3xl mx-auto px-4 pb-10">
@@ -65,39 +65,44 @@ const UserProfilePage = (props: Props) => {
       <div className="mt-3 text-wrap">{userProfile?.description}</div>
 
       <div>
-        {!sessions ? (
-          <div>no workouts</div>
+        {sessionsLoading ? (
+          <div className="flex h-screen w-screen items-center justify-center relative h-128">
+            <Spinner />
+          </div>
+        ) : !sessions ? (
+          <div>No workouts yet</div>
         ) : (
-          <ProfileWorkoutsList sessions={sessions} />
+          <div>
+            <ProfileWorkoutsList sessions={sessions} />
+            <Pagination className="mt-2 mb-0">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    className={
+                      page === 1 ? "pointer-events-none opacity-50" : undefined
+                    }
+                    onClick={() => {
+                      if (page >= 1) setPage(page - 1);
+                    }}
+                  />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext
+                    className={
+                      sessions?.length < pageSize
+                        ? "pointer-events-none opacity-50"
+                        : undefined
+                    }
+                    onClick={() => {
+                      if (sessions?.length >= pageSize) setPage(page + 1);
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         )}
       </div>
-
-      <Pagination className="mt-2 mb-0">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              className={
-                page === 1 ? "pointer-events-none opacity-50" : undefined
-              }
-              onClick={() => {
-                if (page >= 1) setPage(page - 1);
-              }}
-            />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext
-              className={
-                sessions?.length < pageSize
-                  ? "pointer-events-none opacity-50"
-                  : undefined
-              }
-              onClick={() => {
-                if (sessions?.length >= pageSize) setPage(page + 1);
-              }}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
     </div>
   );
 };

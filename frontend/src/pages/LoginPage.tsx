@@ -67,7 +67,7 @@ export const Login = () => {
   };
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+    <div className="flex w-full items-center justify-center p-6 md:p-10">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -99,6 +99,10 @@ export const Login = () => {
               </Field>
               <Field>
                 <Button type="submit">Login</Button>
+
+                <FieldDescription className="text-center">
+                  Don`t have an account? <a href="/register">Sign up</a>
+                </FieldDescription>
               </Field>
             </FieldGroup>
           </form>

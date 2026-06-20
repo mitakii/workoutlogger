@@ -23,7 +23,7 @@ const SearchExercisePage = (props: Props) => {
   };
 
   return (
-    <div className="p-2">
+    <div className="p-2 max-w-3xl mx-auto">
       <ExerciseSearch onSearch={handleSearch} />
       {exercises.length === 0 && searching ? (
         <div>Exercises not found</div>
