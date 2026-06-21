@@ -1,14 +1,5 @@
-import React from "react";
-import { Card } from "../ui/card";
 import type { UserSession } from "@/types/types";
 import ProfileWorkoutTile from "./ProfileWorkoutTile";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "../ui/pagination";
 import { Spinner } from "../ui/spinner";
 
 type Props = {

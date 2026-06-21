@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import "../index.css";
 import { useUserContext } from "../context/UserContext";
 import {
@@ -7,19 +7,14 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { useScrollDirection } from "@/hooks/scrollDirection";
 
 const Navbar = () => {
-  const { isLoggedIn, logout, user } = useUserContext();
+  const { logout, user } = useUserContext();
   const navigate = useNavigate();
   const direction = useScrollDirection();
   const logoutUser = () => {

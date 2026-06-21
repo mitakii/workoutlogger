@@ -1,27 +1,19 @@
 import ProfileWorkoutsList from "@/components/profile/ProfileWorkoutsList";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Spinner } from "@/components/ui/spinner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetUserByUsername, useGetUserSessions } from "@/hooks/react-query";
-import { cn } from "@/lib/utils";
-import { Underline } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
-type Props = {};
-
-const UserProfilePage = (props: Props) => {
+const UserProfilePage = () => {
   const pageSize = 10;
   const { token } = useParams<{ token?: string }>();
   const { data: userProfile, isLoading } = useGetUserByUsername(token ?? "");

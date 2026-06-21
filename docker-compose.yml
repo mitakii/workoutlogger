@@ -1,0 +1,30 @@
+services:
+  api:
+    build:
+      context: ./backend/api
+
+    container_name: workout-log-api
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+      ASPNETCORE_URLS: http://+:8080
+
+    ports:
+      - "8080:8080"
+
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+
+    container_name: workout-log-frontend
+
+    depends_on:
+      - api
+
+    ports:
+      - "80:80"
+
+    restart: unless-stopped

@@ -10,10 +10,8 @@ export type Exercise = {
   imageUrl: string | null;
 };
 
-type Props = {};
-
-const WorkoutPage = (props: Props) => {
-  const { data: workout, isLoading } = useLastSession();
+const WorkoutPage = () => {
+  const { isLoading } = useLastSession();
 
   if (isLoading) {
     return <div>workout loading</div>;
@@ -27,10 +25,7 @@ const WorkoutPage = (props: Props) => {
         </Link>
       </Button>
 
-      <SessionExerciseList
-        exercises={workout?.userExercises}
-        sessionId={workout?.workoutId}
-      />
+      <SessionExerciseList />
     </div>
   );
 };

@@ -336,7 +336,7 @@ public class WorkoutService : IWorkoutService
                     Id = s.Id.ToString()
                 }).OrderBy(s => s.Order).ToList()
             }).OrderBy(e => e.Order).ToList(),
-        }).OrderBy(w => w.StartTime).ToList();
+        }).OrderByDescending(w => w.StartTime).ToList();
             
         return Result<PagedResult<WorkoutResponse>>.Success(new PagedResult<WorkoutResponse>()
         {

@@ -41,7 +41,7 @@ const UserProvider = ({ children }: Props) => {
     language: string
   ) => {
     try {
-      const res = await registerApi({ username, email, password, language });
+      await registerApi({ username, email, password, language });
     } catch (e) {
       console.log(e);
     }
@@ -50,7 +50,7 @@ const UserProvider = ({ children }: Props) => {
   const loginUser = async (username: string, password: string) => {
     try {
       console.log({ username, password });
-      const res = await loginApi({ username, password });
+      await loginApi({ username, password });
     } catch (e) {
       throw e;
     }
@@ -58,7 +58,7 @@ const UserProvider = ({ children }: Props) => {
 
   const logout = async () => {
     try {
-      const res = await logoutApi();
+      await logoutApi();
     } catch (e) {
       console.log(e);
     }

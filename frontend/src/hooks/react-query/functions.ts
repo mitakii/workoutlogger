@@ -18,7 +18,7 @@ import type { GetSessionsApi } from ".";
 export const getLastSession = async (): Promise<UserSession> => {
   try {
     const res = await axios.get(
-      "http://localhost:5241/api/workout/lastWorkout",
+      `${import.meta.env.VITE_API_URL}/workout/lastWorkout`,
       {
         withCredentials: true,
       }
@@ -203,7 +203,7 @@ export const loginApi = async (
 ): Promise<UserProfile> => {
   try {
     const res = await axios.post(
-      "http://localhost:5241/api/login",
+      `${import.meta.env.VITE_API_URL}/login`,
       {
         username,
         password,
@@ -226,7 +226,7 @@ export const registerApi = async (
   language: string
 ) => {
   try {
-    return await axios.post("http://localhost:5241/api/register", {
+    return await axios.post(`${import.meta.env.VITE_API_URL}/register`, {
       username,
       email,
       password,
@@ -250,7 +250,7 @@ export const logoutApi = async () => {
 export const statusApi = async (): Promise<UserProfile | null> => {
   try {
     const res = await axios.get<UserProfile>(
-      "http://localhost:5241/api/status",
+      `${import.meta.env.VITE_API_URL}/status`,
       {
         withCredentials: true,
       }

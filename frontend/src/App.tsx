@@ -5,7 +5,7 @@ export const App = () => {
   return (
     <>
       <Navbar />
-      <div className="mt-17">
+      <div className="pt-18">
         <Outlet />
       </div>
     </>

@@ -172,7 +172,7 @@ export const useUpdateUserSet = (sessionId: string, userSet: UserSet) => {
   });
 };
 
-export const useDeleteUserSet = (sessionId: string) => {
+export const useDeleteUserSet = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (userSet: UserSet) => deleteUserSet(userSet),

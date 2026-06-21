@@ -10,12 +10,9 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Group, MinusIcon, PlusIcon } from "lucide-react";
-import { Label } from "./ui/label";
+import { MinusIcon, PlusIcon } from "lucide-react";
 
 type Props = {
   sessionId: string;
@@ -28,7 +25,7 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
   const isHydrated = useRef(false);
 
   const { mutateAsync: updateSet } = useUpdateUserSet(sessionId, userSet);
-  const { mutateAsync: deleteSet } = useDeleteUserSet(sessionId);
+  const { mutateAsync: deleteSet } = useDeleteUserSet();
 
   const handleSetDelete = async () => {
     try {

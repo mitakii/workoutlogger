@@ -1,6 +1,4 @@
 import type { UserSet } from "@/types/types";
-import React from "react";
-import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
 
 type Props = {

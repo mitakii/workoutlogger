@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAddExercise } from "../hooks/react-query";
 import { TranslationSchema } from "../schemas/Exercise.schema";
 
-type Props = {};
 const exerciseScheme = z.object({
   nameTag: z.string().min(4, "name tag to short"),
   mediaUrl: z.string(),
@@ -15,7 +14,7 @@ const exerciseScheme = z.object({
 
 type ExerciseFormInput = z.infer<typeof exerciseScheme>;
 
-export const AddExercisePage = (props: Props) => {
+export const AddExercisePage = () => {
   const { mutateAsync: addExercise } = useAddExercise();
 
   const {

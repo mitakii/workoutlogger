@@ -12,7 +12,7 @@ public static class TokenCookieExtension
     {
         context.Response.Cookies.Append("refreshToken", tokens.RefreshToken, new CookieOptions
         {
-            HttpOnly = false,
+            HttpOnly = true,
             Secure = false,
             SameSite = SameSiteMode.Lax,
             Path = "/api/refresh",
@@ -20,7 +20,7 @@ public static class TokenCookieExtension
         });
         context.Response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions
         {
-            HttpOnly = false,
+            HttpOnly = true,
             Secure = false,
             SameSite = SameSiteMode.Lax,
             Path = "/",

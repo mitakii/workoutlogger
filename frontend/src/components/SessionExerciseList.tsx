@@ -1,13 +1,7 @@
 import { UserExerciseTile } from "./UserExerciseTile";
-import type { UserExercise } from "../types/types";
 import { useLastSession } from "../hooks/react-query";
 
-type Props = {
-  exercises: UserExercise[] | undefined;
-  sessionId: string | undefined;
-};
-
-const SessionExerciseList = ({ exercises }: Props) => {
+const SessionExerciseList = () => {
   const { data: session } = useLastSession();
 
   if (!session) {

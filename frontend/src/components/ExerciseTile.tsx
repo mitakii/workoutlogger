@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Exercise } from "../pages/WorkoutPage";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader } from "./ui/card";
+import { Card, CardDescription, CardHeader } from "./ui/card";
 import { Button } from "./ui/button";
 
 type Props = {

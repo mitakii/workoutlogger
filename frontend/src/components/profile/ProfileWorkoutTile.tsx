@@ -1,6 +1,6 @@
 import type { UserSession } from "@/types/types";
-import React, { useState } from "react";
-import { Card, CardDescription, CardHeader } from "../ui/card";
+import { useState } from "react";
+import { Card } from "../ui/card";
 import {
   Collapsible,
   CollapsibleContent,

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Card, CardHeader } from "../ui/card";
+import { useState } from "react";
+import { Card } from "../ui/card";
 import type { UserExercise } from "@/types/types";
 import {
   Collapsible,
