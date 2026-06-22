@@ -1,9 +1,11 @@
 import { UserExerciseTile } from "./UserExerciseTile";
-import { useLastSession } from "../hooks/react-query";
+import type { UserSession } from "@/types/types";
 
-const SessionExerciseList = () => {
-  const { data: session } = useLastSession();
+type Props = {
+  session: UserSession;
+};
 
+const SessionExerciseList = ({ session }: Props) => {
   if (!session) {
     return <div> No active session</div>;
   }

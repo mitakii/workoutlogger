@@ -27,7 +27,7 @@ import {
 
 export const useLastSession = () => {
   return useQuery({
-    queryKey: ["workout-session"],
+    queryKey: ["workout-session", "Current"],
     queryFn: getLastSession,
     retry: false,
     staleTime: 5 * 60 * 1000,
@@ -47,7 +47,7 @@ export const useCreateSession = () => {
     mutationFn: () => createSession(),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["workout-session"],
+        queryKey: ["workout-session", "Current"],
       });
     },
   });

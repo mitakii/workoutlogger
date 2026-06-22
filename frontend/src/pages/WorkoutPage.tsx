@@ -2,6 +2,7 @@ import SessionExerciseList from "../components/SessionExerciseList";
 import { Link } from "react-router-dom";
 import { useLastSession } from "../hooks/react-query";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 export type Exercise = {
   name: string;
@@ -11,11 +12,17 @@ export type Exercise = {
 };
 
 const WorkoutPage = () => {
-  const { isLoading } = useLastSession();
+  const { data: session, isLoading, isFetching } = useLastSession();
 
-  if (isLoading) {
-    return <div>workout loading</div>;
+  if (isLoading || isFetching) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center relative h-128">
+        <Spinner />
+      </div>
+    );
   }
+
+  if (!session) return <div>No workout session found</div>;
 
   return (
     <div className=" flex flex-col m-2 max-w-3xl mx-auto">
@@ -25,7 +32,7 @@ const WorkoutPage = () => {
         </Link>
       </Button>
 
-      <SessionExerciseList />
+      <SessionExerciseList session={session} />
     </div>
   );
 };

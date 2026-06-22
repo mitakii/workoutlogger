@@ -14,7 +14,7 @@ import { Button } from "./ui/button";
 import { useScrollDirection } from "@/hooks/scrollDirection";
 
 const Navbar = () => {
-  const { logout, user } = useUserContext();
+  const { logout, user, isLoggedIn } = useUserContext();
   const navigate = useNavigate();
   const direction = useScrollDirection();
   const logoutUser = () => {
@@ -40,23 +40,39 @@ const Navbar = () => {
               <Button variant="outline">☰</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40" align="start">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={() => navigate(`/u/${user?.username}`)}
-                >
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Find user</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={logoutUser}>
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
+              {isLoggedIn() ? (
+                <div>
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={() => navigate(`/u/${user?.username}`)}
+                    >
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>Settings</DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Find user</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={logoutUser}>
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </div>
+              ) : (
+                <div>
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>User Account</DropdownMenuLabel>
+                    <DropdownMenuItem onClick={() => navigate("/login")}>
+                      Login
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/register")}>
+                      Register
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </div>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

@@ -6,6 +6,7 @@ import {
   useRegister,
   useStatus,
 } from "../hooks/react-query";
+import { Spinner } from "@/components/ui/spinner";
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
@@ -72,7 +73,7 @@ const UserProvider = ({ children }: Props) => {
         logout,
       }}
     >
-      {!isLoading ? children : <div>Is loading...</div>}
+      {!isLoading ? children : <Spinner />}
     </UserContext.Provider>
   );
 };
