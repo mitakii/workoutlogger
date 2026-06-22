@@ -35,6 +35,7 @@ export const Login = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
     reset,
   } = useForm<LoginFormInput>({
@@ -44,24 +45,24 @@ export const Login = () => {
       password: "",
     },
   });
-  const [error, setError] = useState("");
 
   const handleLogin = async (form: LoginFormInput) => {
     try {
       await loginUser(form.username, form.password);
       navigate("/");
-      console.log("login");
     } catch (e) {
-      if (
-        axios.isAxiosError(e) &&
-        (e.response?.status == 400 || e.response?.status == 401)
-      ) {
-        setError("invalid credentials");
-        console.log(e);
-      } else {
-        console.log(e);
+      if (!axios.isAxiosError(e)) {
+        setError("root", { message: "Unexpected error occured" });
+        reset();
+        return;
       }
-      reset();
+
+      const status = e.response?.status;
+      if (status === 400 || status === 401) {
+        setError("root", {
+          message: "Invalid credentials",
+        });
+      }
     }
   };
 
@@ -75,7 +76,6 @@ export const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error && <p>{error}</p>}
           <form action="" onSubmit={handleSubmit(handleLogin)}>
             <FieldGroup>
               <Field>
@@ -98,7 +98,7 @@ export const Login = () => {
               </Field>
               <Field>
                 <Button type="submit">Login</Button>
-
+                <FieldError errors={[errors.root]} />
                 <FieldDescription className="text-center">
                   Don`t have an account? <a href="/register">Sign up</a>
                 </FieldDescription>
