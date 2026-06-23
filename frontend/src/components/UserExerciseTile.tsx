@@ -20,7 +20,6 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
 
   const handleAddSet = async () => {
     try {
-      console.log(userExercise);
       const newSet: UserSet = {
         id: ``,
         weight: 0,
@@ -30,7 +29,6 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
 
       await addSet(newSet);
     } catch (e) {
-      console.log(e);
       throw e;
     }
   };

@@ -1,5 +1,7 @@
 import axios from "axios";
 import type {
+  Exercise,
+  GetSessionsApi,
   Translation,
   UserExercise,
   UserProfile,
@@ -11,9 +13,7 @@ import {
   ExerciseSchema,
   UserExerciseSchema,
 } from "../../schemas/Exercise.schema";
-import type { Exercise } from "../../pages/WorkoutPage";
 import type { Session } from "react-router-dom";
-import type { GetSessionsApi } from ".";
 
 export const getLastSession = async (): Promise<UserSession> => {
   try {
@@ -137,7 +137,6 @@ export const getUserSessions = async (
         pageSize: request.pageSize,
       },
     });
-    console.log(res);
     return res.data.items;
   } catch (e) {
     console.log(e);
@@ -191,6 +190,35 @@ export const getUserByName = async (
     return user;
   } catch (e) {
     console.log(e);
+    throw e;
+  }
+};
+
+// settings
+
+export const changeUsername = async (newUsername: string, password: string) => {
+  try {
+    await api.patch("/User/changeUsername", { newUsername, password });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const changePassword = async (
+  oldPassword: string,
+  newPassword: string
+) => {
+  try {
+    await api.patch("/User/changePassword", { oldPassword, newPassword });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const changeLanguage = async (newLanguage: string, password: string) => {
+  try {
+    await api.patch("/User/changeLanguage", { newLanguage, password });
+  } catch (e) {
     throw e;
   }
 };

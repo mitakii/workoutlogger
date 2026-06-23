@@ -60,7 +60,9 @@ const UserProvider = ({ children }: Props) => {
   const logout = async () => {
     try {
       await logoutApi();
-    } catch (e) {}
+    } catch (e) {
+      throw e;
+    }
   };
 
   return (

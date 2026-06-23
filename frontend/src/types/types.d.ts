@@ -36,3 +36,20 @@ export type UserProfile = {
   description: string;
   pfpUrl: string;
 };
+
+export type BackendError = {
+  code: string;
+  description: string;
+};
+
+export type GetSessionsApi = {
+  username: string;
+  page: number;
+  pageSize: number;
+};
+export type Exercise = {
+  name: string;
+  id: string;
+  description: string;
+  imageUrl: string | null;
+};

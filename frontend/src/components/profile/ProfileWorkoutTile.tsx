@@ -9,24 +9,26 @@ import {
 import { Button } from "../ui/button";
 import { ChevronsUpDown } from "lucide-react";
 import ProfileExerciseTile from "./ProfileExerciseTile";
+
 type Props = {
   session: UserSession;
 };
 
+export const days = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
 const ProfileWorkoutTile = ({ session }: Props) => {
-  const date = new Date(session.startTime).toLocaleDateString();
-  const day = new Date(session.startTime).getDay();
   const [isOpen, setIsOpen] = useState(false);
 
-  const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
+  const date = new Date(session.startTime).toLocaleDateString();
+  const day = new Date(session.startTime).getDay();
 
   return (
     <div className="mt-2">

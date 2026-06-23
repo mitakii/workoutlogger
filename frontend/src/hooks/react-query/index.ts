@@ -16,14 +16,22 @@ import {
   deleteUserSet,
   getUserByName,
   getUserSessions,
+  changeUsername,
+  changePassword,
+  changeLanguage,
 } from "./functions";
 import {
+  type GetSessionsApi,
   type Translation,
   type UserExercise,
   type UserProfile,
   type UserSession,
   type UserSet,
 } from "../../types/types.d";
+import type { ChangeUsernameInput } from "@/components/settings/ChangeUsername";
+import { useMultiStateValidator } from "react-use";
+import type { ChangePasswordInput } from "@/components/settings/ChangePassword";
+import type { ChangeLanguageIput } from "@/components/settings/ChangeLanguage";
 
 export const useLastSession = () => {
   return useQuery({
@@ -53,12 +61,6 @@ export const useCreateSession = () => {
   });
 };
 
-export type GetSessionsApi = {
-  username: string;
-  page: number;
-  pageSize: number;
-};
-
 export const useGetUserSessions = (request: GetSessionsApi) => {
   return useQuery({
     queryKey: [
@@ -85,7 +87,9 @@ export const useAddUserExercise = () => {
       exerciseId: string;
     }) => addUserExercise(workoutId, exerciseId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workout-session"] });
+      queryClient.invalidateQueries({
+        queryKey: ["workout-session", "Current"],
+      });
     },
   });
 };
@@ -99,7 +103,7 @@ export const useSearchExercise = (pageSize: number, page: number) => {
 
 export const useGetUserExercises = (sessionId: string) => {
   return useQuery({
-    queryKey: ["sessionExercises"],
+    queryKey: ["sessionExercises", sessionId],
     queryFn: () => {
       getUserExercises(sessionId);
     },
@@ -191,6 +195,47 @@ export const useGetUserByUsername = (username: string) => {
     queryKey: ["User", username],
     queryFn: () => getUserByName(username),
     staleTime: 5 * 60 * 1000,
+  });
+};
+
+// settings
+
+export const useChangeUsername = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ newUsername, password }: ChangeUsernameInput) =>
+      changeUsername(newUsername, password),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["User", "currentUser"],
+      });
+    },
+  });
+};
+
+export const useChangePassword = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ oldPassword, newPassword }: ChangePasswordInput) =>
+      changePassword(oldPassword, newPassword),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["User", "currentUser"],
+      });
+    },
+  });
+};
+
+export const useChangeLanguage = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ newLanguage, password }: ChangeLanguageIput) =>
+      changeLanguage(newLanguage, password),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["User", "currentUser"],
+      });
+    },
   });
 };
 

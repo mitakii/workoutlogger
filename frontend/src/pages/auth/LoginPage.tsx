@@ -1,4 +1,4 @@
-import { useUserContext } from "../context/UserContext";
+import { useUserContext } from "../../context/UserContext";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,11 +20,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-
-const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
-});
+import { loginSchema } from "@/schemas/auth.schema";
 
 export type LoginFormInput = z.infer<typeof loginSchema>;
 

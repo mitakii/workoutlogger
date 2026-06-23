@@ -1,8 +1,8 @@
 import z from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAddExercise } from "../hooks/react-query";
-import { TranslationSchema } from "../schemas/Exercise.schema";
+import { useAddExercise } from "../../hooks/react-query";
+import { TranslationSchema } from "../../schemas/Exercise.schema";
 
 const exerciseScheme = z.object({
   nameTag: z.string().min(4, "name tag to short"),

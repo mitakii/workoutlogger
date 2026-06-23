@@ -1,4 +1,4 @@
-import { useUserContext } from "../context/UserContext";
+import { useUserContext } from "../../context/UserContext";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,30 +23,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-
-type BackendError = {
-  code: string;
-  description: string;
-};
-
-const registerSchema = z
-  .object({
-    userName: z.string().min(4, "Username is required"),
-    email: z.email("email is required"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(/[^A-Za-z0-9]/, "Password must contain at least one symbol"),
-    confirmPassword: z.string(),
-    language: z.string().max(4, "language is required"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
+import { registerSchema } from "@/schemas/auth.schema";
+import type { BackendError } from "@/types/types";
 
 export type RegisterFormInput = z.infer<typeof registerSchema>;
 

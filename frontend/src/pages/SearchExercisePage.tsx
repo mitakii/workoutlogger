@@ -1,9 +1,9 @@
 import { useState } from "react";
 import ExerciseSearch from "../components/ExerciseSearch";
-import type { Exercise } from "./WorkoutPage";
 import { ExerciseList } from "../components/ExerciseList";
 import { useSearchExercise } from "../hooks/react-query";
 import { Spinner } from "@/components/ui/spinner";
+import type { Exercise } from "@/types/types";
 
 const SearchExercisePage = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);

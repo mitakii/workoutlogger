@@ -4,19 +4,12 @@ import { useLastSession } from "../hooks/react-query";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
-export type Exercise = {
-  name: string;
-  id: string;
-  description: string;
-  imageUrl: string | null;
-};
-
 const WorkoutPage = () => {
-  const { data: session, isLoading, isFetching } = useLastSession();
+  const { data: session, isLoading } = useLastSession();
 
-  if (isLoading || isFetching) {
+  if (isLoading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center relative h-128">
+      <div className="flex items-center justify-center h-128">
         <Spinner />
       </div>
     );

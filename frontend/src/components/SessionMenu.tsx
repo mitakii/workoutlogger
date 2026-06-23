@@ -31,7 +31,7 @@ const SessionMenu = () => {
       {isLoggedIn() && lastSession && (
         <Button asChild>
           <Link to={`/session/${lastSession?.workoutId}`}>
-            <div className="">open last session</div>
+            <div className="">Open last session</div>
           </Link>
         </Button>
       )}

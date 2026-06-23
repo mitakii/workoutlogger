@@ -1,6 +1,6 @@
-import type { Exercise } from "../pages/WorkoutPage";
 import ExerciseTile from "./ExerciseTile";
 import { useAddUserExercise, useLastSession } from "../hooks/react-query";
+import type { Exercise } from "@/types/types";
 
 type Props = {
   exercises: Exercise[];
@@ -17,7 +17,6 @@ export const ExerciseList = ({ exercises }: Props) => {
         exerciseId: exercise.id,
       });
     } catch (e) {
-      console.log(e);
       throw e;
     }
   };

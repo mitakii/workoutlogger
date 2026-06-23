@@ -49,7 +49,9 @@ const Navbar = () => {
                     >
                       Profile
                     </DropdownMenuItem>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/settings")}>
+                      Settings
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>Find user</DropdownMenuItem>
