@@ -135,7 +135,7 @@ public class WorkoutService : IWorkoutService
                     Order = s.Order,
                     Id = s.Id.ToString()
                 }).OrderBy(s => s.Order).ToList()
-            }).OrderBy(ue => ue.Order).ToList()
+            }).OrderByDescending(ue => ue.Order).ToList()
         });
     }
 

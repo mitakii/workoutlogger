@@ -55,6 +55,15 @@ public class UserService : IUserService
         return Result<UserGetResponse>.Success(MapToResponse(user));
     }
 
+    public async Task<Result<bool>> ChangeUsernameAsync(User user, string newUsername)
+    {
+        user.UserName = newUsername;
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            return Result<bool>.Failed(ErrorCode.BadRequest, "User not found");
+        return Result<bool>.Success(true);
+    }
+
     private UserGetResponse MapToResponse(User user)
     {
         return new UserGetResponse
