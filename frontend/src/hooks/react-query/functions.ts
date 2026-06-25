@@ -64,24 +64,6 @@ export const addUserExercise = async (
   }
 };
 
-export const searchExercise = async (
-  query: string,
-  pageSize: number,
-  page: number
-): Promise<Exercise[]> => {
-  try {
-    const res = await api.get(`/exercise/search`, {
-      params: { query, pageSize, page },
-    });
-    console.log(res.data.items);
-    const parsed = ExerciseSchema.parse(res.data.items);
-    return parsed;
-  } catch (e) {
-    console.log(e);
-    throw e;
-  }
-};
-
 export const getUserExercises = async (
   workoutId: string
 ): Promise<UserExercise> => {
@@ -173,6 +155,40 @@ export const deleteUserSet = async (userSet: UserSet) => {
     throw e;
   }
 };
+//search
+export const searchExercise = async (
+  query: string,
+  pageSize: number,
+  page: number
+): Promise<Exercise[]> => {
+  try {
+    const res = await api.get(`/exercise/search`, {
+      params: { query, pageSize, page },
+    });
+    console.log(res.data.items);
+    const parsed = ExerciseSchema.parse(res.data.items);
+    return parsed;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+export const searchUser = async (
+  query: string,
+  pageSize: number,
+  page: number
+): Promise<UserProfile[]> => {
+  try {
+    const res = await api.get(`/User/search`, {
+      params: { query, pageSize, page },
+    });
+    return res.data.items;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
 // user
 
 export const getUserByName = async (

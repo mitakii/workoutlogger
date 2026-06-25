@@ -20,7 +20,7 @@ const WorkoutPage = () => {
   return (
     <div className=" flex flex-col m-2 max-w-3xl mx-auto">
       <Button asChild>
-        <Link to={"/search"}>
+        <Link to={"/search/exercise"}>
           <div>Add Exercise</div>
         </Link>
       </Button>

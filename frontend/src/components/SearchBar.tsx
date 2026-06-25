@@ -7,7 +7,7 @@ type SearchBarProps = {
   onSearch: (query: string) => void;
 };
 
-const ExerciseSeaerch: React.FC<SearchBarProps> = ({ onSearch }) => {
+const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [query, setQuery] = useState("");
 
   useDebounce(
@@ -33,4 +33,4 @@ const ExerciseSeaerch: React.FC<SearchBarProps> = ({ onSearch }) => {
   );
 };
 
-export default ExerciseSeaerch;
+export default SearchBar;

@@ -53,3 +53,6 @@ export type Exercise = {
   description: string;
   imageUrl: string | null;
 };
+
+export type SearchType = "exercise" | "user";
+export type SearchResults = Exercise[] | UserProfile[];

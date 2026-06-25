@@ -19,6 +19,7 @@ import {
   changeUsername,
   changePassword,
   changeLanguage,
+  searchUser,
 } from "./functions";
 import {
   type GetSessionsApi,
@@ -29,7 +30,6 @@ import {
   type UserSet,
 } from "../../types/types.d";
 import type { ChangeUsernameInput } from "@/components/settings/ChangeUsername";
-import { useMultiStateValidator } from "react-use";
 import type { ChangePasswordInput } from "@/components/settings/ChangePassword";
 import type { ChangeLanguageIput } from "@/components/settings/ChangeLanguage";
 
@@ -91,13 +91,6 @@ export const useAddUserExercise = () => {
         queryKey: ["workout-session", "Current"],
       });
     },
-  });
-};
-
-export const useSearchExercise = (pageSize: number, page: number) => {
-  return useMutation({
-    mutationFn: (searchValue: string) =>
-      searchExercise(searchValue, pageSize, page),
   });
 };
 

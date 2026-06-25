@@ -1,6 +1,6 @@
-import ExerciseTile from "./ExerciseTile";
-import { useAddUserExercise, useLastSession } from "../hooks/react-query";
+import { useAddUserExercise, useLastSession } from "@/hooks/react-query";
 import type { Exercise } from "@/types/types";
+import ExerciseTile from "./ExerciseTile";
 
 type Props = {
   exercises: Exercise[];

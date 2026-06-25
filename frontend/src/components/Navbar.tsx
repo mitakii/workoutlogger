@@ -52,6 +52,9 @@ const Navbar = () => {
                     <DropdownMenuItem onClick={() => navigate("/settings")}>
                       Settings
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/search/user")}>
+                      Find user
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>Find user</DropdownMenuItem>
