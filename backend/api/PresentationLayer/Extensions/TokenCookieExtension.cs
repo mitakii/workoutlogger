@@ -7,7 +7,7 @@ namespace PresentationLayer.Extensions;
 
 public static class TokenCookieExtension
 {
-    public static void SetTokenToCookie(this TokenDTO tokens, 
+    public static void SetTokensToCookie(this TokenDTO tokens, 
         HttpContext context, JwtOptions options)
     {
         context.Response.Cookies.Append("refreshToken", tokens.RefreshToken, new CookieOptions

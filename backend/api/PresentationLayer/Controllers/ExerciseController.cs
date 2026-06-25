@@ -15,11 +15,13 @@ public class ExerciseController : ControllerBase
 {
     private readonly IExerciseService _exerciseService;
     private readonly UserManager<User> _userManager;
+    private readonly IUserService _userService;
 
-    public ExerciseController(IExerciseService exerciseService, UserManager<User> userManager)
+    public ExerciseController(IExerciseService exerciseService, UserManager<User> userManager, IUserService userService)
     {
         _exerciseService = exerciseService;
         _userManager = userManager;
+        _userService = userService;
     }
 
     [Authorize(Roles = "Admin")]
@@ -36,13 +38,10 @@ public class ExerciseController : ControllerBase
         }) : result.ToIActionResultErrors();
     }
     
-    [Authorize(Roles =  "Admin")]
-    [HttpDelete("{exerciseId}")]
-    public async Task<IActionResult> Delete(string exerciseId)
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{exerciseId:guid}")]
+    public async Task<IActionResult> Delete(Guid exerciseId)
     {
-        if (string.IsNullOrEmpty(exerciseId))
-            return BadRequest();
-        
         var result = await _exerciseService.DeleteAsync(exerciseId);
         return result.Succeeded ? Ok() : result.ToIActionResultErrors();
     }
@@ -60,36 +59,32 @@ public class ExerciseController : ControllerBase
         return result.Succeeded ? Ok() : result.ToIActionResultErrors();
     }
     
-    [HttpGet("{exerciseId}")]
-    public async Task<IActionResult> Get(string exerciseId)
+    [Authorize]
+    [HttpGet("{exerciseId:guid}")]
+    public async Task<IActionResult> Get(Guid exerciseId)
     {
-        if (string.IsNullOrEmpty(exerciseId))
-            return BadRequest();
-        
         var result = await _exerciseService.GetByIdAsync(exerciseId);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
+    [Authorize]
     [HttpGet("search")]
-    public async Task<IActionResult> Search([FromQuery] ExerciseSearchRequest request)
+    public async Task<IActionResult> Search([FromQuery] SearchRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.Values
                 .SelectMany(v => v.Errors
                     .Select(e => e.ErrorMessage)));
+
+        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+            return Unauthorized();
         
-        string language = null;
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        if (identity != null)
-        {
-            language = identity.FindFirst(ClaimTypes.Locality)?.Value;
-        }
-        else return Unauthorized();
-        if(language == null)
-            return BadRequest("unknown language");
+        var userLanguage =await _userService.GetUserLanguageAsync(userId);
+        if(!userLanguage.Succeeded)
+            return userLanguage.ToIActionResultErrors();
         
         
-        var result = await _exerciseService.GetAllAsync(request, language);
+        var result = await _exerciseService.GetAllAsync(request, userLanguage.Data!);
         return result.Succeeded ? Ok(result.Data): result.ToIActionResultErrors();
     }
 }

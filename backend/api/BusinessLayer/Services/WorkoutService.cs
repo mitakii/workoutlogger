@@ -23,9 +23,9 @@ public class WorkoutService : IWorkoutService
         _translationRepo = translationRepository;
     }
     
-    public async Task<Result<WorkoutResponse>> StartAsync(string userId)
+    public async Task<Result<WorkoutResponse>> StartAsync(Guid userId)
     {
-        var user  = await _context.Users.FindAsync(Guid.Parse(userId));
+        var user  = await _context.Users.FindAsync(userId);
         if (user == null)
             return Result<WorkoutResponse>.Failed(ErrorCode.NotFound,"User not found");
         
@@ -33,6 +33,8 @@ public class WorkoutService : IWorkoutService
         {
             User =  user,
             DateStarted = DateTime.UtcNow,
+            Name = "",
+            Notes = "",
         };
         
         await _context.Workouts.AddAsync(workout);
@@ -41,14 +43,14 @@ public class WorkoutService : IWorkoutService
         return Result<WorkoutResponse>.Success(new WorkoutResponse
         {
             StartTime =  workout.DateStarted,
-            UserId = user.Id.ToString(),
-            WorkoutId = workout.Id.ToString(),
+            UserId = user.Id,
+            WorkoutId = workout.Id,
             WorkoutName = workout.Name,
             WorkoutNotes = workout.Notes,
         });
     }
 
-    public async Task<Result<bool>> StopAsync(string workoutId)
+    public async Task<Result<bool>> StopAsync(Guid workoutId)
     {
         var workout = await _context.Workouts.FindAsync(workoutId);
         if (workout == null)
@@ -59,7 +61,7 @@ public class WorkoutService : IWorkoutService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> DeleteAsync(string workoutId)
+    public async Task<Result<bool>> DeleteAsync(Guid workoutId)
     {
         var workout = await _context.Workouts.FindAsync(workoutId);
         if (workout == null)
@@ -70,15 +72,11 @@ public class WorkoutService : IWorkoutService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<WorkoutResponse>> GetByIdAsync(string workoutId, string language)
+    public async Task<Result<WorkoutResponse>> GetByIdAsync(Guid workoutId, string language)
     {
-
-        if (!Guid.TryParse(workoutId, out var workoutGuid))
-            return Result<WorkoutResponse>.Failed(ErrorCode.BadRequest,"Bad workout Id");
-        
         var workout = await _context.Workouts
             .AsNoTracking()
-            .Where(w => w.Id == workoutGuid)
+            .Where(w => w.Id == workoutId)
             .Select(w => new
             {
                 w.Id,
@@ -116,14 +114,14 @@ public class WorkoutService : IWorkoutService
         
         return Result<WorkoutResponse>.Success(new WorkoutResponse
         {
-            WorkoutId = workout.Id.ToString(),
+            WorkoutId = workout.Id,
             EndTime = workout.DateCompleted,
             StartTime = workout.DateStarted,
             WorkoutNotes = workout.Notes,
             WorkoutName = workout.Name,
             UserExercises = workout.UserExercises.Select(e => new UserExerciseGetResponse
             {
-                Id = e.Id.ToString(),
+                Id = e.Id,
                 ExerciseName = translation[e.RefExerciseId].Name,
                 ExerciseDescription = translation[e.RefExerciseId].Description,
                 ImageUrl = e.RefExerciseMediaUrl,
@@ -133,19 +131,16 @@ public class WorkoutService : IWorkoutService
                     Reps = s.Reps,
                     Weight = s.Weight,
                     Order = s.Order,
-                    Id = s.Id.ToString()
+                    Id = s.Id
                 }).OrderBy(s => s.Order).ToList()
             }).OrderByDescending(ue => ue.Order).ToList()
         });
     }
 
-    public async Task<Result<WorkoutResponse>> GetLastWorkoutAsync(string userId, string language)
+    public async Task<Result<WorkoutResponse>> GetLastWorkoutAsync(Guid userId, string language)
     {
-        if(!Guid.TryParse(userId, out var workoutGuid))
-            return Result<WorkoutResponse>.Failed(ErrorCode.BadRequest,"Bad workout Id");
-
         var lastWorkout = await _context.Workouts
-            .Where(w => w.UserId == Guid.Parse(userId))
+            .Where(w => w.UserId == userId)
             .OrderByDescending(w => w.DateStarted)
             .AsNoTracking()
             .FirstOrDefaultAsync();
@@ -153,7 +148,7 @@ public class WorkoutService : IWorkoutService
         if(lastWorkout == null)
             return  Result<WorkoutResponse>.Failed(ErrorCode.NotFound,"Workout not found");
 
-        var result = await GetByIdAsync(lastWorkout.Id.ToString(), language);
+        var result = await GetByIdAsync(lastWorkout.Id, language);
         
         if (!result.Succeeded)
             return Result<WorkoutResponse>.Failed(result.Code, result.ErrorMessages);
@@ -161,23 +156,24 @@ public class WorkoutService : IWorkoutService
         return Result<WorkoutResponse>.Success(result.Data);
     }
 
-    public async Task<Result<UserExerciseGetResponse>> AddUserExerciseAsync(string workoutId, string exerciseId, string language)
+    public async Task<Result<bool>> 
+        AddUserExerciseAsync(Guid workoutId, Guid exerciseId, string language)
     {
         var workout = await _context.Workouts
             .Include(w => w.UserExercises)
-            .FirstOrDefaultAsync(w =>  w.Id == Guid.Parse(workoutId));
+            .FirstOrDefaultAsync(w =>  w.Id == workoutId);
         
         if (workout == null)
-            return Result<UserExerciseGetResponse>.Failed(ErrorCode.NotFound,"Workout not found");
+            return Result<bool>.Failed(ErrorCode.NotFound,"Workout not found");
 
         if( workout.UserExercises
            .Select(ue => ue.RefExerciseId)
-           .Any(ueid => ueid == Guid.Parse(exerciseId)))
-            return Result<UserExerciseGetResponse>.Failed(ErrorCode.BadRequest, "Exercise already exists");
+           .Any(ueid => ueid == exerciseId))
+            return Result<bool>.Failed(ErrorCode.BadRequest, "Exercise already exists");
 
-        var exercise = await _context.Exercises.FindAsync(Guid.Parse(exerciseId));
+        var exercise = await _context.Exercises.FindAsync(exerciseId);
         if(exercise == null)
-            return  Result<UserExerciseGetResponse>.Failed(ErrorCode.NotFound,"Exercise not found");
+            return  Result<bool>.Failed(ErrorCode.NotFound,"Exercise not found");
 
 
             
@@ -202,31 +198,15 @@ public class WorkoutService : IWorkoutService
         
         await _context.SaveChangesAsync();
         var translation = await _translationRepo.GetExerciseTranslationAsync(exercise.Id, language);
-        return Result<UserExerciseGetResponse>.Success(new UserExerciseGetResponse
-        {
-            ExerciseDescription = translation.Description,
-            ExerciseName = translation.Name,
-            Id = userExercise.Id.ToString(),
-            ImageUrl = "",
-            Order =  userExercise.Order,
-            Sets = userExercise.UserExerciseSets.Select(s =>
-            
-                new UserExerciseSetResponse()
-                {
-                    Id = s.Id.ToString(),
-                    Order = s.Order,
-                    Reps = s.Reps,
-                    Weight = s.Weight
-                }
-            ).ToList()
-        });
+        return Result<bool>.Success(true);
     }
 
-    public async Task<Result<ICollection<UserExerciseGetResponse>>> GetAllExercisesAsync(string workoutId, string language)
+    public async Task<Result<ICollection<UserExerciseGetResponse>>> 
+        GetAllExercisesAsync(Guid workoutId, string language)
     {
         var workout = await _context.Workouts
             .AsNoTracking()
-            .Where(w => w.Id == Guid.Parse(workoutId))
+            .Where(w => w.Id == workoutId)
             .Select(w => new
             {
                 w.Id,
@@ -266,7 +246,7 @@ public class WorkoutService : IWorkoutService
                 Reps = s.Reps,
                 Weight = s.Weight,
                 Order = s.Order,
-                Id = s.Id.ToString()
+                Id = s.Id
             }).OrderBy(s => s.Order).ToList()
         }).OrderBy(ue => ue.Order).ToList();
 
@@ -317,7 +297,7 @@ public class WorkoutService : IWorkoutService
         
         var result = workout.Select(w => new WorkoutResponse
         {
-            WorkoutId =  w.Id.ToString(),
+            WorkoutId =  w.Id,
             EndTime = w.DateCompleted,
             StartTime = w.DateStarted,
             WorkoutNotes = w.Notes,
@@ -333,7 +313,7 @@ public class WorkoutService : IWorkoutService
                     Reps = s.Reps,
                     Weight = s.Weight,
                     Order = s.Order,
-                    Id = s.Id.ToString()
+                    Id = s.Id
                 }).OrderBy(s => s.Order).ToList()
             }).OrderBy(e => e.Order).ToList(),
         }).OrderByDescending(w => w.StartTime).ToList();
@@ -347,11 +327,8 @@ public class WorkoutService : IWorkoutService
         });
     }
 
-    public async Task<Result<bool>> RemoveUserExerciseAsync(string exerciseId)
+    public async Task<Result<bool>> RemoveUserExerciseAsync(Guid exerciseId)
     {
-        if(string.IsNullOrEmpty(exerciseId))
-            return Result<bool>.Failed(ErrorCode.BadRequest, "ExerciseId is required.");
-        
         var exercise = await _context.UserExercises.FindAsync(exerciseId);
 
         if (exercise == null)
@@ -362,8 +339,70 @@ public class WorkoutService : IWorkoutService
         return Result<bool>.Success(true);
     }
 
-    public Task<Result<ICollection<UserExercise>>> AddWorkoutFromTemplateAsync(string workoutId)
+    public async Task<Result<bool>> CopyWorkoutSessionAsync(string userLanguage, Guid workoutId, Guid templateWorkoutId)
     {
-        throw new NotImplementedException();
+        var newWorkout = await _context.Workouts.FindAsync(workoutId);
+        
+        if(newWorkout == null)
+            return Result<bool>.Failed(ErrorCode.NotFound, "Workout not found");
+
+        var templateSession = await _context.Workouts
+            .AsNoTracking()
+            .Include(w => w.UserExercises)
+            .ThenInclude(ue => ue.RefExerciseId)
+            .FirstOrDefaultAsync(w => w.Id == templateWorkoutId);
+
+        if(templateSession == null)
+            return  Result<bool>.Failed(ErrorCode.NotFound, "Template workout not found");
+        
+        var templateExercises = templateSession.UserExercises
+            .Select(e => e.RefExerciseId)
+            .ToList();
+
+        foreach (var exerciseId in templateExercises)
+        {
+            await AddUserExerciseAsync(newWorkout.Id, exerciseId, userLanguage);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Result<bool>.Success(true);
+    }
+
+    private async Task<Result<WorkoutResponse>> MapToWorkoutResponseAsync(Workout workout, string lang)
+    {
+        var language = lang == "" ? "en" : lang;
+        
+        var exerciseIds = workout.UserExercises
+            .Select(ue => ue.RefExerciseId)
+            .Distinct()
+            .ToList();
+        
+        var translation =  await _translationRepo
+            .GetExerciseTranslationsAsync(exerciseIds, language);
+        
+        return Result<WorkoutResponse>.Success(new WorkoutResponse
+        {
+            WorkoutId = workout.Id,
+            EndTime = workout.DateCompleted,
+            StartTime = workout.DateStarted,
+            WorkoutNotes = workout.Notes,
+            WorkoutName = workout.Name,
+            UserExercises = workout.UserExercises.Select(e => new UserExerciseGetResponse
+            {
+                Id = e.Id,
+                ExerciseName = translation[e.RefExerciseId].Name,
+                ExerciseDescription = translation[e.RefExerciseId].Description,
+                ImageUrl = e.RefExercise.MediaUrl,
+                Order = e.Order,
+                Sets = e.UserExerciseSets.Select(s => new UserExerciseSetResponse
+                {
+                    Reps = s.Reps,
+                    Weight = s.Weight,
+                    Order = s.Order,
+                    Id = s.Id
+                }).OrderBy(s => s.Order).ToList()
+            }).OrderByDescending(ue => ue.Order).ToList()
+        });
     }
 }

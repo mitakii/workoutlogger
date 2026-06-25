@@ -4,7 +4,7 @@ namespace BusinessLayer.DTO;
 
 public class UserExerciseCreateRequest
 {
-    public string WorkoutId { get; set; }
-    public string ExerciseId { get; set; }
+    public Guid WorkoutId { get; set; }
+    public Guid ExerciseId { get; set; }
     
 }

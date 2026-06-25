@@ -25,8 +25,8 @@ public class SetService : IUserSetService
 
         return Result<UserSetGetResponse>.Success(new()
         {
-            ExerciseId = set.ExerciseId.ToString(),
-            SetId = setId.ToString(),
+            ExerciseId = set.ExerciseId,
+            SetId = setId,
             Weight = set.Weight,
             Reps = set.Reps,
             Order = set.Order
@@ -44,17 +44,17 @@ public class SetService : IUserSetService
         
         var sets = userExercise.UserExerciseSets.Select(s => new UserSetGetResponse()
         {
-            ExerciseId = exerciseId.ToString(),
+            ExerciseId = exerciseId,
             Reps =  s.Reps,
             Weight = s.Weight,
-            SetId = s.Id.ToString(),
+            SetId = s.Id,
             Order = s.Order
         }).ToList();
 
         return Result<List<UserSetGetResponse>>.Success(sets);
     }
 
-    public async Task<Result<UserSetGetResponse>> CreateUserSetAsync(Guid exerciseId, double Weight, int Reps)
+    public async Task<Result<bool>> CreateUserSetAsync(Guid exerciseId, double weight, int reps)
     {
        
         var exercise = await _context.UserExercises
@@ -62,12 +62,12 @@ public class SetService : IUserSetService
             .FirstOrDefaultAsync(e => e.Id == exerciseId);
         
         if(exercise == null)
-            return Result<UserSetGetResponse>.Failed(ErrorCode.NotFound, "Exercise not found");
+            return Result<bool>.Failed(ErrorCode.NotFound, "Exercise not found");
 
         var set = new UserExerciseSet()
         {
-            Weight = Weight,
-            Reps = Reps,
+            Weight = weight,
+            Reps = reps,
             ExerciseId = exerciseId,
             Order = exercise.UserExerciseSets.Count()
         };
@@ -75,35 +75,21 @@ public class SetService : IUserSetService
         exercise.UserExerciseSets.Add(set);
         await _context.SaveChangesAsync();
 
-        return Result<UserSetGetResponse>.Success(new()
-        {
-            ExerciseId = exerciseId.ToString(),
-            Reps = set.Reps,
-            Weight = set.Weight,
-            SetId = set.Id.ToString(),
-            Order = set.Order
-        });
+        return Result<bool>.Success(true);
     }
 
-    public async Task<Result<UserSetGetResponse>> UpdateUserSetAsync(Guid setId, double Weight, int Reps)
+    public async Task<Result<bool>> UpdateUserSetAsync(Guid setId, double weight, int reps)
     {
         var set = await _context.UserExerciseSet.FindAsync(setId);
         if(set == null)
-            return Result<UserSetGetResponse>.Failed(ErrorCode.NotFound, "Set not found");
+            return Result<bool>.Failed(ErrorCode.NotFound, "Set not found");
         
-        set.Weight = Weight;
-        set.Reps = Reps;
+        set.Weight = weight;
+        set.Reps = reps;
 
         _context.UserExerciseSet.Update(set);
         await _context.SaveChangesAsync();
-        return Result<UserSetGetResponse>.Success(new()
-        {
-            SetId = setId.ToString(),
-            Weight = set.Weight,
-            Reps = set.Reps,
-            Order = set.Order,
-            ExerciseId = set.ExerciseId.ToString()
-        });
+        return Result<bool>.Success(true);
     }
 
     public async Task<Result<string>> DeleteUserSetAsync(Guid setId)

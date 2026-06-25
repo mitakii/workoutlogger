@@ -46,7 +46,7 @@ public class ExerciseService : IExerciseService
         return Result<string>.Success(exercise.Id.ToString());
     }
 
-    public async Task<Result<bool>> DeleteAsync(string exerciseId)
+    public async Task<Result<bool>> DeleteAsync(Guid exerciseId)
     {
         var exercise = await _dbContext.Exercises.FindAsync(exerciseId);
         if(exercise == null)
@@ -57,7 +57,7 @@ public class ExerciseService : IExerciseService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<ExerciseGetResponse>> GetByIdAsync(string exerciseId)
+    public async Task<Result<ExerciseGetResponse>> GetByIdAsync(Guid exerciseId)
     {
         var exercise = await _dbContext.Exercises.FindAsync(exerciseId);
         if(exercise == null)
@@ -95,7 +95,7 @@ public class ExerciseService : IExerciseService
     }
 
     public async Task<Result<PagedResult<ExerciseGetResponse>>> GetAllAsync(
-        ExerciseSearchRequest request, string language)
+        SearchRequest request, string language)
     {
         if (string.IsNullOrEmpty(request.Query))
             return Result<PagedResult<ExerciseGetResponse>>
@@ -147,9 +147,6 @@ public class ExerciseService : IExerciseService
 
     public async Task<Result<bool>> AddTranslationAsync(ExerciseTranslationCreateRequest request)
     {
-        if (string.IsNullOrEmpty(request.ExerciseId))
-            return Result<bool>.Failed(ErrorCode.BadRequest, "ExerciseId is empty or null");
-        
         var exercise = await _dbContext.Exercises.FindAsync(request.ExerciseId);
         if (exercise == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Exercise not found");

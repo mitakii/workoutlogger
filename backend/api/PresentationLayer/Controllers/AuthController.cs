@@ -35,9 +35,10 @@ public class AuthController : ControllerBase
     [HttpGet("status")]
     public async Task<IActionResult> Status()
     {
-        string userId = User.FindFirstValue(ClaimTypes.Sid);
+        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+            return Unauthorized();
         
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId.ToString());
         if(user == null) return NotFound("user not found ");
 
         var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
@@ -52,6 +53,7 @@ public class AuthController : ControllerBase
         });
     }
     
+    [AllowAnonymous]
     [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken()
     {
@@ -62,7 +64,7 @@ public class AuthController : ControllerBase
         if(!tokens.Succeeded)
             return tokens.ToIActionResultErrors();
         
-        tokens.Data!.SetTokenToCookie(HttpContext, _jwtOptions);
+        tokens.Data!.SetTokensToCookie(HttpContext, _jwtOptions);
         return Ok();
     }
     
@@ -92,7 +94,7 @@ public class AuthController : ControllerBase
         {
             RefreshToken = refreshToken.Data!,
             AccessToken = accessToken.Data!,
-        }.SetTokenToCookie(HttpContext, _jwtOptions);
+        }.SetTokensToCookie(HttpContext, _jwtOptions);
 
         return Ok(new
         {
@@ -129,14 +131,7 @@ public class AuthController : ControllerBase
         string userId = User.FindFirstValue(ClaimTypes.Sid);
         await _tokenService.RevokeRefreshTokenByUIdAsync(userId);
         
-        new TokenDTO{AccessToken = "", RefreshToken = ""}.SetTokenToCookie(HttpContext, _jwtOptions);
+        new TokenDTO{AccessToken = "", RefreshToken = ""}.SetTokensToCookie(HttpContext, _jwtOptions);
         return Ok();
-    }
-    
-    [Authorize]
-    [HttpGet("test")]
-    public IActionResult Test()
-    {
-        return Ok("would");
     }
 }

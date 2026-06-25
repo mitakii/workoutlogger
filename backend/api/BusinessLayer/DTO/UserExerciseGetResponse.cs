@@ -4,7 +4,7 @@ namespace BusinessLayer.DTO;
 
 public class UserExerciseGetResponse
 {
-    public string Id { get; set; }
+    public Guid Id { get; set; }
     public int Order { get; set; }
     public string ExerciseName { get; set; }
     public string ImageUrl { get; set; }

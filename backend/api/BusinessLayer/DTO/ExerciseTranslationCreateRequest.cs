@@ -4,7 +4,7 @@ namespace BusinessLayer.DTO;
 
 public class ExerciseTranslationCreateRequest
 {
-    public string? ExerciseId {get; set;}
+    public Guid? ExerciseId {get; set;}
     [Required]
     [MaxLength(5)]
     public string Language {get; set;}

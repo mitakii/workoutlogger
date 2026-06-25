@@ -1,10 +1,12 @@
 using ApplicationLayer.Data.Enums;
 using BusinessLayer.DTO;
 using BusinessLayer.Exceptions;
+using BusinessLayer.Helpers;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services;
 
@@ -18,12 +20,12 @@ public class UserService : IUserService
         _context = context;
     }
     
-    public async Task<Result<bool>> ChangeUserLanguageAsync(string userId, string language)
+    public async Task<Result<bool>> ChangeUserLanguageAsync(Guid userId, string language)
     {
         if (string.IsNullOrEmpty(language))
             return Result<bool>.Failed(ErrorCode.BadRequest, "Language in not specified");
         
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "User not found");
         
@@ -37,9 +39,9 @@ public class UserService : IUserService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<UserGetResponse>> GetUserAsync(string userId)
+    public async Task<Result<UserGetResponse>> GetUserAsync(Guid userId)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null)
             return Result<UserGetResponse>.Failed(ErrorCode.NotFound, "User not found");
 
@@ -64,11 +66,48 @@ public class UserService : IUserService
         return Result<bool>.Success(true);
     }
 
-    private UserGetResponse MapToResponse(User user)
+    public async Task<Result<PagedResult<UserGetResponse>>> GetPagedUsersAsync(string query, int pageIndex, int pageSize)
+    {
+        if (string.IsNullOrEmpty(query))
+            return Result<PagedResult<UserGetResponse>>
+                .Failed(ErrorCode.BadRequest, "Search query is empty");
+        
+        var normQ = query.ToUpper();
+
+        var usersQuery = _context.Users
+            .AsNoTracking()
+            .Where(u => u.NormalizedUserName.Contains(normQ));
+        
+        var totalItems = await usersQuery.CountAsync();
+
+        return Result<PagedResult<UserGetResponse>>.Success(new PagedResult<UserGetResponse>()
+        {
+            PageNumber = pageIndex,
+            PageSize = pageSize,
+            TotalItems = totalItems,
+            TotalPages = (int)Math.Ceiling((double)totalItems / pageSize),
+            Items = await usersQuery.OrderBy(t => t.UserName)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .Select(u => MapToResponse(u))
+                .ToListAsync()
+        });
+    }
+
+    public async Task<Result<string>> GetUserLanguageAsync(Guid userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
+            return Result<string>.Failed(ErrorCode.NotFound, "User not found");
+        
+        return Result<string>.Success(user.Language);
+    }
+
+    private static UserGetResponse MapToResponse(User user)
     {
         return new UserGetResponse
         {
-            Id = user.Id.ToString(),
+            Id = user.Id,
             Username = user.UserName,
             Description = user.Description,
             PfpUrl = user.UserPfpUrl

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BusinessLayer.DTO;
 
-public class ExerciseSearchRequest
+public class SearchRequest
 {
     public string Query { get; set; }
     public int Page { get; set; }

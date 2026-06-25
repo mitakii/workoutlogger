@@ -1,9 +1,11 @@
 using BusinessLayer.DTO;
 using BusinessLayer.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Extensions;
 
 namespace PresentationLayer.Controllers;
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class UserExerciseController : ControllerBase
@@ -14,55 +16,40 @@ public class UserExerciseController : ControllerBase
         _userSetService = userSetService;
     }
     
-    [HttpGet("userSet/{id}")]
-    public async Task<IActionResult> GetById(string id)
+    [HttpGet("userSet/{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
     {
-        if(!Guid.TryParse(id, out Guid guid))
-            return BadRequest("id must be a valid guid");
-        
-        var result = await _userSetService.GetUserSetAsync(guid);
+        var result = await _userSetService.GetUserSetAsync(id);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
     
-    [HttpPost("{exerciseId}")]
-    public async Task<IActionResult> AddSet(string exerciseId, double weight, int reps)
+    [HttpPost("{exerciseId:guid}")]
+    public async Task<IActionResult> AddSet(Guid exerciseId, double weight, int reps)
     {
-        if(!Guid.TryParse(exerciseId, out Guid exerciseGuid))
-            return  BadRequest("id must be a valid guid");
-        
-        var result = await _userSetService.CreateUserSetAsync(exerciseGuid, weight, reps);
+        var result = await _userSetService.CreateUserSetAsync(exerciseId, weight, reps);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
     
-    [HttpGet("userSets/{exerciseId}")]
-    public async Task<IActionResult> GetAllSets(string exerciseId)
+    [HttpGet("userSets/{exerciseId:guid}")]
+    public async Task<IActionResult> GetAllSets(Guid exerciseId)
     {
-        if(!Guid.TryParse(exerciseId, out Guid exerciseGuid))
-            return BadRequest("id must be a valid guid");
-        
-        var result = await _userSetService.GetUserSetsAsync(exerciseGuid);
+        var result = await _userSetService.GetUserSetsAsync(exerciseId);
         
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
-    [HttpDelete("userSet/{setId}")]
-    public async Task<IActionResult> DeleteSet(string setId)
+    [HttpDelete("userSet/{setId:guid}")]
+    public async Task<IActionResult> DeleteSet(Guid setId)
     {
-        if(!Guid.TryParse(setId, out Guid setGuid))
-            return BadRequest("id must be a valid guid");
-
-        var result = await  _userSetService.DeleteUserSetAsync(setGuid);
+        var result = await  _userSetService.DeleteUserSetAsync(setId);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
-    [HttpPatch("userSet/{setId}")]
+    [HttpPatch("userSet/{setId:guid}")]
     public async Task<IActionResult> UpdateSet
-        (string setId, [FromBody] UserExerciseSetRequest request)
+        (Guid setId, [FromBody] UserExerciseSetRequest request)
     {
-        if(!Guid.TryParse(setId, out Guid setGuid))
-            return BadRequest("id must be a valid guid");
-        
-        var result = await _userSetService.UpdateUserSetAsync(setGuid, request.Weight, request.Reps);
+        var result = await _userSetService.UpdateUserSetAsync(setId, request.Weight, request.Reps);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 }
