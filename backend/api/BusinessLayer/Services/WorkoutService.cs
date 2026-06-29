@@ -33,8 +33,6 @@ public class WorkoutService : IWorkoutService
         {
             User =  user,
             DateStarted = DateTime.UtcNow,
-            Name = "",
-            Notes = "",
         };
         
         await _context.Workouts.AddAsync(workout);
@@ -45,20 +43,7 @@ public class WorkoutService : IWorkoutService
             StartTime =  workout.DateStarted,
             UserId = user.Id,
             WorkoutId = workout.Id,
-            WorkoutName = workout.Name,
-            WorkoutNotes = workout.Notes,
         });
-    }
-
-    public async Task<Result<bool>> StopAsync(Guid workoutId)
-    {
-        var workout = await _context.Workouts.FindAsync(workoutId);
-        if (workout == null)
-            return Result<bool>.Failed(ErrorCode.NotFound,"Workout not found");
-        
-        workout.DateCompleted = DateTime.Now;
-        await _context.SaveChangesAsync();
-        return Result<bool>.Success(true);
     }
 
     public async Task<Result<bool>> DeleteAsync(Guid workoutId)
@@ -80,11 +65,8 @@ public class WorkoutService : IWorkoutService
             .Select(w => new
             {
                 w.Id,
-                w.DateCompleted,
                 w.DateStarted,
-                w.Notes,
                 w.UserId,
-                w.Name,
                 UserExercises =  w.UserExercises.Select(ue => new
                 {
                     ue.Id,
@@ -115,10 +97,7 @@ public class WorkoutService : IWorkoutService
         return Result<WorkoutResponse>.Success(new WorkoutResponse
         {
             WorkoutId = workout.Id,
-            EndTime = workout.DateCompleted,
             StartTime = workout.DateStarted,
-            WorkoutNotes = workout.Notes,
-            WorkoutName = workout.Name,
             UserExercises = workout.UserExercises.Select(e => new UserExerciseGetResponse
             {
                 Id = e.Id,
@@ -264,11 +243,8 @@ public class WorkoutService : IWorkoutService
             .Select(w => new
             {
                 w.Id,
-                w.DateCompleted,
                 w.DateStarted,
-                w.Notes,
                 w.UserId,
-                w.Name,
                 UserLanguage = w.User.Language,
                 UserExercises =  w.UserExercises.Select(ue => new
                 {
@@ -298,10 +274,7 @@ public class WorkoutService : IWorkoutService
         var result = workout.Select(w => new WorkoutResponse
         {
             WorkoutId =  w.Id,
-            EndTime = w.DateCompleted,
             StartTime = w.DateStarted,
-            WorkoutNotes = w.Notes,
-            WorkoutName = w.Name,
             UserExercises = w.UserExercises.Select(e => new UserExerciseGetResponse
             {
                 ExerciseName = translation[e.RefExerciseId].Name,
@@ -339,35 +312,7 @@ public class WorkoutService : IWorkoutService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> CopyWorkoutSessionAsync(string userLanguage, Guid workoutId, Guid templateWorkoutId)
-    {
-        var newWorkout = await _context.Workouts.FindAsync(workoutId);
-        
-        if(newWorkout == null)
-            return Result<bool>.Failed(ErrorCode.NotFound, "Workout not found");
 
-        var templateSession = await _context.Workouts
-            .AsNoTracking()
-            .Include(w => w.UserExercises)
-            .ThenInclude(ue => ue.RefExerciseId)
-            .FirstOrDefaultAsync(w => w.Id == templateWorkoutId);
-
-        if(templateSession == null)
-            return  Result<bool>.Failed(ErrorCode.NotFound, "Template workout not found");
-        
-        var templateExercises = templateSession.UserExercises
-            .Select(e => e.RefExerciseId)
-            .ToList();
-
-        foreach (var exerciseId in templateExercises)
-        {
-            await AddUserExerciseAsync(newWorkout.Id, exerciseId, userLanguage);
-        }
-
-        await _context.SaveChangesAsync();
-
-        return Result<bool>.Success(true);
-    }
 
     private async Task<Result<WorkoutResponse>> MapToWorkoutResponseAsync(Workout workout, string lang)
     {
@@ -384,10 +329,7 @@ public class WorkoutService : IWorkoutService
         return Result<WorkoutResponse>.Success(new WorkoutResponse
         {
             WorkoutId = workout.Id,
-            EndTime = workout.DateCompleted,
             StartTime = workout.DateStarted,
-            WorkoutNotes = workout.Notes,
-            WorkoutName = workout.Name,
             UserExercises = workout.UserExercises.Select(e => new UserExerciseGetResponse
             {
                 Id = e.Id,

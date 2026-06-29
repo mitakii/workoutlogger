@@ -61,7 +61,7 @@ public class UserController : ControllerBase
         if (string.IsNullOrEmpty(request.NewLanguage))
             return BadRequest();
         
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
         var user  = await _userManager.FindByIdAsync(userId.ToString());
@@ -85,7 +85,7 @@ public class UserController : ControllerBase
         if( await _userManager.FindByNameAsync(request.NewUsername)  != null)
             return BadRequest("Username already exists");
         
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
         var user  = await _userManager.FindByIdAsync(userId.ToString());
@@ -109,7 +109,7 @@ public class UserController : ControllerBase
             return BadRequest("Passwords are empty");
         
         
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
         var user  = await _userManager.FindByIdAsync(userId.ToString());

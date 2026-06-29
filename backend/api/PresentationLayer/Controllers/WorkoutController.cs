@@ -18,23 +18,21 @@ public class WorkoutController : ControllerBase
 {
     private readonly IWorkoutService _workoutService;
     private readonly IUserService _userService;
-    private readonly UserManager<User>  _userManager;
 
-    public WorkoutController(IWorkoutService workoutService,  IUserService userService, UserManager<User> userManager)
+    public WorkoutController(IWorkoutService workoutService,  IUserService userService)
     {
         _workoutService = workoutService;
         _userService = userService;
-        _userManager = userManager;
     }
     
     [Authorize]
     [HttpPost("start")]
     public async Task<IActionResult> Start()
     {
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
-        var result =  await _workoutService.StartAsync(userId);
+        var result = await _workoutService.StartAsync(userId);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
@@ -42,10 +40,10 @@ public class WorkoutController : ControllerBase
     [HttpGet("lastWorkout")]
     public async Task<IActionResult> GetLastWorkout()
     {
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
-        var userLanguage =await _userService.GetUserLanguageAsync(userId);
+        var userLanguage = await _userService.GetUserLanguageAsync(userId);
         if(!userLanguage.Succeeded)
             return userLanguage.ToIActionResultErrors();
         
@@ -56,10 +54,10 @@ public class WorkoutController : ControllerBase
     [HttpGet("{workoutId:guid}")]
     public async Task<IActionResult> GetWorkout(Guid workoutId)
     {
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
-        var userLanguage =await _userService.GetUserLanguageAsync(userId);
+        var userLanguage = await _userService.GetUserLanguageAsync(userId);
         if(!userLanguage.Succeeded)
             return userLanguage.ToIActionResultErrors();
         
@@ -80,10 +78,10 @@ public class WorkoutController : ControllerBase
     [HttpPost("{workoutId:guid}/exercise/{exerciseId:guid}")]
     public async Task<IActionResult> AddExercise(Guid workoutId, Guid exerciseId)
     {
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid).Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
-        var userLanguage =await _userService.GetUserLanguageAsync(userId);
+        var userLanguage = await _userService.GetUserLanguageAsync(userId);
         if(!userLanguage.Succeeded)
             return userLanguage.ToIActionResultErrors();
         
@@ -105,10 +103,10 @@ public class WorkoutController : ControllerBase
     [HttpGet("{workoutId:guid}/exercises")]
     public async Task<IActionResult> GetWorkoutExercises(Guid workoutId)
     {
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
-        var userLanguage =await _userService.GetUserLanguageAsync(userId);
+        var userLanguage = await _userService.GetUserLanguageAsync(userId);
         if(!userLanguage.Succeeded)
             return userLanguage.ToIActionResultErrors();
 
@@ -124,10 +122,10 @@ public class WorkoutController : ControllerBase
         if (request.PageSize <= 0 |  request.Page < 1)
             return BadRequest();
 
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
-        var userLanguage =await _userService.GetUserLanguageAsync(userId);
+        var userLanguage = await _userService.GetUserLanguageAsync(userId);
         if(!userLanguage.Succeeded)
             return userLanguage.ToIActionResultErrors();
         
@@ -137,22 +135,5 @@ public class WorkoutController : ControllerBase
             return result.ToIActionResultErrors();
         
         return Ok(result.Data);
-    }
-
-    [Authorize]
-    [HttpPatch("copyFromTemplate")]
-    public async Task<IActionResult> CopyTemplateSession([FromBody]CopySession request)
-    {
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
-            return Unauthorized();
-        
-        var userLanguage =await _userService.GetUserLanguageAsync(userId);
-        if(!userLanguage.Succeeded)
-            return userLanguage.ToIActionResultErrors();
-        
-        var result = await _workoutService
-            .CopyWorkoutSessionAsync(userLanguage.Data!, request.NewWorkoutId, request.TemplateWorkoutId);
-        
-        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 }

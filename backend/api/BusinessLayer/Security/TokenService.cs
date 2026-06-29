@@ -142,12 +142,10 @@ public class TokenService : ITokenService
         return Result<bool>.Success(token);
     }
 
-    public async Task<Result<string>> RevokeRefreshTokenByUIdAsync(string userId)
+    public async Task<Result<string>> RevokeRefreshTokenByUIdAsync(Guid userId)
     {
-        if (string.IsNullOrEmpty(userId))
-            return Result<string>.Failed(ErrorCode.BadRequest, "userId is required");
-        
-        await _tokenRepository.DeleteUserRefreshTokenSAsync(userId);
+       
+        await _tokenRepository.DeleteUserRefreshTokensAsync(userId);
         return Result<string>.Success("token has been revoked");
     }
 }

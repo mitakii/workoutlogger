@@ -18,6 +18,7 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>,  Guid>
     public DbSet<UserExercise> UserExercises { get; set; }
     public DbSet<UserExerciseSet> UserExerciseSet { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<UserTemplate> UserTemplates { get; set; }
     
     
 

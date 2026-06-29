@@ -50,10 +50,10 @@ public class TokenRepository : ITokenRepository
         return true;
     }
 
-    public async Task<bool> DeleteUserRefreshTokenSAsync(string userId)
+    public async Task<bool> DeleteUserRefreshTokensAsync(Guid userId)
     {
         var tokens = await _context.RefreshTokens
-            .Where(u => u.User.Id.ToString() == userId)
+            .Where(u => u.User.Id == userId)
             .ToListAsync<RefreshToken>();
         
         if (tokens.Count == 0)

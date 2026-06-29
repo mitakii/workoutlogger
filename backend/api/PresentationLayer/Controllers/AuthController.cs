@@ -30,12 +30,11 @@ public class AuthController : ControllerBase
         _userManager = userManager;
         _jwtOptions = jwtOptions.Value;
     }
-
-    [Authorize]
+    
     [HttpGet("status")]
     public async Task<IActionResult> Status()
     {
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
         var user = await _userManager.FindByIdAsync(userId.ToString());
@@ -53,7 +52,6 @@ public class AuthController : ControllerBase
         });
     }
     
-    [AllowAnonymous]
     [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken()
     {
@@ -82,7 +80,7 @@ public class AuthController : ControllerBase
         if (await _userManager.IsLockedOutAsync(user))
             return Forbid();
         
-        await _tokenService.RevokeRefreshTokenByUIdAsync(user.Id.ToString());
+        await _tokenService.RevokeRefreshTokenByUIdAsync(user.Id);
 
         if (!await _userManager.CheckPasswordAsync(user, request.Password))
             return Unauthorized();
@@ -128,7 +126,9 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        string userId = User.FindFirstValue(ClaimTypes.Sid);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
         await _tokenService.RevokeRefreshTokenByUIdAsync(userId);
         
         new TokenDTO{AccessToken = "", RefreshToken = ""}.SetTokensToCookie(HttpContext, _jwtOptions);

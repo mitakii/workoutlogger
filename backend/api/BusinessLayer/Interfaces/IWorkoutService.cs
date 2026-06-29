@@ -14,7 +14,6 @@ public interface IWorkoutService
     public Task<Result<PagedResult<WorkoutResponse>>> GetAllUserWorkoutsAsync(WorkoutsGetRequest request, string lang);
     
     public Task<Result<bool>> AddUserExerciseAsync(Guid workoutId, Guid exerciseId, string language);
-    public Task<Result<bool>> CopyWorkoutSessionAsync(string userLanguage, Guid workoutId, Guid templateWorkoutId);
     public Task<Result<bool>> DeleteAsync(Guid workoutId);
     public Task<Result<bool>> RemoveUserExerciseAsync(Guid exerciseId);
 }

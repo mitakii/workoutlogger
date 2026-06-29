@@ -40,7 +40,12 @@ namespace DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("UserTemplateId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserTemplateId");
 
                     b.ToTable("Exercises");
                 });
@@ -198,23 +203,45 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("UserExerciseSet");
                 });
 
+            modelBuilder.Entity("DataAccessLayer.Entities.UserTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NameNormalized")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("WorkoutId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserTemplates");
+                });
+
             modelBuilder.Entity("DataAccessLayer.Entities.Workout", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("DateCompleted")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<DateTime>("DateStarted")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -378,6 +405,13 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("DataAccessLayer.Entities.Exercise", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.UserTemplate", null)
+                        .WithMany("Exercises")
+                        .HasForeignKey("UserTemplateId");
+                });
+
             modelBuilder.Entity("DataAccessLayer.Entities.ExerciseTranslations", b =>
                 {
                     b.HasOne("DataAccessLayer.Entities.Exercise", "Exercise")
@@ -417,6 +451,15 @@ namespace DataAccessLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Exercise");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.UserTemplate", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.User", null)
+                        .WithMany("UserTemplates")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Workout", b =>
@@ -499,12 +542,19 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Entities.User", b =>
                 {
+                    b.Navigation("UserTemplates");
+
                     b.Navigation("Workouts");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.UserExercise", b =>
                 {
                     b.Navigation("UserExerciseSets");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.UserTemplate", b =>
+                {
+                    b.Navigation("Exercises");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Workout", b =>

@@ -76,7 +76,7 @@ public class ExerciseController : ControllerBase
                 .SelectMany(v => v.Errors
                     .Select(e => e.ErrorMessage)));
 
-        if (Guid.TryParse(User.FindFirst(ClaimTypes.Sid)!.Value, out var userId))
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
         var userLanguage =await _userService.GetUserLanguageAsync(userId);
