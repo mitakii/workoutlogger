@@ -1,6 +1,6 @@
 namespace PresentationLayer.DTO;
 
-public class CopySession
+public class ApplyTemplateRequest
 {
     public Guid NewWorkoutId { get; private set; }
     public Guid TemplateWorkoutId { get; private set; }

@@ -95,7 +95,6 @@ public class WorkoutController : ControllerBase
     public async Task<IActionResult> RemoveUserExercise(Guid exerciseId)
     {
         var result = await _workoutService.RemoveUserExerciseAsync(exerciseId);
-        
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
     

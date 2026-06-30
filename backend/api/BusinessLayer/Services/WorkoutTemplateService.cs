@@ -38,7 +38,7 @@ public class WorkoutTemplateService : IWorkoutTemplate
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> CopyWorkoutSessionAsync(string userLanguage, Guid workoutId, Guid templateWorkoutId)
+    public async Task<Result<bool>> ApplyTemplateAsync(string userLanguage, Guid workoutId, Guid templateWorkoutId)
     {
         var newWorkout = await _context.Workouts.FindAsync(workoutId);
         
@@ -66,7 +66,8 @@ public class WorkoutTemplateService : IWorkoutTemplate
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<PagedResult<TemplateGetResponse>>> GetUserTemplatesAsync(Guid userId, int pageIndex, int pageSize, string language)
+    public async Task<Result<PagedResult<TemplateGetResponse>>> GetUserTemplatesAsync
+        (Guid userId, int pageIndex, int pageSize, string language)
     {
         var userTemplates = await _context.UserTemplates
             .AsNoTracking()
@@ -101,6 +102,33 @@ public class WorkoutTemplateService : IWorkoutTemplate
             PageNumber = pageIndex,
             PageSize = pageSize,
         });
+    }
+
+    public async Task<Result<bool>> CreateTemplateFromWorkoutAsync
+        (Guid userId, Guid workoutId, string name, string description)
+    {
+        var workout = await _context.Workouts
+            .Include(w => w.UserExercises)
+            .ThenInclude(ue => ue.RefExercise)
+            .FirstOrDefaultAsync(w => w.Id == workoutId);
+        
+        if(workout == null)
+            return Result<bool>.Failed(ErrorCode.NotFound, "Workout not found");
+
+        var template = new UserTemplate()
+        {
+            UserId = userId,
+            Description = description,
+            Name = name,
+            NameNormalized = name.ToUpper(),
+            Exercises = workout.UserExercises.Select(ue => ue.RefExercise).ToList(),
+            WorkoutId = workoutId
+        };
+        
+        await _context.UserTemplates.AddAsync(template);
+        await  _context.SaveChangesAsync();
+
+        return  Result<bool>.Success(true);
     }
 
     public async Task<Result<bool>> AddExerciseAsync(Guid templateId, Guid exerciseId)

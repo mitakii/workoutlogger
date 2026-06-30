@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using BusinessLayer.DTO;
 using BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,8 @@ using PresentationLayer.Extensions;
 
 namespace PresentationLayer.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class TemplateController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -19,24 +22,111 @@ public class TemplateController : ControllerBase
     }
 
     [Authorize]
-    [HttpPatch("copyFromTemplate")]
-    public async Task<IActionResult> CopyTemplateSession([FromBody]CopySession request)
+    [HttpPatch("applyTemplate")]
+    public async Task<IActionResult> ApplyTemplate([FromBody]ApplyTemplateRequest request)
     {
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
         
-        var userLanguage =await _userService.GetUserLanguageAsync(userId);
+        var userLanguage = await _userService.GetUserLanguageAsync(userId);
         if(!userLanguage.Succeeded)
             return userLanguage.ToIActionResultErrors();
         
         var result = await _workoutTemplate
-            .CopyWorkoutSessionAsync(userLanguage.Data!, request.NewWorkoutId, request.TemplateWorkoutId);
+            .ApplyTemplateAsync(userLanguage.Data!, request.NewWorkoutId, request.TemplateWorkoutId);
         
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
-    public async Task<IActionResult> MarkSessionAsTemplate(Guid workoutId)
+    [Authorize]
+    [HttpPost("createTemplate")]
+    public async Task<IActionResult> CreateTemplate(CreateTemplateRequest request)
     {
-        return Ok();
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
+        var template = await _workoutTemplate.CreateTemplateAsync(userId, request.Name, request.Description);
+        
+        return template.Succeeded ? Ok(template.Data) : template.ToIActionResultErrors();
+    }
+    
+    [Authorize]
+    [HttpDelete("deleteTemplate/{templateId:guid}")]
+    public async Task<IActionResult> DeleteTemplate(Guid templateId)
+    {
+        var result =  await _workoutTemplate.DeleteTemplateAsync(templateId);
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
+    }
+
+    [Authorize]
+    [HttpPost("{templateId:guid}/addExercise/{exerciseId:guid}")]
+    public async Task<IActionResult> AddExercise(Guid templateId, Guid exerciseId)
+    {
+        var result = await _workoutTemplate.AddExerciseAsync(templateId, exerciseId);
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
+    }
+
+    [Authorize]
+    [HttpPatch("{templateId:guid}/deleteExercise/{exerciseId:guid}")]
+    public async Task<IActionResult> DeleteExercise(Guid templateId, Guid exerciseId)
+    {
+        var result = await _workoutTemplate.DeleteExerciseAsync(templateId, exerciseId);
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
+    }
+
+    [Authorize]
+    [HttpPost("toTemplate")]
+    public async Task<IActionResult> WorkoutToTemplate([FromBody]CreateTemplateRequest request)
+    {
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
+        if (request.WorkoutId == Guid.Empty || request.WorkoutId == null)
+            return BadRequest("workout id is required");
+        
+        var result = await _workoutTemplate.CreateTemplateFromWorkoutAsync(userId, request.WorkoutId.Value, request.Name, request.Description);
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
+    }
+
+    [Authorize]
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchTemplate([FromBody] SearchRequest request)
+    {
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+
+        var userLanguage = await _userService.GetUserLanguageAsync(userId);
+        if(!userLanguage.Succeeded)
+            return userLanguage.ToIActionResultErrors();
+        
+        var result =
+            await _workoutTemplate.SearchWorkoutTemplateAsync(request.Query, userId, request.Page, request.PageSize,
+                userLanguage.Data);
+        
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
+    }
+
+    [Authorize]
+    [HttpPatch("{templateId:guid}")]
+    public async Task<IActionResult> UpdateTemplate(Guid templateId, string name, string description)
+    {
+        var result = await _workoutTemplate.UpdateTemplateAsync(templateId, name, description);
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
+    }
+
+    [Authorize]
+    [HttpGet("userTemplates")]
+    public async Task<IActionResult> GetTemplate(int page, int pageSize)
+    {
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
+        var userLanguage = await _userService.GetUserLanguageAsync(userId);
+        if(!userLanguage.Succeeded)
+            return userLanguage.ToIActionResultErrors();
+        
+        var result = await _workoutTemplate.GetUserTemplatesAsync(userId, page, pageSize, userLanguage.Data);
+        
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 }
