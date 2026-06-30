@@ -1,5 +1,5 @@
-import { UserExerciseTile } from "./UserExerciseTile";
 import type { UserSession } from "@/types/types";
+import { UserExerciseTile } from "./UserExerciseTile";
 
 type Props = {
   session: UserSession;

@@ -9,6 +9,7 @@ type Props = {
 export const ExerciseList = ({ exercises }: Props) => {
   const { data: session } = useLastSession();
   const { mutateAsync: addUserExercise } = useAddUserExercise();
+
   const handleAddExercise = async (exercise: Exercise) => {
     if (!session) return;
     try {

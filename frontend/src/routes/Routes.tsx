@@ -10,6 +10,7 @@ import AdminRoute from "./AdminRoute";
 import { ProtectedRoute } from "./ProtectedRoute";
 import UserProfilePage from "@/pages/UserProfilePage";
 import SettingsPage from "@/pages/SettingsPage";
+import { NotFound } from "@/pages/NotFoundPage";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ export const router = createBrowserRouter([
         element: <AdminRoute />,
         children: [{ path: "addexercise", element: <AddExercisePage /> }],
       },
+      { path: "*", element: <NotFound /> },
     ],
   },
 ]);

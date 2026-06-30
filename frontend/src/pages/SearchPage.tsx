@@ -1,10 +1,9 @@
 import { useState } from "react";
-import ExerciseSearch from "../components/SearchBar";
+import ExerciseSearch from "../components/search/SearchBar";
 import { Spinner } from "@/components/ui/spinner";
 
 import SearchResult from "@/components/search/SearchResult";
 import { useParams } from "react-router-dom";
-import { PageSize } from "./UserProfilePage";
 import type { SearchResults, SearchType } from "@/types/types";
 import PagePagination from "@/components/profile/PagePagination";
 import { useSearch } from "@/hooks/useSearch";

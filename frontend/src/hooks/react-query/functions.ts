@@ -7,6 +7,7 @@ import type {
   UserProfile,
   UserSession,
   UserSet,
+  UserTemplate,
 } from "../../types/types";
 import { api } from "../../api/api";
 import {
@@ -29,7 +30,6 @@ export const getLastSession = async (): Promise<UserSession> => {
       userExercises: res.data.userExercises ?? [],
     } as UserSession;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -42,7 +42,6 @@ export const createSession = async (): Promise<UserSession> => {
       userExercises: res.data.userExercises ?? [],
     };
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -55,11 +54,8 @@ export const addUserExercise = async (
     const res = await api.post<UserExercise>(
       `/workout/${workoutId}/exercise/${exerciseId}`
     );
-    console.log(res.data);
-    const parsed = UserExerciseSchema.parse(res.data);
-    return parsed;
+    return res.data;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -72,7 +68,6 @@ export const getUserExercises = async (
     const parsed = UserExerciseSchema.parse(res.data);
     return parsed;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -90,7 +85,6 @@ export const addExercise = async (
     });
     return res.data;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -103,7 +97,6 @@ export const getSession = async (id: string): Promise<Session> => {
       userExercises: res.data.userExercises ?? [],
     };
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -121,7 +114,6 @@ export const getUserSessions = async (
     });
     return res.data.items;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -131,7 +123,6 @@ export const addUserSet = async (userSet: UserSet, userExerciseId: string) => {
     const res = await api.post(`/UserExercise/${userExerciseId}`, userSet);
     return res.data;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -141,7 +132,6 @@ export const updateUserSet = async (userSet: UserSet) => {
     const res = await api.patch(`/UserExercise/userSet/${userSet.id}`, userSet);
     return res.data;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -151,7 +141,6 @@ export const deleteUserSet = async (userSet: UserSet) => {
     const res = await api.delete(`/UserExercise/userSet/${userSet.id}`);
     return res.data;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -169,7 +158,6 @@ export const searchExercise = async (
     const parsed = ExerciseSchema.parse(res.data.items);
     return parsed;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -184,7 +172,6 @@ export const searchUser = async (
     });
     return res.data.items;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -205,7 +192,6 @@ export const getUserByName = async (
     };
     return user;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -258,7 +244,6 @@ export const loginApi = async (
     );
     return res.data;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -277,7 +262,6 @@ export const registerApi = async (
       language,
     });
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -286,7 +270,6 @@ export const logoutApi = async () => {
   try {
     return await api.post("/logout");
   } catch (e) {
-    console.log(e);
     throw e;
   }
 };
@@ -308,10 +291,130 @@ export const statusApi = async (): Promise<UserProfile | null> => {
     };
     return user;
   } catch (e) {
-    console.log(e);
     if (axios.isAxiosError(e) && e.response?.status == 401) {
       return null;
     }
+    throw e;
+  }
+};
+
+//templates
+
+export const createWorkoutTemplate = async (
+  name: string,
+  description: string
+) => {
+  try {
+    await api.post("/Template/createTemplate", {
+      name: name,
+      description: description,
+    });
+    return;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const deleteTemplate = async (templateId: string) => {
+  try {
+    await api.delete(`Template/deleteTemplate/${templateId}`);
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const applyTemplate = async (workoutId: string, templateId: string) => {
+  try {
+    await api.put("Template/applyTemplate", {
+      newWorkoutId: workoutId,
+      TemplateWorkoutId: templateId,
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const workoutToTemplate = async (
+  workoutId: string,
+  name: string,
+  description: string
+) => {
+  try {
+    await api.post("Template/toTemplate", {
+      workoutId: workoutId,
+      name: name,
+      description: description,
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const addTemplateExercise = async (
+  templateId: string,
+  exerciseId: string
+) => {
+  try {
+    await api.post(`Template/${templateId}/addExercise/${exerciseId}`);
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const deleteTemplateExercise = async (
+  templateId: string,
+  exerciseId: string
+) => {
+  try {
+    await api.delete(`Template/${templateId}/deleteExercise/${exerciseId}`);
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const searchTemplate = async (
+  query: string,
+  pageSize: number,
+  page: number
+): Promise<UserTemplate[]> => {
+  try {
+    const res = await api.get(`/User/search`, {
+      params: { query, pageSize, page },
+    });
+    return res.data.items;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const updateTemplate = async (
+  templateId: string,
+  name: string,
+  description: string
+) => {
+  try {
+    await api.patch(`Template/update/${templateId}`, {
+      name: name,
+      description: description,
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const getUserTemplates = async (
+  page: number,
+  pageSize: number
+): Promise<UserTemplate[]> => {
+  try {
+    const res = await api.get("userTemplates", {
+      params: {
+        page,
+        pageSize,
+      },
+    });
+    return res.data.items;
+  } catch (e) {
     throw e;
   }
 };

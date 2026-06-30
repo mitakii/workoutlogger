@@ -67,7 +67,7 @@ const ChangeLanguage = () => {
   };
 
   return (
-    <div>
+    <div className="pt-2">
       <Card>
         <CardHeader>
           <CardTitle>Change Language</CardTitle>

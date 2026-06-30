@@ -1,14 +1,14 @@
-import { UserSetTile } from "../components/UserSetTile";
-import type { UserExercise, UserSet } from "../types/types";
-import { useAddUserSet } from "../hooks/react-query";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Button } from "./ui/button";
+} from "../ui/card";
+import { Button } from "../ui/button";
+import type { UserExercise, UserSet } from "@/types/types";
+import { useAddUserSet } from "@/hooks/react-query";
+import { UserSetTile } from "./UserSetTile";
 
 type Props = {
   sessionId: string;

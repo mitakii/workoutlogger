@@ -47,6 +47,7 @@ export type GetSessionsApi = {
   page: number;
   pageSize: number;
 };
+
 export type Exercise = {
   name: string;
   id: string;
@@ -54,5 +55,11 @@ export type Exercise = {
   imageUrl: string | null;
 };
 
-export type SearchType = "exercise" | "user";
+export type SearchType = "exercise" | "user" | "template";
 export type SearchResults = Exercise[] | UserProfile[];
+
+export type UserTemplate = {
+  name: string;
+  description: string;
+  exercises: Exercise[];
+};

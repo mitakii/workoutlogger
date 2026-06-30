@@ -1,4 +1,4 @@
-import SessionExerciseList from "../components/SessionExerciseList";
+import SessionExerciseList from "../components/session/SessionExerciseList";
 import { Link } from "react-router-dom";
 import { useLastSession } from "../hooks/react-query";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ const WorkoutPage = () => {
   if (!session) return <div>No workout session found</div>;
 
   return (
-    <div className=" flex flex-col m-2 max-w-3xl mx-auto">
+    <div className=" flex flex-col p-2 max-w-3xl mx-auto">
       <Button asChild>
         <Link to={"/search/exercise"}>
           <div>Add Exercise</div>

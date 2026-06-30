@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Exercise } from "@/types/types";
-import { Card, CardDescription, CardHeader } from "../ui/card";
-import { Field, FieldError } from "../ui/field";
-import { Button } from "../ui/button";
+import { Card, CardDescription, CardHeader } from "../../ui/card";
+import { Field, FieldError } from "../../ui/field";
+import { Button } from "../../ui/button";
 
 type Props = {
   exercise: Exercise;
@@ -13,13 +13,13 @@ type Props = {
 export const ExerciseTile = ({ exercise, addExercise }: Props) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
   const handleAddExercise = async () => {
     try {
       await addExercise(exercise);
       navigate(-1);
     } catch (e) {
-      console.log(e);
-      setError("exercise already exist");
+      setError("Exercise already exist");
     }
   };
 

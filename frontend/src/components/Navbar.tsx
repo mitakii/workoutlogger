@@ -57,8 +57,6 @@ const Navbar = () => {
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Find user</DropdownMenuItem>
-                  <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem onClick={logoutUser}>
                       Log out

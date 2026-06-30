@@ -1,6 +1,10 @@
 import type { SearchType } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
-import { searchExercise, searchUser } from "./react-query/functions";
+import {
+  searchExercise,
+  searchTemplate,
+  searchUser,
+} from "./react-query/functions";
 import { PageSize } from "@/pages/UserProfilePage";
 
 export const useSearch = (type: SearchType, page: number, query: string) => {
@@ -15,6 +19,8 @@ export const useSearch = (type: SearchType, page: number, query: string) => {
           return searchExercise(query, PageSize, page);
         case "user":
           return searchUser(query, PageSize, page);
+        case "template":
+          return searchTemplate(query, PageSize, page);
 
         default:
           return [];

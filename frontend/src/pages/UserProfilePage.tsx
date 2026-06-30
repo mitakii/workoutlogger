@@ -28,10 +28,7 @@ const UserProfilePage = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 pb-10">
       <div className="flex items-start gap-4 mt-4">
-        <Avatar
-          className="h-20 w-20 shrink-0"
-          onClick={() => console.log(userProfile)}
-        >
+        <Avatar className="h-20 w-20 shrink-0">
           <AvatarImage src={`${userProfile?.pfpUrl}`} />
           <AvatarFallback>{userProfile?.username.slice(0, 2)}</AvatarFallback>
         </Avatar>

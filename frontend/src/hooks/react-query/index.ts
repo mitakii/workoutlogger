@@ -20,6 +20,12 @@ import {
   changePassword,
   changeLanguage,
   searchUser,
+  createWorkoutTemplate,
+  deleteTemplate,
+  workoutToTemplate,
+  addTemplateExercise,
+  deleteTemplateExercise,
+  getUserTemplates,
 } from "./functions";
 import {
   type GetSessionsApi,
@@ -283,5 +289,115 @@ export const useStatus = () => {
     queryFn: statusApi,
     retry: false,
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+// templates
+
+export const useCreateTemplate = async () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      name,
+      description,
+    }: {
+      name: string;
+      description: string;
+    }) => createWorkoutTemplate(name, description),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["UserTemplates"] });
+    },
+  });
+};
+
+export const useDeleteTemplate = async () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (templateId: string) => deleteTemplate(templateId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["UserTemplates"] });
+    },
+  });
+};
+
+export const useApplyTemplate = async () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      workoutId,
+      templateId,
+    }: {
+      workoutId: string;
+      templateId: string;
+    }) => createWorkoutTemplate(workoutId, templateId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["workout-session", "Current"],
+      });
+    },
+  });
+};
+
+export const useWorkoutToTemplate = async () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      workoutId,
+      name,
+      description,
+    }: {
+      workoutId: string;
+      name: string;
+      description: string;
+    }) => workoutToTemplate(workoutId, name, description),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["UserTemplates"],
+      });
+    },
+  });
+};
+
+export const useAddTemplateExercise = async () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      templateId,
+      exerciseId,
+    }: {
+      templateId: string;
+      exerciseId: string;
+    }) => addTemplateExercise(templateId, exerciseId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["UserTemplates"],
+      });
+    },
+  });
+};
+
+export const useDeleteTemplateExercise = async () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      templateId,
+      exerciseId,
+    }: {
+      templateId: string;
+      exerciseId: string;
+    }) => deleteTemplateExercise(templateId, exerciseId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["UserTemplates"],
+      });
+    },
+  });
+};
+
+export const useGetUserTemplates = (page: number, pageSize: number) => {
+  return useQuery({
+    queryKey: ["UserTemplates", page, pageSize],
+    queryFn: () => getUserTemplates(page, pageSize),
+    staleTime: 5 * 60 * 1000,
   });
 };
