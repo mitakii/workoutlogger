@@ -11,6 +11,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import UserProfilePage from "@/pages/UserProfilePage";
 import SettingsPage from "@/pages/SettingsPage";
 import { NotFound } from "@/pages/NotFoundPage";
+import SearchPickerPage from "@/pages/SearchPickerPage";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
           { path: "search/:type", element: <SearchPage /> },
           { path: "u/:token", element: <UserProfilePage /> },
           { path: "/settings", element: <SettingsPage /> },
+          { path: "searchPicker/:type/:id", element: <SearchPickerPage /> },
         ],
       },
 

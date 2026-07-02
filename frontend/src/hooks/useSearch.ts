@@ -1,4 +1,4 @@
-import type { SearchType } from "@/types/types";
+import type { SearchPickerType, SearchType } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import {
   searchExercise,
@@ -7,7 +7,11 @@ import {
 } from "./react-query/functions";
 import { PageSize } from "@/pages/UserProfilePage";
 
-export const useSearch = (type: SearchType, page: number, query: string) => {
+export const useSearch = (
+  type: SearchType | SearchPickerType,
+  page: number,
+  query: string
+) => {
   return useQuery({
     queryKey: ["search", query, page, type],
     queryFn: async () => {
@@ -15,12 +19,14 @@ export const useSearch = (type: SearchType, page: number, query: string) => {
       if (!query.trim()) return [];
 
       switch (type) {
-        case "exercise":
+        case "workoutExercise":
           return searchExercise(query, PageSize, page);
         case "user":
           return searchUser(query, PageSize, page);
         case "template":
           return searchTemplate(query, PageSize, page);
+        case "templateExercise":
+          return searchExercise(query, PageSize, page);
 
         default:
           return [];

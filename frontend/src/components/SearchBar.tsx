@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDebounce } from "react-use";
-import { Input } from "../ui/input";
+import { Input } from "./ui/input";
 
 type SearchBarProps = {
   onSearch: (query: string) => void;

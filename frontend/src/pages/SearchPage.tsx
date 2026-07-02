@@ -1,12 +1,12 @@
 import { useState } from "react";
-import ExerciseSearch from "../components/search/SearchBar";
-import { Spinner } from "@/components/ui/spinner";
-
 import SearchResult from "@/components/search/SearchResult";
 import { useParams } from "react-router-dom";
 import type { SearchResults, SearchType } from "@/types/types";
 import PagePagination from "@/components/profile/PagePagination";
 import { useSearch } from "@/hooks/useSearch";
+import { Spinner } from "@/components/ui/spinner";
+import SearchBar from "../components/SearchBar";
+import { useInitialData } from "@/hooks/useInitialData";
 
 const SearchPage = () => {
   const { type } = useParams<{ type: SearchType }>();
@@ -15,7 +15,15 @@ const SearchPage = () => {
 
   const [searching, setSearching] = useState(false);
 
-  const { data = [], isLoading, isFetching } = useSearch(type!, page, query);
+  const {
+    data: searchData = [],
+    isLoading,
+    isFetching,
+  } = useSearch(type!, page, query);
+
+  const { data: initialData = [] } = useInitialData(type!, page);
+
+  const showData = searchData.length == 0 ? initialData : searchData;
 
   const handleSearch = async (debounceValue: string) => {
     try {
@@ -28,7 +36,7 @@ const SearchPage = () => {
 
   return (
     <div className="p-2 max-w-3xl mx-auto">
-      <ExerciseSearch onSearch={handleSearch} />
+      <SearchBar onSearch={handleSearch} />
 
       {(isLoading || isFetching) && (
         <div className="flex h-screen w-screen items-center justify-center">
@@ -36,15 +44,19 @@ const SearchPage = () => {
         </div>
       )}
 
-      {!isLoading && searching && data.length === 0 && (
+      {!isLoading && searching && searchData.length === 0 && (
         <div>{type} not found</div>
       )}
 
-      {data.length > 0 && (
-        <SearchResult type={type!} results={data as SearchResults} />
+      {searchData.length > 0 && (
+        <SearchResult type={type!} results={showData as SearchResults} />
       )}
 
-      <PagePagination page={page} setPage={setPage} pageLength={data.length} />
+      <PagePagination
+        page={page}
+        setPage={setPage}
+        pageLength={showData.length}
+      />
     </div>
   );
 };

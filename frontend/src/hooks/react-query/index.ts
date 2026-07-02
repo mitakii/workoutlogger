@@ -294,7 +294,7 @@ export const useStatus = () => {
 
 // templates
 
-export const useCreateTemplate = async () => {
+export const useCreateTemplate = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -310,7 +310,7 @@ export const useCreateTemplate = async () => {
   });
 };
 
-export const useDeleteTemplate = async () => {
+export const useDeleteTemplate = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (templateId: string) => deleteTemplate(templateId),
@@ -320,7 +320,7 @@ export const useDeleteTemplate = async () => {
   });
 };
 
-export const useApplyTemplate = async () => {
+export const useApplyTemplate = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -338,7 +338,7 @@ export const useApplyTemplate = async () => {
   });
 };
 
-export const useWorkoutToTemplate = async () => {
+export const useWorkoutToTemplate = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -358,7 +358,7 @@ export const useWorkoutToTemplate = async () => {
   });
 };
 
-export const useAddTemplateExercise = async () => {
+export const useAddTemplateExercise = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -376,7 +376,7 @@ export const useAddTemplateExercise = async () => {
   });
 };
 
-export const useDeleteTemplateExercise = async () => {
+export const useDeleteTemplateExercise = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({

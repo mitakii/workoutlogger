@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Exercise } from "@/types/types";
-import { Card, CardDescription, CardHeader } from "../../ui/card";
-import { Field, FieldError } from "../../ui/field";
-import { Button } from "../../ui/button";
+import { Card, CardDescription, CardHeader } from "../ui/card";
+import { Field, FieldError } from "../ui/field";
+import { Button } from "../ui/button";
 
 type Props = {
   exercise: Exercise;

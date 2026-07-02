@@ -55,11 +55,15 @@ export type Exercise = {
   imageUrl: string | null;
 };
 
-export type SearchType = "exercise" | "user" | "template";
-export type SearchResults = Exercise[] | UserProfile[];
-
 export type UserTemplate = {
+  id: string;
   name: string;
   description: string;
   exercises: Exercise[];
 };
+
+export type SearchType = "user" | "template";
+export type SearchResults = UserProfile[] | UserTemplate[];
+
+export type SearchPickerType = "workoutExercise" | "templateExercise";
+export type SearchPickerResults = Exercise[];

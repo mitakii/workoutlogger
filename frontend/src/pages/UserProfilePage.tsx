@@ -1,10 +1,10 @@
-import PagePagination from "@/components/profile/PagePagination";
-import ProfileWorkoutsList from "@/components/profile/ProfileWorkoutsList";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Spinner } from "@/components/ui/spinner";
-import { useGetUserByUsername, useGetUserSessions } from "@/hooks/react-query";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useGetUserByUsername, useGetUserSessions } from "../hooks/react-query";
+import { Spinner } from "@/components/ui/spinner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ProfileWorkoutsList from "@/components/profile/ProfileWorkoutsList";
+import PagePagination from "@/components/profile/PagePagination";
 
 export const PageSize = 10;
 

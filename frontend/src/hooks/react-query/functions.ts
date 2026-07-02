@@ -175,6 +175,20 @@ export const searchUser = async (
     throw e;
   }
 };
+export const searchTemplate = async (
+  query: string,
+  pageSize: number,
+  page: number
+): Promise<UserTemplate[]> => {
+  try {
+    const res = await api.get(`/User/search`, {
+      params: { query, pageSize, page },
+    });
+    return res.data.items;
+  } catch (e) {
+    throw e;
+  }
+};
 
 // user
 
@@ -367,21 +381,6 @@ export const deleteTemplateExercise = async (
 ) => {
   try {
     await api.delete(`Template/${templateId}/deleteExercise/${exerciseId}`);
-  } catch (e) {
-    throw e;
-  }
-};
-
-export const searchTemplate = async (
-  query: string,
-  pageSize: number,
-  page: number
-): Promise<UserTemplate[]> => {
-  try {
-    const res = await api.get(`/User/search`, {
-      params: { query, pageSize, page },
-    });
-    return res.data.items;
   } catch (e) {
     throw e;
   }

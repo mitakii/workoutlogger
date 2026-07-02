@@ -20,7 +20,7 @@ const WorkoutPage = () => {
   return (
     <div className=" flex flex-col p-2 max-w-3xl mx-auto">
       <Button asChild>
-        <Link to={"/search/exercise"}>
+        <Link to={`/searchPicker/workoutExercise/${session.workoutId}`}>
           <div>Add Exercise</div>
         </Link>
       </Button>

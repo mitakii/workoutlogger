@@ -1,20 +1,19 @@
 import { useAddUserExercise, useLastSession } from "@/hooks/react-query";
 import type { Exercise } from "@/types/types";
-import ExerciseTile from "./ExerciseTile";
+import ExerciseTile from "../ExerciseTile";
 
 type Props = {
   exercises: Exercise[];
+  workoutId: string;
 };
 
-export const ExerciseList = ({ exercises }: Props) => {
-  const { data: session } = useLastSession();
+export const WorkoutExerciseList = ({ exercises, workoutId }: Props) => {
   const { mutateAsync: addUserExercise } = useAddUserExercise();
 
   const handleAddExercise = async (exercise: Exercise) => {
-    if (!session) return;
     try {
       await addUserExercise({
-        workoutId: session.workoutId,
+        workoutId: workoutId,
         exerciseId: exercise.id,
       });
     } catch (e) {

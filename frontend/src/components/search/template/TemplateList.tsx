@@ -1,12 +1,24 @@
-import type { Exercise } from "@/types/types";
+import type { Exercise, UserTemplate } from "@/types/types";
 import React from "react";
+import ExerciseTile from "../../searchPicker/ExerciseTile";
+import {
+  useAddTemplateExercise,
+  useGetUserTemplates,
+} from "@/hooks/react-query";
+import TemplateTile from "./TemplateTile";
 
 type Props = {
-  exercises: Exercise[];
+  templates: UserTemplate[];
 };
 
-const TemplateList = ({ exercises }: Props) => {
-  return <div>TemplateList</div>;
+const TemplateList = ({ templates }: Props) => {
+  return (
+    <div>
+      {templates.map((t) => (
+        <TemplateTile key={t.id} template={t} />
+      ))}
+    </div>
+  );
 };
 
 export default TemplateList;
