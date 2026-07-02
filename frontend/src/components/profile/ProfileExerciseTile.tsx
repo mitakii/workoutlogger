@@ -24,14 +24,14 @@ const ProfileExerciseTile = ({ userExercise }: Props) => {
         onOpenChange={setIsOpen}
         className="flex flex-col gap-2"
       >
-        <div className="flex items-center justify-between gap-4 px-4">
-          <h4 className="text-sm font-semibold">{userExercise.exerciseName}</h4>
+        <div className="flex items-center gap-4 px-4">
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="icon" className="size-8">
               <ChevronsUpDown />
               <span className="sr-only">Toggle details</span>
             </Button>
           </CollapsibleTrigger>
+          <h4 className="text-sm font-semibold">{userExercise.exerciseName}</h4>
         </div>
         <CollapsibleContent className="flex flex-col gap-2">
           {userExercise.sets?.map((set) => (

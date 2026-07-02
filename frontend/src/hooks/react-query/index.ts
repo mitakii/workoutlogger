@@ -26,6 +26,7 @@ import {
   addTemplateExercise,
   deleteTemplateExercise,
   getUserTemplates,
+  getUserTemplate,
 } from "./functions";
 import {
   type GetSessionsApi,
@@ -358,7 +359,7 @@ export const useWorkoutToTemplate = () => {
   });
 };
 
-export const useAddTemplateExercise = () => {
+export const useAddTemplateExercise = (templateId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -370,13 +371,13 @@ export const useAddTemplateExercise = () => {
     }) => addTemplateExercise(templateId, exerciseId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["UserTemplates"],
+        queryKey: ["UserTemplates", templateId],
       });
     },
   });
 };
 
-export const useDeleteTemplateExercise = () => {
+export const useDeleteTemplateExercise = (templateId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -388,7 +389,7 @@ export const useDeleteTemplateExercise = () => {
     }) => deleteTemplateExercise(templateId, exerciseId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["UserTemplates"],
+        queryKey: ["UserTemplates", templateId],
       });
     },
   });
@@ -398,6 +399,14 @@ export const useGetUserTemplates = (page: number, pageSize: number) => {
   return useQuery({
     queryKey: ["UserTemplates", page, pageSize],
     queryFn: () => getUserTemplates(page, pageSize),
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useGetUserTemplate = (templateId: string) => {
+  return useQuery({
+    queryKey: ["UserTemplates", templateId],
+    queryFn: () => getUserTemplate(templateId),
     staleTime: 5 * 60 * 1000,
   });
 };

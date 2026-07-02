@@ -1,10 +1,4 @@
 import type { Exercise, UserTemplate } from "@/types/types";
-import React from "react";
-import ExerciseTile from "../../searchPicker/ExerciseTile";
-import {
-  useAddTemplateExercise,
-  useGetUserTemplates,
-} from "@/hooks/react-query";
 import TemplateTile from "./TemplateTile";
 
 type Props = {

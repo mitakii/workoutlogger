@@ -15,7 +15,6 @@ export const useSearch = (
   return useQuery({
     queryKey: ["search", query, page, type],
     queryFn: async () => {
-      console.log(query);
       if (!query.trim()) return [];
 
       switch (type) {

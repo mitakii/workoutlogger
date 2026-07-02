@@ -44,11 +44,11 @@ const SearchPage = () => {
         </div>
       )}
 
-      {!isLoading && searching && searchData.length === 0 && (
+      {!isLoading && searching && showData.length === 0 && (
         <div>{type} not found</div>
       )}
 
-      {searchData.length > 0 && (
+      {showData.length > 0 && (
         <SearchResult type={type!} results={showData as SearchResults} />
       )}
 

@@ -9,7 +9,8 @@ type Props = {
 };
 
 const TemplateExerciseList = ({ exercises, templateId }: Props) => {
-  const { mutateAsync: addTemplateExercise } = useAddTemplateExercise();
+  const { mutateAsync: addTemplateExercise } =
+    useAddTemplateExercise(templateId);
 
   const handleAddExercise = async (exercise: Exercise) => {
     try {

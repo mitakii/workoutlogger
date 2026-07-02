@@ -12,6 +12,8 @@ import UserProfilePage from "@/pages/UserProfilePage";
 import SettingsPage from "@/pages/SettingsPage";
 import { NotFound } from "@/pages/NotFoundPage";
 import SearchPickerPage from "@/pages/SearchPickerPage";
+import TemplateEditPage from "@/pages/templates/TemplateEditPage";
+import CreateTemplatePage from "@/pages/templates/CreateTemplatePage";
 
 export const router = createBrowserRouter([
   {
@@ -24,11 +26,22 @@ export const router = createBrowserRouter([
       {
         element: <ProtectedRoute />,
         children: [
-          { path: "session/:token", element: <WorkoutPage /> },
+          {
+            path: "session/:token",
+            element: <WorkoutPage />,
+            handle: {
+              nav: [
+                { label: "Templates", to: "search/template" },
+                { label: "Create template", to: "createTemplate" },
+              ],
+            },
+          },
           { path: "search/:type", element: <SearchPage /> },
           { path: "u/:token", element: <UserProfilePage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "searchPicker/:type/:id", element: <SearchPickerPage /> },
+          { path: "editTemplate/:id", element: <TemplateEditPage /> },
+          { path: "createTemplate", element: <CreateTemplatePage /> },
         ],
       },
 

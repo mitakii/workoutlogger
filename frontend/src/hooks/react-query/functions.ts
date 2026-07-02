@@ -154,7 +154,6 @@ export const searchExercise = async (
     const res = await api.get(`/exercise/search`, {
       params: { query, pageSize, page },
     });
-    console.log(res.data.items);
     const parsed = ExerciseSchema.parse(res.data.items);
     return parsed;
   } catch (e) {
@@ -181,7 +180,7 @@ export const searchTemplate = async (
   page: number
 ): Promise<UserTemplate[]> => {
   try {
-    const res = await api.get(`/User/search`, {
+    const res = await api.get(`/Template/search`, {
       params: { query, pageSize, page },
     });
     return res.data.items;
@@ -317,13 +316,13 @@ export const statusApi = async (): Promise<UserProfile | null> => {
 export const createWorkoutTemplate = async (
   name: string,
   description: string
-) => {
+): Promise<string> => {
   try {
-    await api.post("/Template/createTemplate", {
+    const res = await api.post("/Template/createTemplate", {
       name: name,
       description: description,
     });
-    return;
+    return res.data;
   } catch (e) {
     throw e;
   }
@@ -406,13 +405,24 @@ export const getUserTemplates = async (
   pageSize: number
 ): Promise<UserTemplate[]> => {
   try {
-    const res = await api.get("userTemplates", {
+    const res = await api.get("Template/userTemplates", {
       params: {
         page,
         pageSize,
       },
     });
     return res.data.items;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const getUserTemplate = async (
+  templateId: string
+): Promise<UserTemplate> => {
+  try {
+    const res = await api.get(`Template/userTemplate/${templateId}`);
+    return res.data;
   } catch (e) {
     throw e;
   }

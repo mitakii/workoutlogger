@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useMatches, useNavigate } from "react-router";
 import "../index.css";
 import { useUserContext } from "../context/UserContext";
 import {
@@ -12,11 +12,24 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { useScrollDirection } from "@/hooks/scrollDirection";
+import type { NavAction } from "@/types/types";
+
+type RouteHandle = {
+  nav?: NavAction[];
+};
+
+export const getNavFromRoute = (route: any): NavAction[] => {
+  return (route?.handle as RouteHandle)?.nav ?? [];
+};
 
 const Navbar = () => {
   const { logout, user, isLoggedIn } = useUserContext();
   const navigate = useNavigate();
   const direction = useScrollDirection();
+  const matches = useMatches();
+
+  const navOptions = getNavFromRoute(matches.at(-1));
+
   const logoutUser = () => {
     logout();
     navigate("/");
@@ -57,6 +70,15 @@ const Navbar = () => {
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
+                  {navOptions.map((opt) => (
+                    <DropdownMenuItem
+                      key={opt.label}
+                      onClick={() => navigate(opt.to!)}
+                    >
+                      {opt.label}
+                    </DropdownMenuItem>
+                  ))}
+                  {navOptions.length > 0 && <DropdownMenuSeparator />}
                   <DropdownMenuGroup>
                     <DropdownMenuItem onClick={logoutUser}>
                       Log out

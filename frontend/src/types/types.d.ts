@@ -67,3 +67,8 @@ export type SearchResults = UserProfile[] | UserTemplate[];
 
 export type SearchPickerType = "workoutExercise" | "templateExercise";
 export type SearchPickerResults = Exercise[];
+
+export type NavAction = {
+  label: string;
+  to?: string;
+};
