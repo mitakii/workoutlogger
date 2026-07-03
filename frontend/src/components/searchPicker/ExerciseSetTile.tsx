@@ -10,7 +10,7 @@ type Props = {
   addExercise: (e: Exercise) => void;
 };
 
-export const ExerciseTile = ({ exercise, addExercise }: Props) => {
+export const ExerciseSetTile = ({ exercise, addExercise }: Props) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -37,4 +37,4 @@ export const ExerciseTile = ({ exercise, addExercise }: Props) => {
   );
 };
 
-export default ExerciseTile;
+export default ExerciseSetTile;

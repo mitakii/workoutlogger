@@ -351,13 +351,14 @@ export const workoutToTemplate = async (
   workoutId: string,
   name: string,
   description: string
-) => {
+): Promise<string> => {
   try {
-    await api.post("Template/toTemplate", {
+    const res = await api.post("Template/toTemplate", {
       workoutId: workoutId,
       name: name,
       description: description,
     });
+    return res.data;
   } catch (e) {
     throw e;
   }

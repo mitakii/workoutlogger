@@ -6,9 +6,9 @@ import type {
   UserTemplate,
 } from "@/types/types";
 import React from "react";
-import { WorkoutExerciseList } from "../searchPicker/workoutExercise/WorkoutExerciseList";
+import { WorkoutSetExerciseList } from "../searchPicker/workoutExercise/WorkoutSetExerciseList";
 import UserList from "./user/UserList";
-import TemplateExerciseList from "../searchPicker/templateExercise/TemplateExerciseList";
+import TemplateSetExerciseList from "../searchPicker/templateExercise/TemplateSetExerciseList";
 import TemplateList from "./template/TemplateList";
 
 type Props = {

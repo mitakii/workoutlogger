@@ -4,8 +4,8 @@ import type {
   SearchPickerResults,
 } from "@/types/types";
 import React from "react";
-import { WorkoutExerciseList } from "./workoutExercise/WorkoutExerciseList";
-import TemplateExerciseList from "./templateExercise/TemplateExerciseList";
+import { WorkoutSetExerciseList } from "./workoutExercise/WorkoutSetExerciseList";
+import TemplateSetExerciseList from "./templateExercise/TemplateSetExerciseList";
 
 type Props = {
   results: SearchPickerResults;
@@ -16,10 +16,16 @@ type Props = {
 const SearchPickerResult = ({ results, type, id }: Props) => {
   const resultComponents = {
     workoutExercise: (
-      <WorkoutExerciseList exercises={results as Exercise[]} workoutId={id} />
+      <WorkoutSetExerciseList
+        exercises={results as Exercise[]}
+        workoutId={id}
+      />
     ),
     templateExercise: (
-      <TemplateExerciseList exercises={results as Exercise[]} templateId={id} />
+      <TemplateSetExerciseList
+        exercises={results as Exercise[]}
+        templateId={id}
+      />
     ),
   };
 

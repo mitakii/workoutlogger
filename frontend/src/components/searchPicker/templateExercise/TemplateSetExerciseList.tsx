@@ -1,6 +1,6 @@
 import type { Exercise } from "@/types/types";
 import React from "react";
-import ExerciseTile from "../ExerciseTile";
+import ExerciseSetTile from "../ExerciseSetTile";
 import { useAddTemplateExercise } from "@/hooks/react-query";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
   templateId: string;
 };
 
-const TemplateExerciseList = ({ exercises, templateId }: Props) => {
+const TemplateSetExerciseList = ({ exercises, templateId }: Props) => {
   const { mutateAsync: addTemplateExercise } =
     useAddTemplateExercise(templateId);
 
@@ -26,10 +26,14 @@ const TemplateExerciseList = ({ exercises, templateId }: Props) => {
   return (
     <div>
       {exercises.map((e) => (
-        <ExerciseTile key={e.id} exercise={e} addExercise={handleAddExercise} />
+        <ExerciseSetTile
+          key={e.id}
+          exercise={e}
+          addExercise={handleAddExercise}
+        />
       ))}
     </div>
   );
 };
 
-export default TemplateExerciseList;
+export default TemplateSetExerciseList;

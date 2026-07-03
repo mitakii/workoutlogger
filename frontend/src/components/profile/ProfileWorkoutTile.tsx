@@ -9,6 +9,17 @@ import {
 import { Button } from "../ui/button";
 import { ChevronsUpDown } from "lucide-react";
 import ProfileExerciseTile from "./ProfileExerciseTile";
+import { useWorkoutToTemplate } from "@/hooks/react-query";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   session: UserSession;
@@ -26,9 +37,21 @@ export const days = [
 
 const ProfileWorkoutTile = ({ session }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const { mutateAsync: createTemplate } = useWorkoutToTemplate();
+  const navigate = useNavigate();
   const date = new Date(session.startTime).toLocaleDateString();
   const day = new Date(session.startTime).getDay();
+
+  const handleCreateTemplate = async () => {
+    try {
+      var templateId = await createTemplate({
+        workoutId: session.workoutId,
+        name: date,
+        description: " ",
+      });
+      navigate(`/editTemplate/${templateId}`);
+    } catch (e) {}
+  };
 
   return (
     <div className="mt-2">
@@ -48,6 +71,20 @@ const ProfileWorkoutTile = ({ session }: Props) => {
             <h4 className="text-sm font-semibold">
               {date} {days[day]}
             </h4>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">☰</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-40" align="start">
+                <div>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => handleCreateTemplate()}>
+                      Create Template
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <CollapsibleContent className="flex flex-col gap-2">
             {session.userExercises.map((exercise) => (

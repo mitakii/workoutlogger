@@ -1,4 +1,4 @@
-import TemplateExerciseList from "@/components/searchPicker/templateExercise/TemplateExerciseList";
+import TemplateExerciseList from "@/components/templates/TemplateExerciseList";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
