@@ -40,12 +40,7 @@ namespace DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("UserTemplateId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserTemplateId");
 
                     b.ToTable("Exercises");
                 });
@@ -224,9 +219,6 @@ namespace DataAccessLayer.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("WorkoutId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
@@ -273,6 +265,21 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("ExerciseUserTemplate", b =>
+                {
+                    b.Property<Guid>("ExercisesId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserTemplateId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ExercisesId", "UserTemplateId");
+
+                    b.HasIndex("UserTemplateId");
+
+                    b.ToTable("ExerciseUserTemplate");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -405,13 +412,6 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.Exercise", b =>
-                {
-                    b.HasOne("DataAccessLayer.Entities.UserTemplate", null)
-                        .WithMany("Exercises")
-                        .HasForeignKey("UserTemplateId");
-                });
-
             modelBuilder.Entity("DataAccessLayer.Entities.ExerciseTranslations", b =>
                 {
                     b.HasOne("DataAccessLayer.Entities.Exercise", "Exercise")
@@ -484,6 +484,21 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ExerciseUserTemplate", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.Exercise", null)
+                        .WithMany()
+                        .HasForeignKey("ExercisesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Entities.UserTemplate", null)
+                        .WithMany()
+                        .HasForeignKey("UserTemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -550,11 +565,6 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entities.UserExercise", b =>
                 {
                     b.Navigation("UserExerciseSets");
-                });
-
-            modelBuilder.Entity("DataAccessLayer.Entities.UserTemplate", b =>
-                {
-                    b.Navigation("Exercises");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Workout", b =>

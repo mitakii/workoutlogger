@@ -28,5 +28,9 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>,  Guid>
         modelBuilder.Entity<ExerciseTranslations>()
             .HasIndex(et => new {et.ExerciseId, et.Language})
             .IsUnique();
+
+        modelBuilder.Entity<UserTemplate>()
+            .HasMany(t => t.Exercises)
+            .WithMany();
     }
 }

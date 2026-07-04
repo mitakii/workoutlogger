@@ -7,6 +7,5 @@ public class UserTemplate
     public string NameNormalized { get; set; }
     public string Description { get; set; }
     public Guid UserId { get; set; }
-    public Guid WorkoutId {get; set;}
     public ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
 }
