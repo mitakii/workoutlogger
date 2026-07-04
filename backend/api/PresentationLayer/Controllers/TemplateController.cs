@@ -23,7 +23,7 @@ public class TemplateController : ControllerBase
 
     [Authorize]
     [HttpPatch("applyTemplate")]
-    public async Task<IActionResult> ApplyTemplate([FromBody]ApplyTemplateRequest request)
+    public async Task<IActionResult> ApplyTemplate([FromBody] ApplyTemplateRequest request)
     {
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
@@ -33,7 +33,7 @@ public class TemplateController : ControllerBase
             return userLanguage.ToIActionResultErrors();
         
         var result = await _workoutTemplate
-            .ApplyTemplateAsync(userLanguage.Data!, request.NewWorkoutId, request.TemplateWorkoutId);
+            .ApplyTemplateAsync(userLanguage.Data!, request.WorkoutId, request.TemplateWorkoutId);
         
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
@@ -67,7 +67,7 @@ public class TemplateController : ControllerBase
     }
 
     [Authorize]
-    [HttpPatch("{templateId:guid}/deleteExercise/{exerciseId:guid}")]
+    [HttpDelete("{templateId:guid}/deleteExercise/{exerciseId:guid}")]
     public async Task<IActionResult> DeleteExercise(Guid templateId, Guid exerciseId)
     {
         var result = await _workoutTemplate.DeleteExerciseAsync(templateId, exerciseId);
@@ -76,7 +76,7 @@ public class TemplateController : ControllerBase
 
     [Authorize]
     [HttpPost("toTemplate")]
-    public async Task<IActionResult> WorkoutToTemplate([FromBody]CreateTemplateRequest request)
+    public async Task<IActionResult> WorkoutToTemplate([FromBody] CreateTemplateRequest request)
     {
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
@@ -90,7 +90,7 @@ public class TemplateController : ControllerBase
 
     [Authorize]
     [HttpGet("search")]
-    public async Task<IActionResult> SearchTemplate([FromBody] SearchRequest request)
+    public async Task<IActionResult> SearchTemplate([FromQuery] SearchRequest request)
     {
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
@@ -107,7 +107,7 @@ public class TemplateController : ControllerBase
     }
 
     [Authorize]
-    [HttpPatch("{templateId:guid}")]
+    [HttpPatch("update/{templateId:guid}")]
     public async Task<IActionResult> UpdateTemplate(Guid templateId, string name, string description)
     {
         var result = await _workoutTemplate.UpdateTemplateAsync(templateId, name, description);
@@ -116,7 +116,7 @@ public class TemplateController : ControllerBase
 
     [Authorize]
     [HttpGet("userTemplates")]
-    public async Task<IActionResult> GetTemplate(int page, int pageSize)
+    public async Task<IActionResult> GetTemplate([FromQuery] InitialDataRequest request)
     {
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
@@ -125,8 +125,23 @@ public class TemplateController : ControllerBase
         if(!userLanguage.Succeeded)
             return userLanguage.ToIActionResultErrors();
         
-        var result = await _workoutTemplate.GetUserTemplatesAsync(userId, page, pageSize, userLanguage.Data);
+        var result = await _workoutTemplate.GetUserTemplatesAsync(userId, request.Page, request.PageSize, userLanguage.Data);
         
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
+    }
+
+    [Authorize]
+    [HttpGet("userTemplate/{templateId:guid}")]
+    public async Task<IActionResult> GetUserTemplate(Guid templateId)
+    {
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
+        var userLanguage = await _userService.GetUserLanguageAsync(userId);
+        if(!userLanguage.Succeeded)
+            return userLanguage.ToIActionResultErrors();
+
+        var result = await _workoutTemplate.GetTemplateAsync(templateId, userLanguage.Data);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 }

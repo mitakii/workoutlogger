@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using BusinessLayer.Services;
 using DataAccessLayer.Data;
+using Microsoft.AspNetCore.HttpOverrides;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,11 +64,17 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                               ForwardedHeaders.XForwardedProto;
+});
 
 builder.Services.AddAuthorization();
 
 
 var app = builder.Build();
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -76,6 +83,11 @@ if (app.Environment.IsDevelopment())
         await SeedRoles.SeedRolesAsync(scope.ServiceProvider);
         await SeedAdmin.SeedAsync(scope.ServiceProvider);
     }
+}
+else
+{
+app.UseForwardedHeaders();
+    
 }
 
 app.UseHttpsRedirection();

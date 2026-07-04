@@ -7,13 +7,14 @@ public class Result<T>
     // field / error message 
     public IDictionary<string, string>? ErrorMessages { get; } 
     public ErrorCode Code { get; }
-    public bool Succeeded => Data != null;
+    public bool Succeeded { get; }
     public T? Data { get; }
     
     private Result(T data)
     {
         Data = data;
         ErrorMessages = new Dictionary<string, string>();
+        Succeeded = true;
     }
     
     private Result(ErrorCode errorCode, IDictionary<string, string> errors)
@@ -21,9 +22,10 @@ public class Result<T>
         Code = errorCode;
         Data = default(T);
         ErrorMessages = errors;
+        Succeeded = false;
     }
 
-    public static Result<T> Success(T data) => new Result<T>(data);
+    public static Result<T> Success(T data) => new(data);
     
     public static Result<T> Failed(ErrorCode code, IDictionary<string,string> errors) => new Result<T>(code, errors);
     public static Result<T> Failed(ErrorCode code, string error) =>

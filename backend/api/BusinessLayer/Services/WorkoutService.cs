@@ -147,14 +147,12 @@ public class WorkoutService : IWorkoutService
 
         if( workout.UserExercises
            .Select(ue => ue.RefExerciseId)
-           .Any(ueid => ueid == exerciseId))
+           .Contains(exerciseId))
             return Result<bool>.Failed(ErrorCode.BadRequest, "Exercise already exists");
 
         var exercise = await _context.Exercises.FindAsync(exerciseId);
         if(exercise == null)
             return  Result<bool>.Failed(ErrorCode.NotFound,"Exercise not found");
-
-
             
         var userExercise = new UserExercise
         {

@@ -111,7 +111,7 @@ public class WorkoutController : ControllerBase
 
         var result = await _workoutService.GetAllExercisesAsync(workoutId, userLanguage.Data!);
         
-        return result.Succeeded ? Ok(result) : result.ToIActionResultErrors();
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
     [Authorize]
