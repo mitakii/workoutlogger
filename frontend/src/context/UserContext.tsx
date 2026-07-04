@@ -50,7 +50,6 @@ const UserProvider = ({ children }: Props) => {
 
   const loginUser = async (username: string, password: string) => {
     try {
-      console.log({ username, password });
       await loginApi({ username, password });
     } catch (e) {
       throw e;

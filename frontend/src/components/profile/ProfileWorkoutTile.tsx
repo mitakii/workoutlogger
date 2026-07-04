@@ -44,12 +44,7 @@ const ProfileWorkoutTile = ({ session }: Props) => {
 
   const handleCreateTemplate = async () => {
     try {
-      var templateId = await createTemplate({
-        workoutId: session.workoutId,
-        name: date,
-        description: " ",
-      });
-      navigate(`/editTemplate/${templateId}`);
+      navigate(`/createTemplate/${session.workoutId}`);
     } catch (e) {}
   };
 
@@ -61,30 +56,34 @@ const ProfileWorkoutTile = ({ session }: Props) => {
           onOpenChange={setIsOpen}
           className="flex flex-col gap-2"
         >
-          <div className="flex items-center gap-4 px-2">
+          <div className="flex flex-row gap-4 items-center">
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="icon" className="size-8">
                 <ChevronsUpDown />
                 <span className="sr-only">Toggle details</span>
               </Button>
             </CollapsibleTrigger>
-            <h4 className="text-sm font-semibold">
-              {date} {days[day]}
-            </h4>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">☰</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-40" align="start">
-                <div>
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => handleCreateTemplate()}>
-                      Create Template
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="">
+              <h4 className="text-sm font-semibold">
+                {date} {days[day]}
+              </h4>
+            </div>
+            <div className="ml-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">☰</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-40" align="start">
+                  <div>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem onClick={() => handleCreateTemplate()}>
+                        Create Template
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
           <CollapsibleContent className="flex flex-col gap-2">
             {session.userExercises.map((exercise) => (

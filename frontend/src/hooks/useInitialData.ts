@@ -20,6 +20,5 @@ export const useInitialData = (
       }
     },
     enabled: Boolean(type),
-    staleTime: 60 * 1000,
   });
 };

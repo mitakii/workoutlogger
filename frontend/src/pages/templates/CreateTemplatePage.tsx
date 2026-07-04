@@ -8,19 +8,20 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useCreateTemplate } from "@/hooks/react-query";
+import { useCreateTemplate, useWorkoutToTemplate } from "@/hooks/react-query";
 import { createTemplateSchema } from "@/schemas/template.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type z from "zod";
 
 export type CreateTemplateInput = z.infer<typeof createTemplateSchema>;
 
 const CreateTemplatePage = () => {
-  const { mutateAsync: createTemplate } = useCreateTemplate();
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { mutateAsync: createTemplate } = useWorkoutToTemplate();
 
   const {
     register,
@@ -30,6 +31,9 @@ const CreateTemplatePage = () => {
     formState: { errors },
   } = useForm<CreateTemplateInput>({
     resolver: zodResolver(createTemplateSchema),
+    defaultValues: {
+      workoutId: id,
+    },
   });
 
   const handleCreateTemplate = async (form: CreateTemplateInput) => {

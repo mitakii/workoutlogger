@@ -7,6 +7,7 @@ type Props = {
   exercises: Exercise[];
   templateId: string;
 };
+
 const TemplateExerciseList = ({ exercises, templateId }: Props) => {
   const { mutateAsync: deleteTemplateExercise } =
     useDeleteTemplateExercise(templateId);

@@ -315,10 +315,12 @@ export const statusApi = async (): Promise<UserProfile | null> => {
 
 export const createWorkoutTemplate = async (
   name: string,
-  description: string
+  description: string,
+  workoutId: string
 ): Promise<string> => {
   try {
     const res = await api.post("/Template/createTemplate", {
+      WorkoutId: workoutId,
       name: name,
       description: description,
     });
@@ -338,8 +340,8 @@ export const deleteTemplate = async (templateId: string) => {
 
 export const applyTemplate = async (workoutId: string, templateId: string) => {
   try {
-    await api.put("Template/applyTemplate", {
-      newWorkoutId: workoutId,
+    await api.patch("Template/applyTemplate", {
+      WorkoutId: workoutId,
       TemplateWorkoutId: templateId,
     });
   } catch (e) {

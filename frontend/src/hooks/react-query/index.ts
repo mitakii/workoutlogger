@@ -27,6 +27,7 @@ import {
   deleteTemplateExercise,
   getUserTemplates,
   getUserTemplate,
+  applyTemplate,
 } from "./functions";
 import {
   type GetSessionsApi,
@@ -295,7 +296,7 @@ export const useStatus = () => {
 
 // templates
 
-export const useCreateTemplate = () => {
+export const useCreateTemplate = (workoutId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -304,7 +305,7 @@ export const useCreateTemplate = () => {
     }: {
       name: string;
       description: string;
-    }) => createWorkoutTemplate(name, description),
+    }) => createWorkoutTemplate(workoutId, name, description),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["UserTemplates"] });
     },
@@ -317,6 +318,7 @@ export const useDeleteTemplate = () => {
     mutationFn: (templateId: string) => deleteTemplate(templateId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["UserTemplates"] });
+      queryClient.invalidateQueries({ queryKey: ["initialData"] });
     },
   });
 };
@@ -330,10 +332,10 @@ export const useApplyTemplate = () => {
     }: {
       workoutId: string;
       templateId: string;
-    }) => createWorkoutTemplate(workoutId, templateId),
+    }) => applyTemplate(workoutId, templateId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["workout-session", "Current"],
+        queryKey: ["workout-session"],
       });
     },
   });

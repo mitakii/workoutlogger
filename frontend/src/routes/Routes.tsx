@@ -29,19 +29,13 @@ export const router = createBrowserRouter([
           {
             path: "session/:token",
             element: <WorkoutPage />,
-            handle: {
-              nav: [
-                { label: "Templates", to: "search/template" },
-                { label: "Create template", to: "createTemplate" },
-              ],
-            },
           },
           { path: "search/:type", element: <SearchPage /> },
           { path: "u/:token", element: <UserProfilePage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "searchPicker/:type/:id", element: <SearchPickerPage /> },
           { path: "editTemplate/:id", element: <TemplateEditPage /> },
-          { path: "createTemplate", element: <CreateTemplatePage /> },
+          { path: "createTemplate/:id", element: <CreateTemplatePage /> },
         ],
       },
 

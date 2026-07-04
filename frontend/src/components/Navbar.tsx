@@ -13,6 +13,7 @@ import {
 import { Button } from "./ui/button";
 import { useScrollDirection } from "@/hooks/scrollDirection";
 import type { NavAction } from "@/types/types";
+import { useEffect } from "react";
 
 type RouteHandle = {
   nav?: NavAction[];
@@ -69,16 +70,14 @@ const Navbar = () => {
                       Find user
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  {navOptions.map((opt) => (
+                  <DropdownMenuGroup>
                     <DropdownMenuItem
-                      key={opt.label}
-                      onClick={() => navigate(opt.to!)}
+                      onClick={() => navigate("search/template")}
                     >
-                      {opt.label}
+                      Templates
                     </DropdownMenuItem>
-                  ))}
-                  {navOptions.length > 0 && <DropdownMenuSeparator />}
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem onClick={logoutUser}>
                       Log out

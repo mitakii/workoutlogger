@@ -27,7 +27,7 @@ const TemplateEditPage = () => {
           <div>Add Exercise</div>
         </Link>
       </Button>
-      <Card>
+      <Card className="p-2 mt-2">
         <CardHeader>{data.name}</CardHeader>
         <CardDescription>{data.description}</CardDescription>
       </Card>
