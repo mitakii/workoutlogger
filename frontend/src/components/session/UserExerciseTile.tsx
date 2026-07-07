@@ -7,8 +7,15 @@ import {
 } from "../ui/card";
 import { Button } from "../ui/button";
 import type { UserExercise, UserSet } from "@/types/types";
-import { useAddUserSet } from "@/hooks/react-query";
+import { useAddUserSet, useDeleteUserExercise } from "@/hooks/react-query";
 import { UserSetTile } from "./UserSetTile";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 type Props = {
   sessionId: string;
@@ -17,6 +24,7 @@ type Props = {
 
 export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
   const { mutateAsync: addSet } = useAddUserSet(userExercise.id);
+  const { mutateAsync: deleteExercise } = useDeleteUserExercise();
 
   const handleAddSet = async () => {
     try {
@@ -33,13 +41,39 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
     }
   };
 
+  const handleDeleteExercise = async (exerciseId: string) => {
+    try {
+      await deleteExercise(exerciseId);
+    } catch (e) {
+      throw e;
+    }
+  };
+
   return (
     <Card className="mt-2">
       <CardHeader>
-        <div>
+        <div className="flex flex-row gap-4 items-center">
           <CardTitle>{userExercise.exerciseName} </CardTitle>
-          <CardDescription>{userExercise.exerciseDescription}</CardDescription>
+          <div className="ml-auto">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">☰</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-40" align="start">
+                <div>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      onClick={() => handleDeleteExercise(userExercise.id)}
+                    >
+                      Delete exercise
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
+        <CardDescription>{userExercise.exerciseDescription}</CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-col justify-center">

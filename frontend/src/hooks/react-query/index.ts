@@ -28,6 +28,7 @@ import {
   getUserTemplates,
   getUserTemplate,
   applyTemplate,
+  deleteUserExercise,
 } from "./functions";
 import {
   type GetSessionsApi,
@@ -63,7 +64,7 @@ export const useCreateSession = () => {
     mutationFn: () => createSession(),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["workout-session", "Current"],
+        queryKey: ["workout-session"],
       });
     },
   });
@@ -94,6 +95,19 @@ export const useAddUserExercise = () => {
       workoutId: string;
       exerciseId: string;
     }) => addUserExercise(workoutId, exerciseId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["workout-session", "Current"],
+      });
+    },
+  });
+};
+
+export const useDeleteUserExercise = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (exerciseId: string) => deleteUserExercise(exerciseId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["workout-session", "Current"],

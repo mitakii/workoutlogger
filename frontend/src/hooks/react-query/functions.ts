@@ -127,6 +127,15 @@ export const addUserSet = async (userSet: UserSet, userExerciseId: string) => {
   }
 };
 
+export const deleteUserExercise = async (exerciseId: string) => {
+  try {
+    const res = await api.delete(`/Workout/exercise/${exerciseId}`);
+    return res.data;
+  } catch (e) {
+    throw e;
+  }
+};
+
 export const updateUserSet = async (userSet: UserSet) => {
   try {
     const res = await api.patch(`/UserExercise/userSet/${userSet.id}`, userSet);
