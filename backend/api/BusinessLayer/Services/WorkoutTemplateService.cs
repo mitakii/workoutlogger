@@ -198,11 +198,13 @@ public class WorkoutTemplateService : IWorkoutTemplate
     public async Task<Result<bool>> DeleteExerciseAsync(Guid templateId, Guid exerciseId)
     {
         var template = await _context.UserTemplates
-            .FirstOrDefaultAsync(t => t.Id == templateId);
+            .Include(e => e.Exercises)
+            .FirstOrDefaultAsync(w => w.Id == templateId);
+
         if(template == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Template not found");
         
-        var exercise = await _context.Exercises.FirstOrDefaultAsync(w => w.Id == exerciseId);
+        var exercise = template.Exercises.FirstOrDefault(w => w.Id == exerciseId);
         if(exercise == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Exercise not found");
 

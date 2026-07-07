@@ -91,7 +91,7 @@ public class WorkoutController : ControllerBase
     }
     
     [Authorize]
-    [HttpDelete("{workoutId:guid}/exercise/{exerciseId:guid}")]
+    [HttpDelete("exercise/{exerciseId:guid}")]
     public async Task<IActionResult> RemoveUserExercise(Guid exerciseId)
     {
         var result = await _workoutService.RemoveUserExerciseAsync(exerciseId);
