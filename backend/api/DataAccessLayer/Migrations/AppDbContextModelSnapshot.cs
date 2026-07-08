@@ -198,6 +198,58 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("UserExerciseSet");
                 });
 
+            modelBuilder.Entity("DataAccessLayer.Entities.UserStatistics", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ConsecutiveWeeksActive")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("LongestStreak")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("MaxBenchPress")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("MaxDeadlift")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("MaxSquat")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("TotalDistanceKm")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("TotalExercises")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalMonthsStreak")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalSets")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("TotalVolume")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("TotalWorkouts")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserStatistics");
+                });
+
             modelBuilder.Entity("DataAccessLayer.Entities.UserTemplate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -232,7 +284,7 @@ namespace DataAccessLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("DateStarted")
+                    b.Property<DateTime>("LastEditedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
@@ -451,6 +503,17 @@ namespace DataAccessLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Exercise");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.UserStatistics", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.UserTemplate", b =>

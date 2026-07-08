@@ -19,6 +19,7 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>,  Guid>
     public DbSet<UserExerciseSet> UserExerciseSet { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<UserTemplate> UserTemplates { get; set; }
+    public DbSet<UserStatistics> UserStatistics { get; set; }
     
     
 
@@ -32,5 +33,6 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>,  Guid>
         modelBuilder.Entity<UserTemplate>()
             .HasMany(t => t.Exercises)
             .WithMany();
+        
     }
 }
