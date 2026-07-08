@@ -298,11 +298,8 @@ export const logoutApi = async () => {
 
 export const statusApi = async (): Promise<UserProfile | null> => {
   try {
-    const res = await axios.get<UserProfile>(
-      `${import.meta.env.VITE_API_URL}/status`,
-      {
-        withCredentials: true,
-      }
+    const res = await api.get<UserProfile>(
+      `${import.meta.env.VITE_API_URL}/status`
     );
     const user: UserProfile = {
       username: res.data.username,
@@ -313,9 +310,6 @@ export const statusApi = async (): Promise<UserProfile | null> => {
     };
     return user;
   } catch (e) {
-    if (axios.isAxiosError(e) && e.response?.status == 401) {
-      return null;
-    }
     throw e;
   }
 };

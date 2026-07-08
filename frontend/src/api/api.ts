@@ -1,46 +1,69 @@
-import axios from "axios";
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+
+interface QueueItem {
+  resolve: () => void;
+  reject: (error: unknown) => void;
+}
+
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: QueueItem[] = [];
 
 export const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}`,
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
-const processQueue = (error: any) => {
-  failedQueue.forEach((promise) => {
+const processQueue = (error?: unknown) => {
+  failedQueue.forEach(({ resolve, reject }) => {
     if (error) {
-      promise.reject(error);
+      reject(error);
     } else {
-      promise.resolve();
+      resolve();
     }
   });
+
   failedQueue = [];
 };
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as
+      | CustomAxiosRequestConfig
+      | undefined;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes("/refresh")
+    ) {
       originalRequest._retry = true;
 
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then(() => api(originalRequest));
       }
 
       isRefreshing = true;
+
       try {
         await api.post("/refresh");
-        processQueue(null);
+
+        processQueue();
 
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
