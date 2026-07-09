@@ -70,11 +70,15 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
                                ForwardedHeaders.XForwardedProto;
 });
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 builder.Services.AddAuthorization();
 
 
 var app = builder.Build();
 
+app.UseExceptionHandler("/error");
 
 if (app.Environment.IsDevelopment())
 {

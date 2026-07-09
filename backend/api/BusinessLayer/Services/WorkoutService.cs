@@ -32,7 +32,7 @@ public class WorkoutService : IWorkoutService
         var workout = new Workout
         {
             User =  user,
-            DateStarted = DateTime.UtcNow,
+            DateCreated = DateTime.UtcNow,
         };
         
         await _context.Workouts.AddAsync(workout);
@@ -40,7 +40,7 @@ public class WorkoutService : IWorkoutService
 
         return Result<WorkoutResponse>.Success(new WorkoutResponse
         {
-            StartTime =  workout.DateStarted,
+            StartTime =  workout.DateCreated,
             UserId = user.Id,
             WorkoutId = workout.Id,
         });
@@ -65,7 +65,7 @@ public class WorkoutService : IWorkoutService
             .Select(w => new
             {
                 w.Id,
-                w.DateStarted,
+                DateStarted = w.DateCreated,
                 w.UserId,
                 UserExercises =  w.UserExercises.Select(ue => new
                 {
@@ -120,7 +120,7 @@ public class WorkoutService : IWorkoutService
     {
         var lastWorkout = await _context.Workouts
             .Where(w => w.UserId == userId)
-            .OrderByDescending(w => w.DateStarted)
+            .OrderByDescending(w => w.DateCreated)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
@@ -234,14 +234,14 @@ public class WorkoutService : IWorkoutService
     {
         var workout = await _context.Workouts
             .AsNoTracking()
-            .OrderByDescending(w => w.DateStarted)
+            .OrderByDescending(w => w.DateCreated)
             .Where(w => w.User.UserName == request.Username)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(w => new
             {
                 w.Id,
-                w.DateStarted,
+                DateStarted = w.DateCreated,
                 w.UserId,
                 UserLanguage = w.User.Language,
                 UserExercises =  w.UserExercises.Select(ue => new
@@ -327,7 +327,7 @@ public class WorkoutService : IWorkoutService
         return Result<WorkoutResponse>.Success(new WorkoutResponse
         {
             WorkoutId = workout.Id,
-            StartTime = workout.DateStarted,
+            StartTime = workout.DateCreated,
             UserExercises = workout.UserExercises.Select(e => new UserExerciseGetResponse
             {
                 Id = e.Id,
