@@ -1,0 +1,14 @@
+namespace DataAccessLayer.Entities;
+
+public class DailyStatistics
+{
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
+    public User  User { get; set; }
+    
+    public DateTime Date { get; set; }
+    
+    public int TotalWorkouts { get; set; }
+    public double TotalVolume { get; set; }
+    public double TotalDistanceKm { get; set; }
+}

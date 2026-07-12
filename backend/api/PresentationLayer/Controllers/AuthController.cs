@@ -19,15 +19,18 @@ public class AuthController : ControllerBase
     private readonly ITokenService _tokenService;
     private readonly JwtOptions _jwtOptions;
     private readonly UserManager<User> _userManager;
-    
+    private readonly IStatisticsService _statistics;
+
     public AuthController(ILogger<AuthController> logger, 
         ITokenService tokenService,
         UserManager<User> userManager, 
-        IOptions<JwtOptions> jwtOptions)
+        IOptions<JwtOptions> jwtOptions,
+        IStatisticsService statistics)
     {
         _logger = logger;
         _tokenService = tokenService;
         _userManager = userManager;
+        _statistics = statistics;
         _jwtOptions = jwtOptions.Value;
     }
     
@@ -113,12 +116,18 @@ public class AuthController : ControllerBase
             Email = request.Email,
             Language =  request.Language,
         };
-        var result = await _userManager.CreateAsync(user, request.Password);
+        var userResult = await _userManager.CreateAsync(user, request.Password);
 
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
+        if (!userResult.Succeeded)
+            return BadRequest(userResult.Errors);
         
         await _userManager.AddToRoleAsync(user, "User");
+        
+        var statisticResult = await _statistics.CreateStatisticsAsync(user.Id);
+        
+        if (!statisticResult.Succeeded)
+            return statisticResult.ToIActionResultErrors();
+        
         return Ok();
     }
     

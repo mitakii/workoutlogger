@@ -42,28 +42,20 @@ public class UserService : IUserService
     public async Task<Result<UserGetResponse>> GetUserAsync(Guid userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null)
-            return Result<UserGetResponse>.Failed(ErrorCode.NotFound, "User not found");
-
-        return Result<UserGetResponse>.Success(MapToResponse(user));
+        return user == null ? Result<UserGetResponse>.Failed(ErrorCode.NotFound, "User not found") : Result<UserGetResponse>.Success(MapToResponse(user));
     }
 
     public async Task<Result<UserGetResponse>> GetUserByNameAsync(string username)
     {
         var user = await _userManager.FindByNameAsync(username);
-        if(user == null)
-            return Result<UserGetResponse>.Failed(ErrorCode.NotFound, "User not found");
-
-        return Result<UserGetResponse>.Success(MapToResponse(user));
+        return user == null ? Result<UserGetResponse>.Failed(ErrorCode.NotFound, "User not found") : Result<UserGetResponse>.Success(MapToResponse(user));
     }
 
     public async Task<Result<bool>> ChangeUsernameAsync(User user, string newUsername)
     {
         user.UserName = newUsername;
         var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded)
-            return Result<bool>.Failed(ErrorCode.BadRequest, "User not found");
-        return Result<bool>.Success(true);
+        return !result.Succeeded ? Result<bool>.Failed(ErrorCode.BadRequest, "User not found") : Result<bool>.Success(true);
     }
 
     public async Task<Result<PagedResult<UserGetResponse>>> GetPagedUsersAsync(string query, int pageIndex, int pageSize)

@@ -20,6 +20,8 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>,  Guid>
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<UserTemplate> UserTemplates { get; set; }
     public DbSet<UserStatistics> UserStatistics { get; set; }
+    public DbSet<DailyStatistics> DailyStatistics { get; set; }
+    public DbSet<ExerciseStatistics> ExerciseStatistics { get; set; }
     
     
 

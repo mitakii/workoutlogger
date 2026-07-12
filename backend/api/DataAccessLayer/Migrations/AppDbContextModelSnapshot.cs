@@ -22,6 +22,34 @@ namespace DataAccessLayer.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("DataAccessLayer.Entities.DailyStatistics", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("TotalDistanceKm")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("TotalVolume")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("TotalWorkouts")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DailyStatistics");
+                });
+
             modelBuilder.Entity("DataAccessLayer.Entities.Exercise", b =>
                 {
                     b.Property<Guid>("Id")
@@ -43,6 +71,54 @@ namespace DataAccessLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Exercises");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.ExerciseStatistics", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ExerciseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("LastTimeExecuted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("MaxDistanceKm")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("MaxDuration")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("MaxWeight")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("TotalDistanceKm")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("TotalDuration")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("TotalSets")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("TotalVolume")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("TotalWeight")
+                        .HasColumnType("double precision");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ExerciseStatistics");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.ExerciseTranslations", b =>
@@ -210,7 +286,7 @@ namespace DataAccessLayer.Migrations
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("LongestStreak")
+                    b.Property<int>("LongestWeekStreak")
                         .HasColumnType("integer");
 
                     b.Property<double>("MaxBenchPress")
@@ -226,9 +302,6 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("double precision");
 
                     b.Property<int>("TotalExercises")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TotalMonthsStreak")
                         .HasColumnType("integer");
 
                     b.Property<int>("TotalSets")
@@ -284,7 +357,7 @@ namespace DataAccessLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("LastEditedDate")
+                    b.Property<DateTime>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
@@ -462,6 +535,36 @@ namespace DataAccessLayer.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.DailyStatistics", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.ExerciseStatistics", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.Exercise", "Exercise")
+                        .WithMany()
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exercise");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.ExerciseTranslations", b =>

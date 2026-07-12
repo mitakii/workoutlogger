@@ -14,13 +14,17 @@ namespace BusinessLayer.Services;
 
 public class WorkoutService : IWorkoutService
 {
-    public readonly AppDbContext _context;
-    public readonly ITranslationRepository _translationRepo;
+    private readonly AppDbContext _context;
+    private readonly ITranslationRepository _translationRepo;
+    private readonly IStatisticsService _statistics;
 
-    public WorkoutService(AppDbContext context, ITranslationRepository translationRepository)
+    public WorkoutService(AppDbContext context,
+        ITranslationRepository translationRepository, 
+        IStatisticsService statistics)
     {
         _context = context;
         _translationRepo = translationRepository;
+        _statistics = statistics;
     }
     
     public async Task<Result<WorkoutResponse>> StartAsync(Guid userId)
@@ -38,6 +42,11 @@ public class WorkoutService : IWorkoutService
         await _context.Workouts.AddAsync(workout);
         await _context.SaveChangesAsync();
 
+        await _statistics.UpdateUserStatisticsAsync(user.Id, new()
+        {
+            TotalWorkouts = 1
+        });
+
         return Result<WorkoutResponse>.Success(new WorkoutResponse
         {
             StartTime =  workout.DateCreated,
@@ -48,9 +57,23 @@ public class WorkoutService : IWorkoutService
 
     public async Task<Result<bool>> DeleteAsync(Guid workoutId)
     {
-        var workout = await _context.Workouts.FindAsync(workoutId);
+        var workout = await _context.Workouts.Include(w => w.UserExercises)
+            .ThenInclude(ue => ue.UserExerciseSets)
+            .FirstOrDefaultAsync(w => w.Id == workoutId);
+        
         if (workout == null)
             return Result<bool>.Failed(ErrorCode.NotFound,"Workout not found");
+
+        var wSets = workout.UserExercises.SelectMany(ue => ue.UserExerciseSets).ToList();
+        
+        await _statistics.UpdateUserStatisticsAsync(workout.UserId, new UpdateUserStatisticDto()
+        {
+            TotalWorkouts = -1,
+            TotalExercises = workout.UserExercises.Count * -1,
+            TotalSets = wSets.Count * -1,
+            TotalVolume = wSets.Sum(s => s.Weight) * -1,
+        });
+        
         _context.Workouts.Remove(workout);
         await _context.SaveChangesAsync();
         
@@ -212,6 +235,7 @@ public class WorkoutService : IWorkoutService
         
         var translation =  await _translationRepo
             .GetExerciseTranslationsAsync(exerciseIds, language);
+        
 
         var result = workout.UserExercises.Select(e => new UserExerciseGetResponse
         {
