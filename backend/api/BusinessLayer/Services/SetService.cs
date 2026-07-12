@@ -4,17 +4,22 @@ using BusinessLayer.Exceptions;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
+using DataAccessLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services;
 
 public class SetService : IUserSetService
 {
-    public readonly AppDbContext _context;
-    
-    public SetService(AppDbContext context)
+    private readonly AppDbContext _context;
+    private readonly IBackgroundJobService _job;
+    private readonly IStatisticsRepository _statisticsRepository;
+
+    public SetService(AppDbContext context, IBackgroundJobService backgroundJobService, IStatisticsRepository statisticsRepository)
     {
         _context = context;
+        _job = backgroundJobService;
+        _statisticsRepository = statisticsRepository;
     }
     
     public async Task<Result<UserSetGetResponse>> GetUserSetAsync(Guid setId)
@@ -56,12 +61,19 @@ public class SetService : IUserSetService
 
     public async Task<Result<bool>> CreateUserSetAsync(Guid exerciseId, double weight, int reps)
     {
-       
-        var exercise = await _context.UserExercises
-            .Include(ue=> ue.UserExerciseSets)
-            .FirstOrDefaultAsync(e => e.Id == exerciseId);
+        var data = await _context.UserExercises
+            .AsNoTracking()
+            .Where(ue => ue.Id == exerciseId)
+            .Select(ue => new
+            {
+                ue.Id,
+                ue.UserExerciseSets,
+                workoutId = ue.Workout.Id,
+                date = ue.Workout.DateOnlyCreated,
+                userId = ue.Workout.UserId,
+            }).FirstOrDefaultAsync();
         
-        if(exercise == null)
+        if(data == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Exercise not found");
 
         var set = new UserExerciseSet()
@@ -69,18 +81,24 @@ public class SetService : IUserSetService
             Weight = weight,
             Reps = reps,
             ExerciseId = exerciseId,
-            Order = exercise.UserExerciseSets.Count()
+            Order = data.UserExerciseSets.Count
         };
         
-        exercise.UserExerciseSets.Add(set);
+        await _context.UserExerciseSet.AddAsync(set);
         await _context.SaveChangesAsync();
+        
+        await _statisticsRepository.MarkDirty(data.userId, data.date);
 
         return Result<bool>.Success(true);
     }
 
     public async Task<Result<bool>> UpdateUserSetAsync(Guid setId, double weight, int reps)
     {
-        var set = await _context.UserExerciseSet.FindAsync(setId);
+        var set =  await _context.UserExerciseSet
+            .Include(s => s.Exercise)
+            .ThenInclude(e => e.Workout)
+            .FirstOrDefaultAsync(s => s.Id == setId);
+        
         if(set == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Set not found");
         
@@ -89,16 +107,26 @@ public class SetService : IUserSetService
 
         _context.UserExerciseSet.Update(set);
         await _context.SaveChangesAsync();
+
+        await _statisticsRepository.MarkDirty(set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated);
+        
         return Result<bool>.Success(true);
     }
 
     public async Task<Result<string>> DeleteUserSetAsync(Guid setId)
     {
-        var set = await _context.UserExerciseSet.FindAsync(setId);
+        var set =  await _context.UserExerciseSet
+            .Include(s => s.Exercise)
+            .ThenInclude(e => e.Workout)
+            .FirstOrDefaultAsync(s => s.Id == setId);
+
         if(set == null)
             return Result<string>.Failed(ErrorCode.NotFound, "Set not found");
         _context.UserExerciseSet.Remove(set);
         await _context.SaveChangesAsync();
-         return Result<string>.Success("Set has been deleted");
+        
+        await _statisticsRepository.MarkDirty(set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated);
+        
+        return Result<string>.Success("Set has been deleted");
     }
 }

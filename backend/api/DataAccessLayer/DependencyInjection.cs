@@ -36,5 +36,6 @@ public static class DependencyInjection
         
         builder.Services.AddScoped<ITokenRepository, TokenRepository>();
         builder.Services.AddScoped<ITranslationRepository, TranslationRepository>();
+        builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
     } 
 }

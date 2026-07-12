@@ -1,4 +1,5 @@
 using DataAccessLayer.Entities;
+using DataAccessLayer.Statistics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>,  Guid>
     public DbSet<UserStatistics> UserStatistics { get; set; }
     public DbSet<DailyStatistics> DailyStatistics { get; set; }
     public DbSet<ExerciseStatistics> ExerciseStatistics { get; set; }
+    public DbSet<StatisticsUpdateQueue>  StatisticsUpdateQueues { get; set; }
     
     
 
@@ -35,6 +37,9 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>,  Guid>
         modelBuilder.Entity<UserTemplate>()
             .HasMany(t => t.Exercises)
             .WithMany();
-        
+
+        modelBuilder.Entity<DailyStatistics>()
+            .Ignore(t => t.Workouts);
+
     }
 }

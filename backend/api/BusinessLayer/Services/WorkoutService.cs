@@ -6,6 +6,7 @@ using BusinessLayer.Helpers;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
+using DataAccessLayer.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -17,14 +18,16 @@ public class WorkoutService : IWorkoutService
     private readonly AppDbContext _context;
     private readonly ITranslationRepository _translationRepo;
     private readonly IStatisticsService _statistics;
+    private readonly IStatisticsRepository _statisticsRepository;
 
     public WorkoutService(AppDbContext context,
         ITranslationRepository translationRepository, 
-        IStatisticsService statistics)
+        IStatisticsService statistics, IStatisticsRepository statisticsRepository)
     {
         _context = context;
         _translationRepo = translationRepository;
         _statistics = statistics;
+        _statisticsRepository = statisticsRepository;
     }
     
     public async Task<Result<WorkoutResponse>> StartAsync(Guid userId)
@@ -36,20 +39,23 @@ public class WorkoutService : IWorkoutService
         var workout = new Workout
         {
             User =  user,
-            DateCreated = DateTime.UtcNow,
+            DateOnlyCreated = WorkoutDate.GetNormalizedDate(DateTime.UtcNow),
+            ExactTimeCreated = DateTime.UtcNow
         };
         
         await _context.Workouts.AddAsync(workout);
         await _context.SaveChangesAsync();
 
-        await _statistics.UpdateUserStatisticsAsync(user.Id, new()
-        {
-            TotalWorkouts = 1
-        });
+        var exist = await _statistics.DailyStatisticsExistAsync(userId, workout.DateOnlyCreated);
+
+        if (exist.Data)
+            await _statisticsRepository.MarkDirty(workout.UserId, workout.DateOnlyCreated);
+        else
+            await _statistics.CreateDailyStatisticsAsync(userId, workout.DateOnlyCreated);
 
         return Result<WorkoutResponse>.Success(new WorkoutResponse
         {
-            StartTime =  workout.DateCreated,
+            StartTime =  workout.DateOnlyCreated,
             UserId = user.Id,
             WorkoutId = workout.Id,
         });
@@ -63,19 +69,11 @@ public class WorkoutService : IWorkoutService
         
         if (workout == null)
             return Result<bool>.Failed(ErrorCode.NotFound,"Workout not found");
-
-        var wSets = workout.UserExercises.SelectMany(ue => ue.UserExerciseSets).ToList();
-        
-        await _statistics.UpdateUserStatisticsAsync(workout.UserId, new UpdateUserStatisticDto()
-        {
-            TotalWorkouts = -1,
-            TotalExercises = workout.UserExercises.Count * -1,
-            TotalSets = wSets.Count * -1,
-            TotalVolume = wSets.Sum(s => s.Weight) * -1,
-        });
         
         _context.Workouts.Remove(workout);
         await _context.SaveChangesAsync();
+        
+        await _statisticsRepository.MarkDirty(workout.UserId, workout.DateOnlyCreated);
         
         return Result<bool>.Success(true);
     }
@@ -88,7 +86,7 @@ public class WorkoutService : IWorkoutService
             .Select(w => new
             {
                 w.Id,
-                DateStarted = w.DateCreated,
+                DateStarted = w.DateOnlyCreated,
                 w.UserId,
                 UserExercises =  w.UserExercises.Select(ue => new
                 {
@@ -143,7 +141,7 @@ public class WorkoutService : IWorkoutService
     {
         var lastWorkout = await _context.Workouts
             .Where(w => w.UserId == userId)
-            .OrderByDescending(w => w.DateCreated)
+            .OrderByDescending(w => w.ExactTimeCreated)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
@@ -195,9 +193,10 @@ public class WorkoutService : IWorkoutService
         };
         
         userExercise.UserExerciseSets.Add(newSet);
-        
         await _context.SaveChangesAsync();
-        var translation = await _translationRepo.GetExerciseTranslationAsync(exercise.Id, language);
+
+        await _statisticsRepository.MarkDirty(workout.UserId, workout.DateOnlyCreated);
+        
         return Result<bool>.Success(true);
     }
 
@@ -258,14 +257,14 @@ public class WorkoutService : IWorkoutService
     {
         var workout = await _context.Workouts
             .AsNoTracking()
-            .OrderByDescending(w => w.DateCreated)
+            .OrderByDescending(w => w.DateOnlyCreated)
             .Where(w => w.User.UserName == request.Username)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(w => new
             {
                 w.Id,
-                DateStarted = w.DateCreated,
+                DateStarted = w.DateOnlyCreated,
                 w.UserId,
                 UserLanguage = w.User.Language,
                 UserExercises =  w.UserExercises.Select(ue => new
@@ -324,49 +323,18 @@ public class WorkoutService : IWorkoutService
 
     public async Task<Result<bool>> RemoveUserExerciseAsync(Guid exerciseId)
     {
-        var exercise = await _context.UserExercises.FindAsync(exerciseId);
+        var exercise = await _context.UserExercises
+            .Include(e => e.Workout)
+            .FirstOrDefaultAsync();
 
         if (exercise == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Exercise not found");
         
         _context.UserExercises.Remove(exercise);
         await _context.SaveChangesAsync();
+        
+        await _statisticsRepository.MarkDirty(exercise.Workout.UserId, exercise.Workout.DateOnlyCreated);
+        
         return Result<bool>.Success(true);
-    }
-
-
-
-    private async Task<Result<WorkoutResponse>> MapToWorkoutResponseAsync(Workout workout, string lang)
-    {
-        var language = lang == "" ? "en" : lang;
-        
-        var exerciseIds = workout.UserExercises
-            .Select(ue => ue.RefExerciseId)
-            .Distinct()
-            .ToList();
-        
-        var translation =  await _translationRepo
-            .GetExerciseTranslationsAsync(exerciseIds, language);
-        
-        return Result<WorkoutResponse>.Success(new WorkoutResponse
-        {
-            WorkoutId = workout.Id,
-            StartTime = workout.DateCreated,
-            UserExercises = workout.UserExercises.Select(e => new UserExerciseGetResponse
-            {
-                Id = e.Id,
-                ExerciseName = translation[e.RefExerciseId].Name,
-                ExerciseDescription = translation[e.RefExerciseId].Description,
-                ImageUrl = e.RefExercise.MediaUrl,
-                Order = e.Order,
-                Sets = e.UserExerciseSets.Select(s => new UserExerciseSetResponse
-                {
-                    Reps = s.Reps,
-                    Weight = s.Weight,
-                    Order = s.Order,
-                    Id = s.Id
-                }).OrderBy(s => s.Order).ToList()
-            }).OrderByDescending(ue => ue.Order).ToList()
-        });
     }
 }

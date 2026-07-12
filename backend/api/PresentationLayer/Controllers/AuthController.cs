@@ -20,17 +20,19 @@ public class AuthController : ControllerBase
     private readonly JwtOptions _jwtOptions;
     private readonly UserManager<User> _userManager;
     private readonly IStatisticsService _statistics;
+    private readonly IBackgroundJobService _jobs;
 
     public AuthController(ILogger<AuthController> logger, 
         ITokenService tokenService,
         UserManager<User> userManager, 
         IOptions<JwtOptions> jwtOptions,
-        IStatisticsService statistics)
+        IStatisticsService statistics, IBackgroundJobService jobs)
     {
         _logger = logger;
         _tokenService = tokenService;
         _userManager = userManager;
         _statistics = statistics;
+        _jobs = jobs;
         _jwtOptions = jwtOptions.Value;
     }
     
@@ -123,10 +125,7 @@ public class AuthController : ControllerBase
         
         await _userManager.AddToRoleAsync(user, "User");
         
-        var statisticResult = await _statistics.CreateStatisticsAsync(user.Id);
-        
-        if (!statisticResult.Succeeded)
-            return statisticResult.ToIActionResultErrors();
+        _jobs.Enqueue<IStatisticsService>(x => x.CreateStatisticsAsync(user.Id));
         
         return Ok();
     }

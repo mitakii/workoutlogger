@@ -6,7 +6,8 @@ namespace DataAccessLayer.Entities;
 public class Workout
 {
     public Guid Id { get; set; }
-    public DateTime DateCreated { get; set; }
+    public DateOnly DateOnlyCreated { get; set; }
+    public DateTime ExactTimeCreated { get; set; }
 
     [ForeignKey("UserId")]
     public User User { get; set; }

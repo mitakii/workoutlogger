@@ -28,11 +28,17 @@ namespace DataAccessLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
 
                     b.Property<double>("TotalDistanceKm")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("TotalExercises")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalSets")
+                        .HasColumnType("integer");
 
                     b.Property<double>("TotalVolume")
                         .HasColumnType("double precision");
@@ -82,8 +88,8 @@ namespace DataAccessLayer.Migrations
                     b.Property<Guid>("ExerciseId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("LastTimeExecuted")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("LastTimeExecuted")
+                        .HasColumnType("date");
 
                     b.Property<double>("MaxDistanceKm")
                         .HasColumnType("double precision");
@@ -357,7 +363,10 @@ namespace DataAccessLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateOnly>("DateOnlyCreated")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("ExactTimeCreated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
@@ -390,6 +399,29 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Statistics.StatisticsUpdateQueue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("Dirty")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StatisticsUpdateQueues");
                 });
 
             modelBuilder.Entity("ExerciseUserTemplate", b =>

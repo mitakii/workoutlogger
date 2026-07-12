@@ -4,9 +4,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json;
+using BusinessLayer.Interfaces;
 using BusinessLayer.Services;
 using DataAccessLayer.Data;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.HttpOverrides;
+using PresentationLayer.Filters;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +19,8 @@ var issuer = builder.Configuration["JWTOptions:Issuer"] ?? throw new InvalidOper
 var audience = builder.Configuration["JWTOptions:Audience"] ?? throw new InvalidOperationException("audience");
 var key = builder.Configuration["JWTOptions:SigningKey"] ?? throw new InvalidOperationException("key");
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
@@ -31,6 +37,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
+
 builder.ConfigureDataAccessServices();
 builder.ConfigureBusinessServices();
 
@@ -70,23 +77,50 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
                                ForwardedHeaders.XForwardedProto;
 });
 
+builder.Services.AddHangfire(config =>
+{
+    config.UsePostgreSqlStorage(
+        options => options.UseNpgsqlConnection(
+            builder.Configuration.GetConnectionString("DefaultConnection")),
+        new PostgreSqlStorageOptions()
+        {
+            InvisibilityTimeout =  TimeSpan.FromMinutes(5),
+            QueuePollInterval = TimeSpan.FromSeconds(10)
+        });
+});
+
+builder.Services.AddHangfireServer();
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 builder.Services.AddAuthorization();
 
-
 var app = builder.Build();
+
+app.MapHangfireDashboard("/hangfire"/*, new DashboardOptions()
+{
+    Authorization = new []
+    {
+        new AuthorizationFilter()
+    }
+}*/);
+
+RecurringJob.AddOrUpdate<IStatisticsService>(
+    "statistics-processor",
+    s => s.ProcessDirtyStatistics(),
+    Cron.Minutely);
 
 app.UseExceptionHandler("/error");
 
 if (app.Environment.IsDevelopment())
 {
-    using (var scope = app.Services.CreateScope())
-    {
-        await SeedRoles.SeedRolesAsync(scope.ServiceProvider);
-        await SeedAdmin.SeedAsync(scope.ServiceProvider);
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    using var scope = app.Services.CreateScope();
+    await SeedRoles.SeedRolesAsync(scope.ServiceProvider);
+    await SeedAdmin.SeedAsync(scope.ServiceProvider);
 }
 else
 {

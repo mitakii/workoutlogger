@@ -21,5 +21,5 @@ public class ExerciseStatistics
     public double TotalDuration { get; set; }
     public double TotalDistanceKm { get; set; }
     
-    public DateTime LastTimeExecuted { get; set; }
+    public DateOnly LastTimeExecuted { get; set; }
 }

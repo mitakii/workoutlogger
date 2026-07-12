@@ -6,6 +6,7 @@ namespace PresentationLayer.Controllers;
 public class ErrorController : ControllerBase
 {
     [Route("/error")]
+    [HttpGet]
     public IActionResult Error()
     {
         return Problem(title: "An error occured", statusCode: 500);

@@ -5,6 +5,7 @@ using BusinessLayer.Exceptions;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
+using DataAccessLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services;
@@ -12,10 +13,26 @@ namespace BusinessLayer.Services;
 public class StatisticsService : IStatisticsService
 {
     private readonly AppDbContext _context;
+    private readonly IStatisticsRepository _statisticsRepository;
 
-    public StatisticsService(AppDbContext context)
+    public StatisticsService(AppDbContext context, IStatisticsRepository statisticsRepository)
     {
         _context = context;
+        _statisticsRepository = statisticsRepository;
+    }
+
+    public async Task ProcessDirtyStatistics()
+    {
+        var items = await _statisticsRepository.GetDirtyStatisticsOlderThan(TimeSpan.FromMinutes(5));
+
+        foreach (var item in items)
+        {
+            await RecalculateDailyStatisticsAsync(item.UserId, item.Date);
+            
+            await RecalculateUserStatisticsAsync(item.UserId);
+            
+            await _statisticsRepository.MarkClean(item.UserId, item.Date);
+        }
     }
 
     public async Task<Result<GetUserStatisticResponse>> GetUserStatisticsAsync(Guid userId)
@@ -71,108 +88,36 @@ public class StatisticsService : IStatisticsService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> UpdateUserStatisticsAsync(Guid userId, UpdateUserStatisticDto newUserStatistic)
-    {
-        var userStatistic = await _context.UserStatistics.FirstOrDefaultAsync(us => us.UserId == userId);
-
-        if (userStatistic == null)
-            return Result<bool>.Failed(ErrorCode.NotFound, "User statistic not found");
-
-        userStatistic.TotalWorkouts += newUserStatistic.TotalWorkouts;
-        userStatistic.TotalExercises += newUserStatistic.TotalExercises;
-        userStatistic.TotalSets += newUserStatistic.TotalSets;
-        userStatistic.TotalVolume += newUserStatistic.TotalVolume;
-        userStatistic.TotalDistanceKm += newUserStatistic.TotalDistanceKm;
-
-        userStatistic.LongestWeekStreak += newUserStatistic.LongestStreak;
-        userStatistic.ConsecutiveWeeksActive += newUserStatistic.ConsecutiveWeeksActive;
-
-        userStatistic.MaxBenchPress += newUserStatistic.MaxBenchPress;
-        userStatistic.MaxDeadlift += newUserStatistic.MaxDeadlift;
-        userStatistic.MaxSquat += newUserStatistic.MaxSquat;
-
-        userStatistic.LastUpdated = DateTime.UtcNow;
-
-        _context.UserStatistics.Update(userStatistic);
-        await _context.SaveChangesAsync();
-
-        return Result<bool>.Success(true);
-    }
-
     public async Task<Result<bool>> RecalculateUserStatisticsAsync(Guid userId)
     {
         var statistics = await _context.UserStatistics.FirstOrDefaultAsync(us => us.UserId == userId);
+
         if (statistics == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "User statistic not found");
-
-        var data = await _context.Workouts
+        
+        var data = await _context.DailyStatistics
             .AsNoTracking()
             .Where(w => w.UserId == userId)
-            .Select(w => new
-            {
-                w.Id,
-                LastEditedDate = w.DateCreated,
-                UserExercises = w.UserExercises.Select(ue => new
-                {
-                    ue.Id,
-                    ExerciseSets = ue.UserExerciseSets.Select(s => new
-                    {
-                        s.Id,
-                        s.Weight,
-                        s.Reps
-                    }).ToList()
-                }).ToList()
-            }).ToListAsync();
+            .ToListAsync();
 
         if (data.Count == 0)
             return Result<bool>.Failed(ErrorCode.NotFound, "No data for statistics");
 
         statistics.LastUpdated = DateTime.UtcNow;
-        statistics.TotalWorkouts = data.Count;
+        statistics.TotalWorkouts = data.Sum(d => d.TotalWorkouts);
+        
+        statistics.TotalExercises = data.Sum(d => d.TotalExercises);
 
-        var exercises = data
-            .SelectMany(w => w.UserExercises).ToList();
-
-        statistics.TotalExercises = exercises.Count;
-
-        var sets = exercises
-            .SelectMany(s => s.ExerciseSets).ToList();
-
-        statistics.TotalSets = sets.Count;
-        statistics.TotalVolume = sets.Sum(s => s.Weight);
-
-        var longestWeekStreak = 0;
-        var currentWeekStreak = 0;
-        DateTime? prev = null;
-
-        foreach (var week in data
-                     .Select(w => w.LastEditedDate)
-                     .Select(d => ISOWeek.ToDateTime(
-                         ISOWeek.GetYear(d),
-                         ISOWeek.GetWeekOfYear(d),
-                         DayOfWeek.Monday))
-                     .Distinct()
-                     .OrderBy(d => d))
-        {
-            if (prev == null)
-                currentWeekStreak = 1;
-            else if ((week - prev.Value).Days == 7)
-                currentWeekStreak++;
-            else
-                currentWeekStreak = 1;
-            longestWeekStreak = Math.Max(longestWeekStreak, currentWeekStreak);
-            prev = week;
-        }
-
-        statistics.ConsecutiveWeeksActive = currentWeekStreak;
-        statistics.LongestWeekStreak = longestWeekStreak;
+        statistics.TotalSets = data.Sum(d => d.TotalSets);
+        statistics.TotalVolume = data.Sum(d => d.TotalVolume);
 
         _context.UserStatistics.Update(statistics);
         await _context.SaveChangesAsync();
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<List<DailyStatisticsGetResponse>>> GetDailyStatisticsRangeAsync(Guid userId, DateTime start, DateTime end)
+    public async Task<Result<List<DailyStatisticsGetResponse>>> GetDailyStatisticsRangeAsync
+        (Guid userId, DateOnly start, DateOnly end)
     {
         var data = await _context.DailyStatistics
             .Where(s => s.UserId == userId && s.Date >= start && s.Date <= end).ToListAsync();
@@ -193,7 +138,7 @@ public class StatisticsService : IStatisticsService
         return Result<List<DailyStatisticsGetResponse>>.Success(result);
     }
 
-    public async Task<Result<DailyStatisticsGetResponse>> GetDailyStatisticsAsync(Guid userId, DateTime date)
+    public async Task<Result<DailyStatisticsGetResponse>> GetDailyStatisticsAsync(Guid userId, DateOnly date)
     {
         var data = await _context.DailyStatistics
             .FirstOrDefaultAsync(s => s.UserId == userId && s.Date == date);
@@ -211,7 +156,7 @@ public class StatisticsService : IStatisticsService
         });
     }
 
-    public async Task<Result<bool>> CreateDailyStatisticsAsync(Guid userId, DateTime date)
+    public async Task<Result<bool>> CreateDailyStatisticsAsync(Guid userId, DateOnly date)
     {
         var statistic = new DailyStatistics
         {
@@ -226,7 +171,7 @@ public class StatisticsService : IStatisticsService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> DeleteDailyStatisticsAsync(DateTime date)
+    public async Task<Result<bool>> DeleteDailyStatisticsAsync(DateOnly date)
     {
         var statistic = await _context.DailyStatistics
             .FirstOrDefaultAsync(s => s.Date == date);
@@ -248,61 +193,7 @@ public class StatisticsService : IStatisticsService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> UpdateDailyStatisticsAsync(Guid userId, UpdateDailyStatisticsDto newDailyStatistic)
-    {
-        var statistic = await _context.DailyStatistics
-            .FirstOrDefaultAsync(s => s.UserId == userId && s.Date == newDailyStatistic.Date);
-        
-        if (statistic == null)
-            return  Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
-        
-        statistic.TotalDistanceKm += newDailyStatistic.TotalDistanceKm;
-        statistic.TotalVolume += newDailyStatistic.TotalVolume;
-        statistic.TotalWorkouts += newDailyStatistic.TotalWorkouts;
-        await _context.SaveChangesAsync();
-        return Result<bool>.Success(true);
-    }
-
-    public async Task<Result<bool>> RecalculateDailyStatisticsAsync(Guid userId, Guid statisticId)
-    {
-        var statistic = await  _context.DailyStatistics
-            .FirstOrDefaultAsync(s => s.UserId == userId && s.Id == statisticId);
-        
-        if (statistic == null)
-            return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
-
-        var workouts = await _context.Workouts
-            .AsNoTracking()
-            .Where(w => w.UserId == userId && w.DateCreated == statistic.Date)
-            .Select(w => new
-            {
-                UserExercise = w.UserExercises.Select(ue => new
-                {
-                    UserExerciseSets = ue.UserExerciseSets.Select(s => new
-                    {
-                        s.Reps,
-                        s.Weight
-                    })
-                })
-            })
-            .ToListAsync();
-
-        statistic.TotalWorkouts = workouts.Count;
-        
-        statistic.TotalVolume = workouts
-            .SelectMany(w => w.UserExercise)
-            .SelectMany(ue => ue.UserExerciseSets)
-            .Sum(ue => ue.Weight *  ue.Reps);
-        
-        // todo: add types to exercises
-        // statistic.TotalDistanceKm =
-        
-        _context.DailyStatistics.Update(statistic);
-        await _context.SaveChangesAsync();
-        return Result<bool>.Success(true);
-    }
-
-    public async Task<Result<bool>> RecalculateDailyStatisticsAsync(Guid userId, DateTime date)
+    public async Task<Result<bool>> RecalculateDailyStatisticsAsync(Guid userId, DateOnly date)
     {
         var statistic = await  _context.DailyStatistics
             .FirstOrDefaultAsync(s => s.UserId == userId && s.Date == date);
@@ -312,7 +203,7 @@ public class StatisticsService : IStatisticsService
 
         var workouts = await _context.Workouts
             .AsNoTracking()
-            .Where(w => w.UserId == userId && w.DateCreated == statistic.Date)
+            .Where(w => w.UserId == userId && w.DateOnlyCreated == statistic.Date)
             .Select(w => new
             {
                 UserExercise = w.UserExercises.Select(ue => new
@@ -327,17 +218,34 @@ public class StatisticsService : IStatisticsService
             .ToListAsync();
 
         statistic.TotalWorkouts = workouts.Count;
+        var exercises = workouts
+            .SelectMany(w => w.UserExercise).ToList();
         
-        statistic.TotalVolume = workouts
-            .SelectMany(w => w.UserExercise)
-            .SelectMany(ue => ue.UserExerciseSets)
+        var sets = exercises
+            .SelectMany(ue => ue.UserExerciseSets).ToList();
+        
+        statistic.TotalVolume = sets
             .Sum(ue => ue.Weight *  ue.Reps);
+
+
+        statistic.TotalSets = sets.Count;
+        statistic.TotalExercises = exercises.Count;
         
         // todo: add types to exercises
         // statistic.TotalDistanceKm =
         
         _context.DailyStatistics.Update(statistic);
         await _context.SaveChangesAsync();
+        return Result<bool>.Success(true);
+    }
+
+    public async Task<Result<bool>> DailyStatisticsExistAsync(Guid userId, DateOnly date)
+    {
+        var statistic = await  _context.DailyStatistics
+            .FirstOrDefaultAsync(s => s.UserId == userId && s.Date == date);
+        
+        if (statistic == null)
+            return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
         return Result<bool>.Success(true);
     }
 
@@ -397,32 +305,6 @@ public class StatisticsService : IStatisticsService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> UpdateExerciseStatisticsAsync(Guid userId, UpdateExerciseStatisticsDto exerciseStatistic)
-    {
-        var statistic = await _context.ExerciseStatistics
-            .FirstOrDefaultAsync(s => 
-                s.UserId == userId && s.ExerciseId == exerciseStatistic.ExerciseId);
-        
-        if (statistic == null)
-            return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
-
-        statistic.MaxWeight = exerciseStatistic.MaxWeight == 0 ? 0 : exerciseStatistic.MaxWeight;
-        statistic.MaxDuration = exerciseStatistic.MaxDuration == 0 ? 0 : exerciseStatistic.MaxDuration;
-        statistic.MaxDistanceKm = exerciseStatistic.MaxDistanceKm == 0 ? 0 : exerciseStatistic.MaxDistanceKm;
-        
-        statistic.TotalWeight += exerciseStatistic.TotalWeight;
-        statistic.TotalSets += exerciseStatistic.TotalSets;
-        statistic.TotalVolume += exerciseStatistic.TotalVolume;
-        
-        statistic.TotalDuration += exerciseStatistic.TotalDuration;
-        statistic.TotalDistanceKm += exerciseStatistic.TotalDistanceKm;
-
-        statistic.LastTimeExecuted = DateTime.UtcNow;
-        
-        await _context.SaveChangesAsync();
-        return Result<bool>.Success(true);
-    }
-
     public async Task<Result<bool>> RecalculateExerciseStatisticsAsync(Guid userId, Guid exerciseId)
     {
         var statistic = _context.ExerciseStatistics
@@ -473,7 +355,7 @@ public class StatisticsService : IStatisticsService
             .Select(w => new
             {
                 w.Id,
-                LastEditedDate = w.DateCreated,
+                LastEditedDate = w.DateOnlyCreated,
             }).ToListAsync();
         
         if (data.Count == 0)
@@ -481,23 +363,25 @@ public class StatisticsService : IStatisticsService
         
         var longestWeekStreak = 0;
         var currentWeekStreak = 0;
-        DateTime? prev = null;
+        DateOnly? prev = null;
 
         foreach (var week in data
-                     .Select(w => w.LastEditedDate)
-                     .Select(d => ISOWeek.ToDateTime(
-                         ISOWeek.GetYear(d),
-                         ISOWeek.GetWeekOfYear(d),
-                         DayOfWeek.Monday))
+                     .Select(w => w.LastEditedDate.ToDateTime(TimeOnly.MinValue))
+                     .Select(d => DateOnly.FromDateTime(
+                         ISOWeek.ToDateTime(
+                             ISOWeek.GetYear(d),
+                             ISOWeek.GetWeekOfYear(d),
+                             DayOfWeek.Monday)))
                      .Distinct()
                      .OrderBy(d => d))
         {
             if (prev == null)
                 currentWeekStreak = 1;
-            else if ((week - prev.Value).Days == 7)
+            else if (week.DayNumber - prev.Value.DayNumber == 7)
                 currentWeekStreak++;
             else
                 currentWeekStreak = 1;
+
             longestWeekStreak = Math.Max(longestWeekStreak, currentWeekStreak);
             prev = week;
         }
