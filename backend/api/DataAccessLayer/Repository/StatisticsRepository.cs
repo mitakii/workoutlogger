@@ -18,14 +18,15 @@ public class StatisticsRepository : IStatisticsRepository
     {
         var threshold = DateTime.UtcNow.Subtract(timespan);
         return await _context.StatisticsUpdateQueues
-            .Where(x => x.Dirty && x.LastModified <= threshold)
+            .Where(x => x.IsDirty && x.LastModified <= threshold)
             .ToListAsync();
     }
 
-    public async Task MarkDirty(Guid userId, DateOnly date)
+    public async Task MarkDirty(Guid userId, DateOnly date, Guid exerciseId)
     {
         var item = await _context.StatisticsUpdateQueues
-            .FirstOrDefaultAsync(s => s.UserId == userId && s.Date == date);
+            .FirstOrDefaultAsync(s => 
+                s.UserId == userId && s.Date == date && s.RefExerciseId == exerciseId);
         
         if (item == null)
         {
@@ -33,24 +34,26 @@ public class StatisticsRepository : IStatisticsRepository
             {
                 UserId = userId,
                 Date = date,
+                RefExerciseId =  exerciseId,
             };
             _context.StatisticsUpdateQueues.Add(item);
         }
 
-        item.Dirty = true;
+        item.IsDirty = true;
         item.LastModified = DateTime.UtcNow;
         await _context.SaveChangesAsync();
     }
 
-    public async Task MarkClean(Guid userId, DateOnly date)
+    public async Task MarkClean(Guid userId, DateOnly date,  Guid exerciseId)
     {
         var item = await _context.StatisticsUpdateQueues
-            .FirstOrDefaultAsync(s => s.UserId == userId && s.Date == date);
+            .FirstOrDefaultAsync(s => 
+                s.UserId == userId && s.Date == date && s.RefExerciseId == exerciseId);
 
         if (item == null)
             return;
 
-        item.Dirty = false;
+        item.IsDirty = false;
         await _context.SaveChangesAsync();
     }
 }

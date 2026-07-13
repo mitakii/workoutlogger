@@ -23,15 +23,23 @@ public class StatisticsService : IStatisticsService
 
     public async Task ProcessDirtyStatistics()
     {
-        var items = await _statisticsRepository.GetDirtyStatisticsOlderThan(TimeSpan.FromMinutes(5));
+        // todo: in prod change to +-5 min
+        var items = await _statisticsRepository
+            .GetDirtyStatisticsOlderThan(TimeSpan.FromMinutes(1));
 
         foreach (var item in items)
         {
+            if (item.RefExerciseId != Guid.Empty)
+            {
+                await RecalculateExerciseStatisticsAsync(item.UserId, item.RefExerciseId);
+                continue;
+            }
+            
             await RecalculateDailyStatisticsAsync(item.UserId, item.Date);
             
             await RecalculateUserStatisticsAsync(item.UserId);
             
-            await _statisticsRepository.MarkClean(item.UserId, item.Date);
+            await _statisticsRepository.MarkClean(item.UserId, item.Date, item.RefExerciseId);
         }
     }
 
@@ -277,14 +285,7 @@ public class StatisticsService : IStatisticsService
         {
             ExerciseId = exerciseId,
             UserId = userId,
-            TotalWeight = 0,
             TotalSets = 1,
-            TotalDistanceKm = 0,
-            TotalVolume = 0,
-            TotalDuration = 0,
-            MaxDistanceKm = 0,
-            MaxDuration = 0,
-            MaxWeight = 0
         };
         
         await  _context.ExerciseStatistics.AddAsync(statistic);
@@ -305,17 +306,17 @@ public class StatisticsService : IStatisticsService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> RecalculateExerciseStatisticsAsync(Guid userId, Guid exerciseId)
+    public async Task<Result<bool>> RecalculateExerciseStatisticsAsync(Guid userId, Guid refExerciseId)
     {
         var statistic = _context.ExerciseStatistics
-            .FirstOrDefault(es => es.UserId == userId && es.ExerciseId == exerciseId);
+            .FirstOrDefault(es => es.UserId == userId && es.ExerciseId == refExerciseId);
         
         if (statistic == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
         
         var userExercises = await _context.UserExercises
             .AsNoTracking()
-            .Where(ue => ue.RefExerciseId == exerciseId)
+            .Where(ue => ue.RefExerciseId == refExerciseId)
             .Select(ue => new
             {
                 ue.Id,
@@ -336,11 +337,23 @@ public class StatisticsService : IStatisticsService
 
         statistic.TotalWeight = sets.Sum(s => s.Weight);
         statistic.TotalSets = sets.Count;
-        statistic.TotalVolume = sets.Sum(s => s.Weight);
+        statistic.TotalVolume = sets.Sum(s => s.Weight * s.Reps);
+        
+        statistic.LastTimeExecuted = DateOnly.FromDateTime(DateTime.Now);
 
         _context.ExerciseStatistics.Update(statistic);
         await _context.SaveChangesAsync();
         return Result<bool>.Success(true);
+    }
+
+    public async Task<Result<bool>> ExerciseStatisticsExistAsync(Guid userId, Guid exerciseId)
+    {
+        var statistic = await  _context.ExerciseStatistics
+            .AnyAsync(s => s.UserId == userId && s.ExerciseId == exerciseId);
+        
+        return !statistic ? 
+            Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found") : 
+            Result<bool>.Success(true);
     }
 
     public async Task<Result<bool>> RecalculateStreak(Guid userId)

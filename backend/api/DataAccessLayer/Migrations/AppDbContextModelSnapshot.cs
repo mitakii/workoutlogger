@@ -122,8 +122,6 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("ExerciseId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("ExerciseStatistics");
                 });
 
@@ -410,11 +408,14 @@ namespace DataAccessLayer.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<bool>("Dirty")
+                    b.Property<bool>("IsDirty")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("LastModified")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("RefExerciseId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -588,15 +589,7 @@ namespace DataAccessLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccessLayer.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Exercise");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.ExerciseTranslations", b =>

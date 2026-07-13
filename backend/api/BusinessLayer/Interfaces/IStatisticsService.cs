@@ -25,5 +25,6 @@ public interface IStatisticsService
     public Task<Result<ExerciseStatisticsGetResponse>> GetExerciseStatisticsAsync(Guid userId, Guid exerciseId);
     public Task<Result<bool>> CreateExerciseStatisticsAsync(Guid userId, Guid exerciseId);
     public Task<Result<bool>> DeleteExerciseStatisticsAsync(Guid userId, Guid exerciseId);
-    public Task<Result<bool>> RecalculateExerciseStatisticsAsync(Guid userId, Guid statisticId);
+    public Task<Result<bool>> RecalculateExerciseStatisticsAsync(Guid userId, Guid refExerciseId);
+    public Task<Result<bool>> ExerciseStatisticsExistAsync(Guid userId, Guid exerciseId);
 }

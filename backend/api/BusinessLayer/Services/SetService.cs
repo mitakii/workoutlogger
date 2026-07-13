@@ -12,13 +12,11 @@ namespace BusinessLayer.Services;
 public class SetService : IUserSetService
 {
     private readonly AppDbContext _context;
-    private readonly IBackgroundJobService _job;
     private readonly IStatisticsRepository _statisticsRepository;
 
-    public SetService(AppDbContext context, IBackgroundJobService backgroundJobService, IStatisticsRepository statisticsRepository)
+    public SetService(AppDbContext context, IStatisticsRepository statisticsRepository)
     {
         _context = context;
-        _job = backgroundJobService;
         _statisticsRepository = statisticsRepository;
     }
     
@@ -59,15 +57,16 @@ public class SetService : IUserSetService
         return Result<List<UserSetGetResponse>>.Success(sets);
     }
 
-    public async Task<Result<bool>> CreateUserSetAsync(Guid exerciseId, double weight, int reps)
+    public async Task<Result<bool>> CreateUserSetAsync(Guid userExerciseId, double weight, int reps)
     {
         var data = await _context.UserExercises
             .AsNoTracking()
-            .Where(ue => ue.Id == exerciseId)
+            .Where(ue => ue.Id == userExerciseId)
             .Select(ue => new
             {
                 ue.Id,
                 ue.UserExerciseSets,
+                refExerciseId = ue.RefExerciseId,
                 workoutId = ue.Workout.Id,
                 date = ue.Workout.DateOnlyCreated,
                 userId = ue.Workout.UserId,
@@ -80,14 +79,14 @@ public class SetService : IUserSetService
         {
             Weight = weight,
             Reps = reps,
-            ExerciseId = exerciseId,
+            ExerciseId = userExerciseId,
             Order = data.UserExerciseSets.Count
         };
         
         await _context.UserExerciseSet.AddAsync(set);
         await _context.SaveChangesAsync();
         
-        await _statisticsRepository.MarkDirty(data.userId, data.date);
+        await _statisticsRepository.MarkDirty(data.userId, data.date, data.refExerciseId);
 
         return Result<bool>.Success(true);
     }
@@ -108,7 +107,9 @@ public class SetService : IUserSetService
         _context.UserExerciseSet.Update(set);
         await _context.SaveChangesAsync();
 
-        await _statisticsRepository.MarkDirty(set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated);
+        await _statisticsRepository
+            .MarkDirty(set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated,
+                set.Exercise.RefExerciseId);
         
         return Result<bool>.Success(true);
     }
@@ -122,10 +123,13 @@ public class SetService : IUserSetService
 
         if(set == null)
             return Result<string>.Failed(ErrorCode.NotFound, "Set not found");
+        
         _context.UserExerciseSet.Remove(set);
         await _context.SaveChangesAsync();
         
-        await _statisticsRepository.MarkDirty(set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated);
+        await _statisticsRepository
+            .MarkDirty(set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated,
+                set.Exercise.RefExerciseId);
         
         return Result<string>.Success("Set has been deleted");
     }
