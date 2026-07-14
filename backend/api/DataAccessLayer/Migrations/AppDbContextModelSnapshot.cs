@@ -96,6 +96,9 @@ namespace DataAccessLayer.Migrations
                     b.Property<DateOnly>("LastTimeExecuted")
                         .HasColumnType("date");
 
+                    b.Property<DateTime>("LastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<double>("MaxDistanceKm")
                         .HasColumnType("double precision");
 

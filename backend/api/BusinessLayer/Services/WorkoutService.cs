@@ -329,7 +329,7 @@ public class WorkoutService : IWorkoutService
     {
         var exercise = await _context.UserExercises
             .Include(e => e.Workout)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(e => e.Id == exerciseId);
 
         if (exercise == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Exercise not found");

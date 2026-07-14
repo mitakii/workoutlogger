@@ -7,6 +7,8 @@ public class DailyStatisticsGetResponse
     
     public DateOnly Date { get; set; }
     
+    public IList<Guid> WorkouIds { get; set; }
+    
     public int TotalWorkouts { get; set; }
     public double TotalVolume { get; set; }
     public double TotalDistanceKm { get; set; }
