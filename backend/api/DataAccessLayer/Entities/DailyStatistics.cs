@@ -8,7 +8,7 @@ public class DailyStatistics
     
     public DateOnly Date { get; set; }
 
-    public ICollection<Workout> Workouts { get; set; } = new List<Workout>();
+    public IList<Guid> Workouts { get; set; } =  new List<Guid>();
     
     public int TotalWorkouts { get; set; }
     public int TotalExercises { get; set; }

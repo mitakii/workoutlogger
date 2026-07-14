@@ -49,9 +49,14 @@ namespace DataAccessLayer.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid[]>("Workouts")
+                        .IsRequired()
+                        .HasColumnType("uuid[]");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "Date")
+                        .IsUnique();
 
                     b.ToTable("DailyStatistics");
                 });
@@ -110,9 +115,6 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("integer");
 
                     b.Property<double>("TotalVolume")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("TotalWeight")
                         .HasColumnType("double precision");
 
                     b.Property<Guid>("UserId")
@@ -414,13 +416,13 @@ namespace DataAccessLayer.Migrations
                     b.Property<DateTime>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("RefExerciseId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Date")
+                        .IsUnique();
 
                     b.ToTable("StatisticsUpdateQueues");
                 });

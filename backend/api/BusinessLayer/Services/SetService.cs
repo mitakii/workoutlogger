@@ -66,9 +66,7 @@ public class SetService : IUserSetService
             {
                 ue.Id,
                 ue.UserExerciseSets,
-                refExerciseId = ue.RefExerciseId,
-                workoutId = ue.Workout.Id,
-                date = ue.Workout.DateOnlyCreated,
+                dateCreated = ue.Workout.DateOnlyCreated,
                 userId = ue.Workout.UserId,
             }).FirstOrDefaultAsync();
         
@@ -86,7 +84,7 @@ public class SetService : IUserSetService
         await _context.UserExerciseSet.AddAsync(set);
         await _context.SaveChangesAsync();
         
-        await _statisticsRepository.MarkDirty(data.userId, data.date, data.refExerciseId);
+        await _statisticsRepository.MarkDirty(data.userId, data.dateCreated);
 
         return Result<bool>.Success(true);
     }
@@ -108,8 +106,7 @@ public class SetService : IUserSetService
         await _context.SaveChangesAsync();
 
         await _statisticsRepository
-            .MarkDirty(set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated,
-                set.Exercise.RefExerciseId);
+            .MarkDirty(set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated);
         
         return Result<bool>.Success(true);
     }
@@ -128,8 +125,7 @@ public class SetService : IUserSetService
         await _context.SaveChangesAsync();
         
         await _statisticsRepository
-            .MarkDirty(set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated,
-                set.Exercise.RefExerciseId);
+            .MarkDirty(set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated);
         
         return Result<string>.Success("Set has been deleted");
     }

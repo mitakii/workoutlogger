@@ -38,8 +38,12 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>,  Guid>
             .HasMany(t => t.Exercises)
             .WithMany();
 
+        modelBuilder.Entity<StatisticsUpdateQueue>()
+            .HasIndex(x => new { x.UserId, x.Date })
+            .IsUnique();
+        
         modelBuilder.Entity<DailyStatistics>()
-            .Ignore(t => t.Workouts);
-
+            .HasIndex(x => new { x.UserId, x.Date })
+            .IsUnique();
     }
 }

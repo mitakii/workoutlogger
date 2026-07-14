@@ -48,8 +48,8 @@ public class WorkoutService : IWorkoutService
 
         var exist = await _statistics.DailyStatisticsExistAsync(userId, workout.DateOnlyCreated);
 
-        if (exist.Data)
-            await _statisticsRepository.MarkDirty(workout.UserId, workout.DateOnlyCreated, Guid.Empty);
+        if (exist.Succeeded)
+            await _statisticsRepository.MarkDirty(workout.UserId, workout.DateOnlyCreated);
         else
             await _statistics.CreateDailyStatisticsAsync(userId, workout.DateOnlyCreated);
 
@@ -73,7 +73,7 @@ public class WorkoutService : IWorkoutService
         _context.Workouts.Remove(workout);
         await _context.SaveChangesAsync();
         
-        await _statisticsRepository.MarkDirty(workout.UserId, workout.DateOnlyCreated, Guid.Empty);
+        await _statisticsRepository.MarkDirty(workout.UserId, workout.DateOnlyCreated);
         
         return Result<bool>.Success(true);
     }
@@ -199,7 +199,7 @@ public class WorkoutService : IWorkoutService
         if(!statisticExist.Succeeded)
             await _statistics.CreateExerciseStatisticsAsync(workout.UserId, exerciseId);
         
-        await _statisticsRepository.MarkDirty(workout.UserId, workout.DateOnlyCreated, exerciseId);
+        await _statisticsRepository.MarkDirty(workout.UserId, workout.DateOnlyCreated);
         
         return Result<bool>.Success(true);
     }
@@ -337,7 +337,7 @@ public class WorkoutService : IWorkoutService
         _context.UserExercises.Remove(exercise);
         await _context.SaveChangesAsync();
         
-        await _statisticsRepository.MarkDirty(exercise.Workout.UserId, exercise.Workout.DateOnlyCreated, exerciseId);
+        await _statisticsRepository.MarkDirty(exercise.Workout.UserId, exercise.Workout.DateOnlyCreated);
         
         return Result<bool>.Success(true);
     }

@@ -23,23 +23,17 @@ public class StatisticsService : IStatisticsService
 
     public async Task ProcessDirtyStatistics()
     {
-        // todo: in prod change to +-5 min
+        // todo: in prod change to +-30 min
+        // todo: move to env 
         var items = await _statisticsRepository
             .GetDirtyStatisticsOlderThan(TimeSpan.FromMinutes(1));
-
+        
         foreach (var item in items)
         {
-            if (item.RefExerciseId != Guid.Empty)
-            {
-                await RecalculateExerciseStatisticsAsync(item.UserId, item.RefExerciseId);
-                continue;
-            }
-            
             await RecalculateDailyStatisticsAsync(item.UserId, item.Date);
-            
             await RecalculateUserStatisticsAsync(item.UserId);
-            
-            await _statisticsRepository.MarkClean(item.UserId, item.Date, item.RefExerciseId);
+                
+            await _statisticsRepository.MarkClean(item.UserId, item.Date);
         }
     }
 
@@ -84,9 +78,9 @@ public class StatisticsService : IStatisticsService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> DeleteStatisticsAsync(Guid userId)
+    public async Task<Result<bool>> DeleteUserStatisticsAsync(Guid userId)
     {
-        var userStatistic = await _context.UserStatistics.FirstOrDefaultAsync(us => us.UserId == userId);
+        var userStatistic = await _context.UserStatistics.FindAsync(userId);
 
         if (userStatistic == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "User statistic not found");
@@ -98,7 +92,7 @@ public class StatisticsService : IStatisticsService
 
     public async Task<Result<bool>> RecalculateUserStatisticsAsync(Guid userId)
     {
-        var statistics = await _context.UserStatistics.FirstOrDefaultAsync(us => us.UserId == userId);
+        var statistics = await _context.UserStatistics.FindAsync(userId);
 
         if (statistics == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "User statistic not found");
@@ -106,18 +100,29 @@ public class StatisticsService : IStatisticsService
         var data = await _context.DailyStatistics
             .AsNoTracking()
             .Where(w => w.UserId == userId)
-            .ToListAsync();
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                TotalDistanceKm = g.Sum(d => d.TotalDistanceKm),
+                TotalWorkouts = g.Sum(d => d.TotalWorkouts),
+                TotalExercises = g.Sum(d => d.TotalExercises),
+                TotalSets = g.Sum(d => d.TotalSets),
+                TotalVolume = g.Sum(d => d.TotalVolume),
+            })
+            .FirstOrDefaultAsync();
 
-        if (data.Count == 0)
+        if (data == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "No data for statistics");
 
         statistics.LastUpdated = DateTime.UtcNow;
-        statistics.TotalWorkouts = data.Sum(d => d.TotalWorkouts);
-        
-        statistics.TotalExercises = data.Sum(d => d.TotalExercises);
+        statistics.TotalWorkouts = data.TotalWorkouts;
+        statistics.TotalDistanceKm = data.TotalDistanceKm;
+        statistics.TotalExercises = data.TotalExercises;
 
-        statistics.TotalSets = data.Sum(d => d.TotalSets);
-        statistics.TotalVolume = data.Sum(d => d.TotalVolume);
+        statistics.TotalSets = data.TotalSets;
+        statistics.TotalVolume = data.TotalVolume;
+
+        statistics.LastUpdated = DateTime.UtcNow;
 
         _context.UserStatistics.Update(statistics);
         await _context.SaveChangesAsync();
@@ -179,10 +184,10 @@ public class StatisticsService : IStatisticsService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> DeleteDailyStatisticsAsync(DateOnly date)
+    public async Task<Result<bool>> DeleteDailyStatisticsAsync(Guid userId, DateOnly date)
     {
         var statistic = await _context.DailyStatistics
-            .FirstOrDefaultAsync(s => s.Date == date);
+            .FirstOrDefaultAsync(s => s.Date == date && s.UserId == userId);
         if (statistic == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
         _context.DailyStatistics.Remove(statistic);
@@ -193,7 +198,7 @@ public class StatisticsService : IStatisticsService
     public async Task<Result<bool>> DeleteDailyStatisticsAsync(Guid statisticId)
     {
         var statistic = await _context.DailyStatistics
-            .FirstOrDefaultAsync(s => s.Id == statisticId);
+            .FindAsync(statisticId);
         if (statistic == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
         _context.DailyStatistics.Remove(statistic);
@@ -209,35 +214,32 @@ public class StatisticsService : IStatisticsService
         if (statistic == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
 
-        var workouts = await _context.Workouts
+        var data = await _context.Workouts
             .AsNoTracking()
             .Where(w => w.UserId == userId && w.DateOnlyCreated == statistic.Date)
+            .GroupBy(_ => 1)
             .Select(w => new
             {
-                UserExercise = w.UserExercises.Select(ue => new
-                {
-                    UserExerciseSets = ue.UserExerciseSets.Select(s => new
-                    {
-                        s.Reps,
-                        s.Weight
-                    })
-                })
+                WorkoutIds = w.Select(w => w.Id).ToArray(),
+                TotalWorkoutsCount = w.Count(),
+                TotalSetsCount = w.SelectMany(w=> w.UserExercises)
+                    .SelectMany(ue => ue.UserExerciseSets)
+                    .Count(),
+                TotalExercisesCount = w.SelectMany(w=> w.UserExercises).Count(),
+                TotalVolume =  w.SelectMany(w=> w.UserExercises)
+                    .SelectMany(ue => ue.UserExerciseSets)
+                    .Sum(s => s.Weight * s.Reps),
             })
-            .ToListAsync();
+            .FirstOrDefaultAsync();
 
-        statistic.TotalWorkouts = workouts.Count;
-        var exercises = workouts
-            .SelectMany(w => w.UserExercise).ToList();
+        if (data == null)
+            return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
         
-        var sets = exercises
-            .SelectMany(ue => ue.UserExerciseSets).ToList();
-        
-        statistic.TotalVolume = sets
-            .Sum(ue => ue.Weight *  ue.Reps);
-
-
-        statistic.TotalSets = sets.Count;
-        statistic.TotalExercises = exercises.Count;
+        statistic.TotalWorkouts = data.TotalWorkoutsCount;
+        statistic.TotalVolume = data.TotalVolume;
+        statistic.TotalSets = data.TotalSetsCount;
+        statistic.TotalExercises = data.TotalExercisesCount;
+        statistic.Workouts = data.WorkoutIds;
         
         // todo: add types to exercises
         // statistic.TotalDistanceKm =
@@ -266,14 +268,12 @@ public class StatisticsService : IStatisticsService
 
         return Result<ExerciseStatisticsGetResponse>.Success(new ExerciseStatisticsGetResponse()
         {
-            Id = result.Id,
             ExerciseId = result.ExerciseId,
             TotalDistanceKm = result.TotalDistanceKm,
             TotalVolume = result.TotalVolume,
             MaxWeight = result.MaxWeight,
             MaxDuration = result.MaxDuration,
             MaxDistanceKm = result.MaxDistanceKm,
-            TotalWeight = result.TotalWeight,
             TotalDuration = result.TotalDuration,
             TotalSets = result.TotalSets,
         });
@@ -314,31 +314,24 @@ public class StatisticsService : IStatisticsService
         if (statistic == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
         
-        var userExercises = await _context.UserExercises
+        var userExerciseStatistic = await _context.UserExercises
             .AsNoTracking()
-            .Where(ue => ue.RefExerciseId == refExerciseId)
-            .Select(ue => new
+            .Where(ue => ue.RefExerciseId == refExerciseId && ue.Workout.UserId == userId)
+            .GroupBy(_ => 1)
+            .Select(x => new
             {
-                ue.Id,
-                Sets = ue.UserExerciseSets.Select(s => new
-                {
-                    s.Id,
-                    s.Weight,
-                    s.Reps
-                }).ToList()
+                MaxWeight = x.SelectMany(ue => ue.UserExerciseSets).Max(s => s.Weight),
+                TotalVolume = x.SelectMany(ue => ue.UserExerciseSets).Sum(s => s.Weight * s.Reps),
+                TotalSets = x.SelectMany(ue => ue.UserExerciseSets).Count(),
             })
-            .ToListAsync();
+            .FirstOrDefaultAsync();
         
-        if(userExercises.Count == 0)
+        if(userExerciseStatistic == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "UserExercise not found");
         
-        var sets = userExercises.SelectMany(ue => ue.Sets).ToList();
-        statistic.MaxWeight = sets.Max(s => s.Weight);
-
-        statistic.TotalWeight = sets.Sum(s => s.Weight);
-        statistic.TotalSets = sets.Count;
-        statistic.TotalVolume = sets.Sum(s => s.Weight * s.Reps);
-        
+        statistic.MaxWeight = userExerciseStatistic.MaxWeight;
+        statistic.TotalSets = userExerciseStatistic.TotalSets;
+        statistic.TotalVolume = userExerciseStatistic.TotalSets;
         statistic.LastTimeExecuted = DateOnly.FromDateTime(DateTime.Now);
 
         _context.ExerciseStatistics.Update(statistic);

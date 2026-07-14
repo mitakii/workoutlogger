@@ -11,13 +11,13 @@ public interface IStatisticsService
     
     public Task<Result<GetUserStatisticResponse>> GetUserStatisticsAsync(Guid userId);
     public Task<Result<bool>> CreateStatisticsAsync(Guid userId);
-    public Task<Result<bool>> DeleteStatisticsAsync(Guid userId);
+    public Task<Result<bool>> DeleteUserStatisticsAsync(Guid userId);
     public Task<Result<bool>> RecalculateUserStatisticsAsync(Guid userId);
     
     public Task<Result<List<DailyStatisticsGetResponse>>> GetDailyStatisticsRangeAsync(Guid userId, DateOnly start, DateOnly end);
     public Task<Result<DailyStatisticsGetResponse>> GetDailyStatisticsAsync(Guid userId, DateOnly date);
     public Task<Result<bool>> CreateDailyStatisticsAsync(Guid userId, DateOnly date);
-    public Task<Result<bool>> DeleteDailyStatisticsAsync(DateOnly date);
+    public Task<Result<bool>> DeleteDailyStatisticsAsync(Guid userId, DateOnly date);
     public Task<Result<bool>> DeleteDailyStatisticsAsync(Guid statisticId);
     public Task<Result<bool>> RecalculateDailyStatisticsAsync(Guid userId, DateOnly date);
     public Task<Result<bool>> DailyStatisticsExistAsync(Guid userId, DateOnly date);

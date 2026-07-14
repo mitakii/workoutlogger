@@ -13,7 +13,6 @@ public class ExerciseStatistics
     public double MaxDuration { get; set; }
     public double MaxDistanceKm { get; set; }
     
-    public double TotalWeight { get; set; }
     public int TotalSets { get; set; }
     public double TotalVolume { get; set; }
     

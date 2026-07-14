@@ -22,11 +22,11 @@ public class StatisticsRepository : IStatisticsRepository
             .ToListAsync();
     }
 
-    public async Task MarkDirty(Guid userId, DateOnly date, Guid exerciseId)
+    public async Task MarkDirty(Guid userId, DateOnly date)
     {
         var item = await _context.StatisticsUpdateQueues
             .FirstOrDefaultAsync(s => 
-                s.UserId == userId && s.Date == date && s.RefExerciseId == exerciseId);
+                s.UserId == userId && s.Date == date);
         
         if (item == null)
         {
@@ -34,7 +34,6 @@ public class StatisticsRepository : IStatisticsRepository
             {
                 UserId = userId,
                 Date = date,
-                RefExerciseId =  exerciseId,
             };
             _context.StatisticsUpdateQueues.Add(item);
         }
@@ -44,11 +43,11 @@ public class StatisticsRepository : IStatisticsRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task MarkClean(Guid userId, DateOnly date,  Guid exerciseId)
+    public async Task MarkClean(Guid userId, DateOnly date)
     {
         var item = await _context.StatisticsUpdateQueues
             .FirstOrDefaultAsync(s => 
-                s.UserId == userId && s.Date == date && s.RefExerciseId == exerciseId);
+                s.UserId == userId && s.Date == date);
 
         if (item == null)
             return;
