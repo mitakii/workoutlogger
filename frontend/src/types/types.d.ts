@@ -99,8 +99,8 @@ export type UserTemplate = {
   exercises: Exercise[];
 };
 
-export type SearchType = "user" | "template";
-export type SearchResults = UserProfile[] | UserTemplate[];
+export type SearchType = "user" | "template" | "exercise";
+export type SearchResults = UserProfile[] | UserTemplate[] | Exercise[];
 
 export type SearchPickerType = "workoutExercise" | "templateExercise";
 export type SearchPickerResults = Exercise[];

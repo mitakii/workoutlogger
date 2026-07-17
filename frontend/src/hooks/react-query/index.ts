@@ -463,5 +463,6 @@ export const useExerciseStatistics = (userId: string, exerciseId: string) => {
     queryFn: () => getExerciseStatistics(exerciseId),
     enabled: !!userId && !!exerciseId,
     staleTime: 2 * 60 * 1000,
+    retry: 2,
   });
 };

@@ -68,25 +68,34 @@ const Navbar = () => {
                     >
                       Profile
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/settings")}>
-                      Settings
-                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/search/user")}>
                       Find user
                     </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>Statistics</DropdownMenuLabel>
                     <DropdownMenuItem onClick={() => navigate("/statistics")}>
                       Statistics
                     </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/search/exercise")}
+                    >
+                      Exercise Stats
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuGroup>
+                    <DropdownMenuLabel>Template</DropdownMenuLabel>
                     <DropdownMenuItem
                       onClick={() => navigate("search/template")}
                     >
-                      Templates
+                      User templates
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => navigate("/settings")}>
+                      Settings
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={logoutUser}>
                       Log out
                     </DropdownMenuItem>

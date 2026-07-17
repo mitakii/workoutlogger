@@ -26,6 +26,8 @@ export const useSearch = (
           return searchTemplate(query, PageSize, page);
         case "templateExercise":
           return searchExercise(query, PageSize, page);
+        case "exercise":
+          return searchExercise(query, PageSize, page);
 
         default:
           return [];

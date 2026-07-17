@@ -10,6 +10,7 @@ import { WorkoutSetExerciseList } from "../searchPicker/workoutExercise/WorkoutS
 import UserList from "./user/UserList";
 import TemplateSetExerciseList from "../searchPicker/templateExercise/TemplateSetExerciseList";
 import TemplateList from "./template/TemplateList";
+import ExerciseList from "./exercise/ExerciseList";
 
 type Props = {
   type: SearchType;
@@ -20,6 +21,7 @@ const SearchResult = ({ type, results }: Props) => {
   const resultComponents = {
     user: <UserList users={results as UserProfile[]} />,
     template: <TemplateList templates={results as UserTemplate[]} />,
+    exercise: <ExerciseList exercises={results as Exercise[]} />,
   };
 
   return resultComponents[type] ?? null;
