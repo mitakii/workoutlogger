@@ -294,7 +294,8 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: () => logoutApi(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["User", "currentUser"] });
+      queryClient.invalidateQueries({ queryKey: ["User"] });
+      queryClient.invalidateQueries({ queryKey: ["workout-session"] });
     },
   });
 };

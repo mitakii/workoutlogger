@@ -16,7 +16,7 @@ import {
 } from "../../schemas/Exercise.schema";
 import type { Session } from "react-router-dom";
 
-export const getLastSession = async (): Promise<UserSession> => {
+export const getLastSession = async (): Promise<UserSession | null> => {
   try {
     const res = await axios.get(
       `${import.meta.env.VITE_API_URL}/workout/lastWorkout`,
@@ -30,6 +30,12 @@ export const getLastSession = async (): Promise<UserSession> => {
       userExercises: res.data.userExercises ?? [],
     } as UserSession;
   } catch (e) {
+    if (
+      axios.isAxiosError(e) &&
+      (e.response?.status === 404 || e.response?.status === 401)
+    ) {
+      return null;
+    }
     throw e;
   }
 };
@@ -310,6 +316,9 @@ export const statusApi = async (): Promise<UserProfile | null> => {
     };
     return user;
   } catch (e) {
+    if (axios.isAxiosError(e) && e.response?.status === 401) {
+      return null;
+    }
     throw e;
   }
 };

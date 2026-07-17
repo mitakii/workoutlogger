@@ -31,9 +31,14 @@ const Navbar = () => {
 
   const navOptions = getNavFromRoute(matches.at(-1));
 
-  const logoutUser = () => {
-    logout();
-    navigate("/");
+  const logoutUser = async () => {
+    try {
+      await logout();
+    } catch (e) {
+      throw e;
+    } finally {
+      navigate("/");
+    }
   };
 
   return (

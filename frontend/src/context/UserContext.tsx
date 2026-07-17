@@ -24,7 +24,7 @@ type UserContextType = {
     password: string,
     language: string
   ) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoggedIn: () => boolean;
 };
 
@@ -34,7 +34,7 @@ const UserProvider = ({ children }: Props) => {
   const { mutateAsync: loginApi } = useLogin();
   const { mutateAsync: logoutApi } = useLogout();
 
-  const isLoggedIn = () => user != null || user != undefined;
+  const isLoggedIn = () => user != null;
 
   const registerUser = async (
     username: string,
