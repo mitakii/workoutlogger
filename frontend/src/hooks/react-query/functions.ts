@@ -1,12 +1,15 @@
 import axios from "axios";
 import type {
+  DailyStatistic,
   Exercise,
+  ExerciseStatistics,
   GetSessionsApi,
   Translation,
   UserExercise,
   UserProfile,
   UserSession,
   UserSet,
+  UserStatistics,
   UserTemplate,
 } from "../../types/types";
 import { api } from "../../api/api";
@@ -212,6 +215,7 @@ export const getUserByName = async (
   try {
     const res = await api.get(`/User/${username}`);
     const user: UserProfile = {
+      id: res.data.id,
       username: res.data.username,
       email: res.data.email,
       role: res.data.role,
@@ -304,10 +308,9 @@ export const logoutApi = async () => {
 
 export const statusApi = async (): Promise<UserProfile | null> => {
   try {
-    const res = await api.get<UserProfile>(
-      `${import.meta.env.VITE_API_URL}/status`
-    );
+    const res = await api.get(`/status`);
     const user: UserProfile = {
+      id: res.data.id,
       username: res.data.username,
       email: res.data.email,
       role: res.data.role,
@@ -321,6 +324,39 @@ export const statusApi = async (): Promise<UserProfile | null> => {
     }
     throw e;
   }
+};
+
+const fmtDate = (d: Date) => d.toISOString().split("T")[0];
+
+export const getUserStatistics = async (
+  userId: string
+): Promise<UserStatistics> => {
+  const res = await api.get<UserStatistics>(`/Statistics/user/${userId}`);
+  return res.data;
+};
+
+export const getDailyStatisticsRange = async (
+  from: Date,
+  to: Date
+): Promise<DailyStatistic[]> => {
+  try {
+    const res = await api.get<DailyStatistic[]>(
+      `/Statistics/day/from/${fmtDate(from)}/to/${fmtDate(to)}`
+    );
+    return res.data;
+  } catch (e) {
+    if (axios.isAxiosError(e) && e.response?.status === 404) return [];
+    throw e;
+  }
+};
+
+export const getExerciseStatistics = async (
+  exerciseId: string
+): Promise<ExerciseStatistics> => {
+  const res = await api.get<ExerciseStatistics>(
+    `/Statistics/exercise/${exerciseId}`
+  );
+  return res.data;
 };
 
 //templates

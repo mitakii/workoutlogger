@@ -6,7 +6,7 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useChangeUsername } from "@/hooks/react-query";
-import { changeUsernameScheme } from "@/schemas/settiings.scheme";
+import { changeUsernameScheme } from "@/schemas/settings.schema";
 import { useState } from "react";
 import axios from "axios";
 

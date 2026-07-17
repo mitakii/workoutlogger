@@ -1,0 +1,81 @@
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  type TooltipContentProps,
+} from "recharts";
+import type { DailyStatistic } from "@/types/types";
+import { fmtVol } from "@/lib/utils";
+
+type Props = {
+  data: DailyStatistic[];
+};
+
+const fmtLabel = (date: string) =>
+  new Date(date).toLocaleDateString("en", { month: "short", day: "numeric" });
+
+const VolumeTooltip = ({ active, payload }: TooltipContentProps) => {
+  if (!active || !payload?.length) return null;
+  const point = payload[0].payload as DailyStatistic;
+
+  return (
+    <div className="rounded-md border border-border bg-card px-2.5 py-1.5 text-xs shadow-sm space-y-0.5">
+      <p className="text-muted-foreground">{fmtLabel(point.date)}</p>
+      <p className="font-medium text-card-foreground">
+        {fmtVol(point.totalVolume)}
+      </p>
+      <p className="text-muted-foreground">
+        {point.totalExercises} exercises &middot; {point.totalSets} sets
+      </p>
+    </div>
+  );
+};
+
+const VolumeChart = ({ data }: Props) => {
+  const labelEvery = Math.max(1, Math.ceil(data.length / 6));
+
+  return (
+    <div className="w-full h-40">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart
+          data={data}
+          margin={{ top: 4, right: 4, left: 4, bottom: 0 }}
+        >
+          <CartesianGrid vertical={false} stroke="var(--border)" />
+          <XAxis
+            dataKey="date"
+            tickFormatter={fmtLabel}
+            interval={labelEvery - 1}
+            tickLine={false}
+            axisLine={false}
+            tick={{ fill: "var(--muted-foreground)", fontSize: 9 }}
+            dy={6}
+          />
+          <Tooltip
+            content={(props) => <VolumeTooltip {...props} />}
+            cursor={{ stroke: "var(--border)" }}
+          />
+          <Line
+            type="monotone"
+            dataKey="totalVolume"
+            stroke="var(--primary)"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{
+              r: 4,
+              fill: "var(--primary)",
+              stroke: "var(--card)",
+              strokeWidth: 2,
+            }}
+            isAnimationActive={false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
+export default VolumeChart;

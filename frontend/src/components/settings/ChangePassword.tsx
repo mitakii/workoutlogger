@@ -6,7 +6,7 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { useChangePassword } from "@/hooks/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { changePasswordScheme } from "@/schemas/settiings.scheme";
+import { changePasswordScheme } from "@/schemas/settings.schema";
 import { useState } from "react";
 import axios from "axios";
 

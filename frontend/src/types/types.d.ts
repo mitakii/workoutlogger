@@ -30,11 +30,48 @@ export type Translation = {
 };
 
 export type UserProfile = {
+  id: string;
   username: string;
   email: string;
   role: "User" | "Admin";
   description: string;
   pfpUrl: string;
+};
+
+export type UserStatistics = {
+  totalWorkouts: number;
+  totalExercises: number;
+  totalSets: number;
+  totalVolume: number;
+  totalDistanceKm: number;
+  consecutiveWeeksActive: number;
+  longestStreak: number;
+  maxBenchPress: number;
+  maxDeadlift: number;
+  maxSquat: number;
+  lastUpdated: string;
+};
+
+export type DailyStatistic = {
+  id: string;
+  userId: string;
+  date: string;
+  totalWorkouts: number;
+  totalVolume: number;
+  totalDistanceKm: number;
+  totalExercises: number;
+  totalSets: number;
+};
+
+export type ExerciseStatistics = {
+  exerciseId: string;
+  maxWeight: number;
+  maxDuration: number;
+  maxDistanceKm: number;
+  totalSets: number;
+  totalVolume: number;
+  totalDuration: number;
+  totalDistanceKm: number;
 };
 
 export type BackendError = {

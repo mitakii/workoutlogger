@@ -501,3 +501,7 @@ backend/api/DataAccessLayer/Migrations/20260308182040_UserTranslationOption.Desi
 backend/api/DataAccessLayer/Migrations/20260310174843_Order.cs
 backend/api/DataAccessLayer/Migrations/20260310174843_Order.Designer.cs
 backend/api/PresentationLayer/appsettings.Development.json
+CLAUDE.md
+backend-analysis.pdf
+.gitignore
+frontend-analysis.pdf

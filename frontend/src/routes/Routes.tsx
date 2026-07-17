@@ -14,6 +14,8 @@ import { NotFound } from "@/pages/NotFoundPage";
 import SearchPickerPage from "@/pages/SearchPickerPage";
 import TemplateEditPage from "@/pages/templates/TemplateEditPage";
 import CreateTemplatePage from "@/pages/templates/CreateTemplatePage";
+import StatisticsPage from "@/pages/statistics/StatisticsPage";
+import ExerciseStatisticsPage from "@/pages/statistics/ExerciseStatisticsPage";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +38,11 @@ export const router = createBrowserRouter([
           { path: "searchPicker/:type/:id", element: <SearchPickerPage /> },
           { path: "editTemplate/:id", element: <TemplateEditPage /> },
           { path: "createTemplate/:id", element: <CreateTemplatePage /> },
+          { path: "statistics", element: <StatisticsPage /> },
+          {
+            path: "statistics/exercise/:exerciseId",
+            element: <ExerciseStatisticsPage />,
+          },
         ],
       },
 

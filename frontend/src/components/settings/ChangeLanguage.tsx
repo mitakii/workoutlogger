@@ -10,7 +10,7 @@ import {
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { changeLanguageScheme } from "@/schemas/settiings.scheme";
+import { changeLanguageScheme } from "@/schemas/settings.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Select,

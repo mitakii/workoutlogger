@@ -29,6 +29,9 @@ import {
   getUserTemplate,
   applyTemplate,
   deleteUserExercise,
+  getUserStatistics,
+  getDailyStatisticsRange,
+  getExerciseStatistics,
 } from "./functions";
 import {
   type GetSessionsApi,
@@ -425,5 +428,40 @@ export const useGetUserTemplate = (templateId: string) => {
     queryKey: ["UserTemplates", templateId],
     queryFn: () => getUserTemplate(templateId),
     staleTime: 5 * 60 * 1000,
+  });
+};
+
+// statistics
+
+export const useUserStatistics = (userId: string) => {
+  return useQuery({
+    queryKey: ["statistics", "user", userId],
+    queryFn: () => getUserStatistics(userId),
+    enabled: !!userId,
+    staleTime: 2 * 60 * 1000,
+  });
+};
+
+export const useDailyStatisticsRange = (
+  userId: string,
+  from: Date,
+  to: Date
+) => {
+  const fromKey = from.toISOString().split("T")[0];
+  const toKey = to.toISOString().split("T")[0];
+  return useQuery({
+    queryKey: ["statistics", "daily", userId, fromKey, toKey],
+    queryFn: () => getDailyStatisticsRange(from, to),
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useExerciseStatistics = (userId: string, exerciseId: string) => {
+  return useQuery({
+    queryKey: ["statistics", "exercise", userId, exerciseId],
+    queryFn: () => getExerciseStatistics(exerciseId),
+    enabled: !!userId && !!exerciseId,
+    staleTime: 2 * 60 * 1000,
   });
 };
