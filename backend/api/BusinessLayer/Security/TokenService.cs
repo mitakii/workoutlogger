@@ -69,13 +69,13 @@ public class TokenService : ITokenService
         if (refreshToken == null)
             return Result<bool>.Failed(ErrorCode.Unauthorized, "Refresh token doesnt exist");
         
-        var token =  await _tokenRepository.GetRefreshTokenAsync(refreshToken);
+        var token =  await _tokenRepository.GetRefreshTokenAsync(TokenHasher.Hash(refreshToken));
         if (token == null)
             return Result<bool>.Failed(ErrorCode.Unauthorized, "Refresh token doesnt exist");
-    
+
         if (token.IsExpired)
         {
-            await _tokenRepository.DeleteRefreshTokenAsync(refreshToken);
+            await _tokenRepository.DeleteRefreshTokenAsync(token.Token);
             return Result<bool>.Failed(ErrorCode.Unauthorized, "Refresh token expired");
         }
         
@@ -84,57 +84,71 @@ public class TokenService : ITokenService
 
     public async Task<Result<TokenDTO>> RefreshTokensAsync(string oldRefreshToken)
     {
-        var oldToken = await _tokenRepository.GetRefreshTokenAsync(oldRefreshToken);
-        
+        var oldToken = await _tokenRepository.GetRefreshTokenAsync(TokenHasher.Hash(oldRefreshToken));
+
         if(oldToken == null)
             return  Result<TokenDTO>.Failed(ErrorCode.Unauthorized, "Refresh token doesnt exist");
+
+        if (oldToken.IsUsed)
+        {
+            await _tokenRepository.DeleteUserRefreshTokensAsync(oldToken.User.Id);
+            return Result<TokenDTO>.Failed(ErrorCode.Unauthorized, "Refresh token reuse detected");
+        }
+
+        if (oldToken.IsExpired)
+        {
+            await _tokenRepository.DeleteRefreshTokenAsync(oldToken.Token);
+            return Result<TokenDTO>.Failed(ErrorCode.Unauthorized, "Refresh token expired");
+        }
 
         var user = await _userManager.FindByIdAsync(oldToken.User.Id.ToString());
         if(user == null)
             return Result<TokenDTO>.Failed(ErrorCode.NotFound, "User not found");
-        
+
+        oldToken.IsUsed = true;
+        await _tokenRepository.UpdateRefreshTokenAsync(oldToken);
+
+        var rawRefreshToken = Guid.NewGuid().ToString();
         var refreshToken = new RefreshToken()
         {
             Id = Guid.NewGuid().ToString(),
-            // temp
-            Token =  Guid.NewGuid().ToString(),
+            Token = TokenHasher.Hash(rawRefreshToken),
             Expires = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenDays),
-            User =  user
+            User = user
         };
-        
-        await _tokenRepository.DeleteRefreshTokenAsync(oldRefreshToken);
+
         await _tokenRepository.CreateRefreshTokenAsync(refreshToken);
-        
-        var accessToken = await GenerateAccessTokenAsync(oldToken.User);
+
+        var accessToken = await GenerateAccessTokenAsync(user);
         if (!accessToken.Succeeded)
             return Result<TokenDTO>.Failed(accessToken.Code, accessToken.ErrorMessages!);
-        
+
         return Result<TokenDTO>.Success(new TokenDTO
         {
-            RefreshToken =  refreshToken.Token,
+            RefreshToken =  rawRefreshToken,
             AccessToken = accessToken.Data!
         });
     }
 
     public async Task<Result<string>> GenerateRefreshTokenAsync(User user)
     {
+        var rawToken = Guid.NewGuid().ToString();
         var token = new RefreshToken()
         {
             Id = Guid.NewGuid().ToString(),
-            // temp
-            Token =  Guid.NewGuid().ToString(),
+            Token = TokenHasher.Hash(rawToken),
             Expires = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenDays),
             User =  user
         };
 
         await _tokenRepository.CreateRefreshTokenAsync(token);
-        
-        return Result<string>.Success(token.Token);
+
+        return Result<string>.Success(rawToken);
     }
-    
+
     public async Task<Result<bool>> RevokeRefreshTokenAsync(string refreshToken)
     {
-        var token = await _tokenRepository.DeleteRefreshTokenAsync(refreshToken);
+        var token = await _tokenRepository.DeleteRefreshTokenAsync(TokenHasher.Hash(refreshToken));
 
         if (!token)
             return Result<bool>.Failed(ErrorCode.Unauthorized, "Refresh token doesnt exist");
@@ -144,8 +158,12 @@ public class TokenService : ITokenService
 
     public async Task<Result<string>> RevokeRefreshTokenByUIdAsync(Guid userId)
     {
-       
         await _tokenRepository.DeleteUserRefreshTokensAsync(userId);
         return Result<string>.Success("token has been revoked");
+    }
+
+    public async Task CleanupStaleRefreshTokensAsync()
+    {
+        await _tokenRepository.DeleteStaleRefreshTokensAsync();
     }
 }

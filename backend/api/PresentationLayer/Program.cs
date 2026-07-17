@@ -8,6 +8,7 @@ using BusinessLayer.Interfaces;
 using BusinessLayer.Services;
 using DataAccessLayer.Data;
 using Hangfire;
+using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.HttpOverrides;
 using PresentationLayer.Filters;
@@ -98,18 +99,23 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-app.MapHangfireDashboard("/hangfire"/*, new DashboardOptions()
+app.MapHangfireDashboard("/hangfire", new DashboardOptions
 {
     Authorization = new []
     {
         new AuthorizationFilter()
     }
-}*/);
+});
 
 RecurringJob.AddOrUpdate<IStatisticsService>(
     "statistics-processor",
     s => s.ProcessDirtyStatistics(),
     Cron.Minutely);
+
+RecurringJob.AddOrUpdate<ITokenService>(
+    "refresh-token-cleanup",
+    s => s.CleanupStaleRefreshTokensAsync(),
+    Cron.Daily);
 
 app.UseExceptionHandler("/error");
 

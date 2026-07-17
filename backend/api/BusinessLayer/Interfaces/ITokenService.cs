@@ -14,6 +14,6 @@ public interface ITokenService
     public Task<Result<bool>> RevokeRefreshTokenAsync(string refreshToken);
     
     public Task<Result<string>> RevokeRefreshTokenByUIdAsync(Guid userId);
-    
-    
+
+    public Task CleanupStaleRefreshTokensAsync();
 }

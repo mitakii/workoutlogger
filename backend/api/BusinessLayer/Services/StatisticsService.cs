@@ -92,13 +92,12 @@ public class StatisticsService : IStatisticsService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> RecalculateUserStatisticsAsync(Guid userId)
+    public async Task RecalculateUserStatisticsAsync(Guid userId)
     {
         var statistics = await _context.UserStatistics.FirstOrDefaultAsync(us => us.UserId == userId);
 
         if (statistics == null)
             throw new Exception("Statistics not found");
-            //return Result<bool>.Failed(ErrorCode.NotFound, "User statistic not found");
         
         var data = await _context.DailyStatistics
             .AsNoTracking()
@@ -116,7 +115,6 @@ public class StatisticsService : IStatisticsService
 
         if (data == null)
             throw new Exception("Statistics data not found");
-            //return Result<bool>.Failed(ErrorCode.NotFound, "No data for statistics");
 
         statistics.LastUpdated = DateTime.UtcNow;
         statistics.TotalWorkouts = data.TotalWorkouts;
@@ -130,7 +128,6 @@ public class StatisticsService : IStatisticsService
 
         _context.UserStatistics.Update(statistics);
         await _context.SaveChangesAsync();
-        return Result<bool>.Success(true);
     }
 
     public async Task<Result<List<DailyStatisticsGetResponse>>> GetDailyStatisticsRangeAsync
@@ -219,14 +216,13 @@ public class StatisticsService : IStatisticsService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> RecalculateDailyStatisticsAsync(Guid userId, DateOnly date)
+    public async Task RecalculateDailyStatisticsAsync(Guid userId, DateOnly date)
     {
         var statistic = await  _context.DailyStatistics
             .FirstOrDefaultAsync(s => s.UserId == userId && s.Date == date);
         
         if (statistic == null)
             throw new Exception("Daily statistics not found");
-            //return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
 
         var data = await _context.Workouts
             .AsNoTracking()
@@ -248,7 +244,6 @@ public class StatisticsService : IStatisticsService
 
         if (data == null)
             throw new  Exception("Daily statistics data not found");
-            //return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
         
         statistic.TotalWorkouts = data.TotalWorkoutsCount;
         statistic.TotalVolume = data.TotalVolume;
@@ -261,7 +256,6 @@ public class StatisticsService : IStatisticsService
         
         _context.DailyStatistics.Update(statistic);
         await _context.SaveChangesAsync();
-        return Result<bool>.Success(true);
     }
 
     public async Task<Result<bool>> DailyStatisticsExistAsync(Guid userId, DateOnly date)

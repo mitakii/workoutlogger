@@ -19,19 +19,20 @@ public class AuthController : ControllerBase
     private readonly ITokenService _tokenService;
     private readonly JwtOptions _jwtOptions;
     private readonly UserManager<User> _userManager;
-    private readonly IStatisticsService _statistics;
+    private readonly SignInManager<User> _signInManager;
     private readonly IBackgroundJobService _jobs;
 
-    public AuthController(ILogger<AuthController> logger, 
+    public AuthController(ILogger<AuthController> logger,
         ITokenService tokenService,
-        UserManager<User> userManager, 
+        UserManager<User> userManager,
+        SignInManager<User> signInManager,
         IOptions<JwtOptions> jwtOptions,
-        IStatisticsService statistics, IBackgroundJobService jobs)
+        IBackgroundJobService jobs)
     {
         _logger = logger;
         _tokenService = tokenService;
         _userManager = userManager;
-        _statistics = statistics;
+        _signInManager = signInManager;
         _jobs = jobs;
         _jwtOptions = jwtOptions.Value;
     }
@@ -80,12 +81,10 @@ public class AuthController : ControllerBase
         
         var user = await _userManager.FindByNameAsync(request.Username);
         if (user == null)
-            return BadRequest();
-        
-        if (await _userManager.IsLockedOutAsync(user))
-            return Forbid();
+            return Unauthorized();
 
-        if (!await _userManager.CheckPasswordAsync(user, request.Password))
+        var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+        if (!signInResult.Succeeded)
             return Unauthorized();
 
         await _tokenService.RevokeRefreshTokenByUIdAsync(user.Id);

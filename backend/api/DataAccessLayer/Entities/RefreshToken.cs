@@ -8,6 +8,7 @@ public class RefreshToken
     public string Token { get; set; }
     public User User { get; set; }
     public DateTime Expires { get; set; }
-    
+    public bool IsUsed { get; set; }
+
     public bool IsExpired => DateTime.UtcNow > Expires;
 }

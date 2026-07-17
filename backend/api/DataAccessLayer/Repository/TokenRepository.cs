@@ -35,7 +35,15 @@ public class TokenRepository : ITokenRepository
         await _context.SaveChangesAsync();
         return true;
     }
-    
+
+    public async Task<bool> UpdateRefreshTokenAsync(RefreshToken refreshToken)
+    {
+        _context.RefreshTokens.Update(refreshToken);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+
     public async Task<bool> DeleteRefreshTokenAsync(string refreshToken)
     {
         if (string.IsNullOrEmpty(refreshToken))
@@ -55,12 +63,27 @@ public class TokenRepository : ITokenRepository
         var tokens = await _context.RefreshTokens
             .Where(u => u.User.Id == userId)
             .ToListAsync<RefreshToken>();
-        
+
         if (tokens.Count == 0)
             return true;
-        
+
         _context.RefreshTokens.RemoveRange(tokens);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<int> DeleteStaleRefreshTokensAsync()
+    {
+        var now = DateTime.UtcNow;
+        var tokens = await _context.RefreshTokens
+            .Where(t => t.IsUsed || t.Expires < now)
+            .ToListAsync();
+
+        if (tokens.Count == 0)
+            return 0;
+
+        _context.RefreshTokens.RemoveRange(tokens);
+        await _context.SaveChangesAsync();
+        return tokens.Count;
     }
 }

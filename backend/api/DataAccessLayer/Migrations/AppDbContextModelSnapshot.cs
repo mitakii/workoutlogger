@@ -58,7 +58,7 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("UserId", "Date")
                         .IsUnique();
 
-                    b.ToTable("DailyStatistics", (string)null);
+                    b.ToTable("DailyStatistics");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Exercise", b =>
@@ -81,7 +81,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Exercises", (string)null);
+                    b.ToTable("Exercises");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.ExerciseStatistics", b =>
@@ -127,7 +127,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("ExerciseId");
 
-                    b.ToTable("ExerciseStatistics", (string)null);
+                    b.ToTable("ExerciseStatistics");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.ExerciseTranslations", b =>
@@ -156,7 +156,7 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("ExerciseId", "Language")
                         .IsUnique();
 
-                    b.ToTable("ExerciseTranslations", (string)null);
+                    b.ToTable("ExerciseTranslations");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.User", b =>
@@ -255,7 +255,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("WorkoutId");
 
-                    b.ToTable("UserExercises", (string)null);
+                    b.ToTable("UserExercises");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.UserExerciseSet", b =>
@@ -280,7 +280,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("ExerciseId");
 
-                    b.ToTable("UserExerciseSet", (string)null);
+                    b.ToTable("UserExerciseSet");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.UserStatistics", b =>
@@ -329,7 +329,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserStatistics", (string)null);
+                    b.ToTable("UserStatistics");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.UserTemplate", b =>
@@ -357,7 +357,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserTemplates", (string)null);
+                    b.ToTable("UserTemplates");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Workout", b =>
@@ -379,7 +379,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Workouts", (string)null);
+                    b.ToTable("Workouts");
                 });
 
             modelBuilder.Entity("DataAccessLayer.RefreshToken", b =>
@@ -389,6 +389,9 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<DateTime>("Expires")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -401,7 +404,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Statistics.StatisticsUpdateQueue", b =>
@@ -427,7 +430,7 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("UserId", "Date")
                         .IsUnique();
 
-                    b.ToTable("StatisticsUpdateQueues", (string)null);
+                    b.ToTable("StatisticsUpdateQueues");
                 });
 
             modelBuilder.Entity("ExerciseUserTemplate", b =>
@@ -442,7 +445,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserTemplateId");
 
-                    b.ToTable("ExerciseUserTemplate", (string)null);
+                    b.ToTable("ExerciseUserTemplate");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
