@@ -12,4 +12,6 @@ public class DailyStatisticsGetResponse
     public int TotalWorkouts { get; set; }
     public double TotalVolume { get; set; }
     public double TotalDistanceKm { get; set; }
+    public int TotalExercises { get; set; }
+    public int TotalSets { get; set; }
 }

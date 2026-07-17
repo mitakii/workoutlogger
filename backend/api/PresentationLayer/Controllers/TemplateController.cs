@@ -33,7 +33,7 @@ public class TemplateController : ControllerBase
             return userLanguage.ToIActionResultErrors();
         
         var result = await _workoutTemplate
-            .ApplyTemplateAsync(userLanguage.Data!, request.WorkoutId, request.TemplateWorkoutId);
+            .ApplyTemplateAsync(userId, userLanguage.Data!, request.WorkoutId, request.TemplateWorkoutId);
         
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
@@ -54,7 +54,10 @@ public class TemplateController : ControllerBase
     [HttpDelete("deleteTemplate/{templateId:guid}")]
     public async Task<IActionResult> DeleteTemplate(Guid templateId)
     {
-        var result =  await _workoutTemplate.DeleteTemplateAsync(templateId);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
+        var result =  await _workoutTemplate.DeleteTemplateAsync(userId, templateId);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
@@ -62,7 +65,10 @@ public class TemplateController : ControllerBase
     [HttpPost("{templateId:guid}/addExercise/{exerciseId:guid}")]
     public async Task<IActionResult> AddExercise(Guid templateId, Guid exerciseId)
     {
-        var result = await _workoutTemplate.AddExerciseAsync(templateId, exerciseId);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
+        var result = await _workoutTemplate.AddExerciseAsync(userId, templateId, exerciseId);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
@@ -70,7 +76,10 @@ public class TemplateController : ControllerBase
     [HttpDelete("{templateId:guid}/deleteExercise/{exerciseId:guid}")]
     public async Task<IActionResult> DeleteExercise(Guid templateId, Guid exerciseId)
     {
-        var result = await _workoutTemplate.DeleteExerciseAsync(templateId, exerciseId);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
+        var result = await _workoutTemplate.DeleteExerciseAsync(userId, templateId, exerciseId);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
@@ -110,7 +119,10 @@ public class TemplateController : ControllerBase
     [HttpPatch("update/{templateId:guid}")]
     public async Task<IActionResult> UpdateTemplate(Guid templateId, string name, string description)
     {
-        var result = await _workoutTemplate.UpdateTemplateAsync(templateId, name, description);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
+        var result = await _workoutTemplate.UpdateTemplateAsync(userId, templateId, name, description);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
@@ -141,7 +153,7 @@ public class TemplateController : ControllerBase
         if(!userLanguage.Succeeded)
             return userLanguage.ToIActionResultErrors();
 
-        var result = await _workoutTemplate.GetTemplateAsync(templateId, userLanguage.Data);
+        var result = await _workoutTemplate.GetTemplateAsync(userId, templateId, userLanguage.Data);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 }

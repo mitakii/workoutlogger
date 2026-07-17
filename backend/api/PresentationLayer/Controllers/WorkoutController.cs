@@ -70,7 +70,10 @@ public class WorkoutController : ControllerBase
     [HttpDelete("{workoutId:guid}")]
     public async Task<IActionResult> DeleteWorkout(Guid workoutId)
     {
-        var result = await _workoutService.DeleteAsync(workoutId);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
+        var result = await _workoutService.DeleteAsync(userId, workoutId);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
@@ -85,7 +88,7 @@ public class WorkoutController : ControllerBase
         if(!userLanguage.Succeeded)
             return userLanguage.ToIActionResultErrors();
         
-        var result = await _workoutService.AddUserExerciseAsync(workoutId, exerciseId, userLanguage.Data!);
+        var result = await _workoutService.AddUserExerciseAsync(userId, workoutId, exerciseId, userLanguage.Data!);
         
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
@@ -94,7 +97,10 @@ public class WorkoutController : ControllerBase
     [HttpDelete("exercise/{exerciseId:guid}")]
     public async Task<IActionResult> RemoveUserExercise(Guid exerciseId)
     {
-        var result = await _workoutService.RemoveUserExerciseAsync(exerciseId);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+        
+        var result = await _workoutService.RemoveUserExerciseAsync(userId, exerciseId);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
     

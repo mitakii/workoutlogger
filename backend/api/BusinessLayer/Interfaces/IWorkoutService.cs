@@ -13,7 +13,7 @@ public interface IWorkoutService
     public Task<Result<ICollection<UserExerciseGetResponse>>> GetAllExercisesAsync(Guid workoutId, string language);
     public Task<Result<PagedResult<WorkoutResponse>>> GetAllUserWorkoutsAsync(WorkoutsGetRequest request, string lang);
     
-    public Task<Result<bool>> AddUserExerciseAsync(Guid workoutId, Guid exerciseId, string language);
-    public Task<Result<bool>> DeleteAsync(Guid workoutId);
-    public Task<Result<bool>> RemoveUserExerciseAsync(Guid exerciseId);
+    public Task<Result<bool>> AddUserExerciseAsync(Guid userId, Guid workoutId, Guid exerciseId, string language);
+    public Task<Result<bool>> DeleteAsync(Guid userId, Guid workoutId);
+    public Task<Result<bool>> RemoveUserExerciseAsync(Guid userId, Guid exerciseId);
 }

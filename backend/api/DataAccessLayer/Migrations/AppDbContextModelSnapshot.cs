@@ -58,7 +58,7 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("UserId", "Date")
                         .IsUnique();
 
-                    b.ToTable("DailyStatistics");
+                    b.ToTable("DailyStatistics", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Exercise", b =>
@@ -81,7 +81,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Exercises");
+                    b.ToTable("Exercises", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.ExerciseStatistics", b =>
@@ -127,7 +127,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("ExerciseId");
 
-                    b.ToTable("ExerciseStatistics");
+                    b.ToTable("ExerciseStatistics", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.ExerciseTranslations", b =>
@@ -156,7 +156,7 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("ExerciseId", "Language")
                         .IsUnique();
 
-                    b.ToTable("ExerciseTranslations");
+                    b.ToTable("ExerciseTranslations", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.User", b =>
@@ -255,7 +255,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("WorkoutId");
 
-                    b.ToTable("UserExercises");
+                    b.ToTable("UserExercises", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.UserExerciseSet", b =>
@@ -280,7 +280,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("ExerciseId");
 
-                    b.ToTable("UserExerciseSet");
+                    b.ToTable("UserExerciseSet", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.UserStatistics", b =>
@@ -329,7 +329,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserStatistics");
+                    b.ToTable("UserStatistics", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.UserTemplate", b =>
@@ -357,7 +357,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserTemplates");
+                    b.ToTable("UserTemplates", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Workout", b =>
@@ -379,7 +379,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Workouts");
+                    b.ToTable("Workouts", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.RefreshToken", b =>
@@ -401,7 +401,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Statistics.StatisticsUpdateQueue", b =>
@@ -427,7 +427,7 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("UserId", "Date")
                         .IsUnique();
 
-                    b.ToTable("StatisticsUpdateQueues");
+                    b.ToTable("StatisticsUpdateQueues", (string)null);
                 });
 
             modelBuilder.Entity("ExerciseUserTemplate", b =>
@@ -442,7 +442,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("UserTemplateId");
 
-                    b.ToTable("ExerciseUserTemplate");
+                    b.ToTable("ExerciseUserTemplate", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>

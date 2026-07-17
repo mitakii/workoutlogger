@@ -57,7 +57,7 @@ public class SetService : IUserSetService
         return Result<List<UserSetGetResponse>>.Success(sets);
     }
 
-    public async Task<Result<bool>> CreateUserSetAsync(Guid userExerciseId, double weight, int reps)
+    public async Task<Result<bool>> CreateUserSetAsync(Guid userId, Guid userExerciseId, double weight, int reps)
     {
         var data = await _context.UserExercises
             .AsNoTracking()
@@ -73,6 +73,9 @@ public class SetService : IUserSetService
         if(data == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Exercise not found");
 
+        if (data.userId != userId)
+            return Result<bool>.Failed(ErrorCode.Unauthorized, "Actions is not allowed");
+        
         var set = new UserExerciseSet()
         {
             Weight = weight,
@@ -89,12 +92,12 @@ public class SetService : IUserSetService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> UpdateUserSetAsync(Guid setId, double weight, int reps)
+    public async Task<Result<bool>> UpdateUserSetAsync(Guid userId, Guid setId, double weight, int reps)
     {
         var set =  await _context.UserExerciseSet
             .Include(s => s.Exercise)
             .ThenInclude(e => e.Workout)
-            .FirstOrDefaultAsync(s => s.Id == setId);
+            .FirstOrDefaultAsync(s => s.Id == setId && s.Exercise.Workout.UserId == userId);
         
         if(set == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Set not found");
@@ -111,12 +114,12 @@ public class SetService : IUserSetService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<string>> DeleteUserSetAsync(Guid setId)
+    public async Task<Result<string>> DeleteUserSetAsync(Guid userId, Guid setId)
     {
         var set =  await _context.UserExerciseSet
             .Include(s => s.Exercise)
             .ThenInclude(e => e.Workout)
-            .FirstOrDefaultAsync(s => s.Id == setId);
+            .FirstOrDefaultAsync(s => s.Id == setId && s.Exercise.Workout.UserId == userId);
 
         if(set == null)
             return Result<string>.Failed(ErrorCode.NotFound, "Set not found");

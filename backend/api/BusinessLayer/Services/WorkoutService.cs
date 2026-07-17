@@ -61,11 +61,11 @@ public class WorkoutService : IWorkoutService
         });
     }
 
-    public async Task<Result<bool>> DeleteAsync(Guid workoutId)
+    public async Task<Result<bool>> DeleteAsync(Guid userId, Guid workoutId)
     {
         var workout = await _context.Workouts.Include(w => w.UserExercises)
             .ThenInclude(ue => ue.UserExerciseSets)
-            .FirstOrDefaultAsync(w => w.Id == workoutId);
+            .FirstOrDefaultAsync(w => w.Id == workoutId && w.UserId == userId);
         
         if (workout == null)
             return Result<bool>.Failed(ErrorCode.NotFound,"Workout not found");
@@ -157,11 +157,11 @@ public class WorkoutService : IWorkoutService
     }
 
     public async Task<Result<bool>> 
-        AddUserExerciseAsync(Guid workoutId, Guid exerciseId, string language)
+        AddUserExerciseAsync(Guid userId, Guid workoutId, Guid exerciseId, string language)
     {
         var workout = await _context.Workouts
             .Include(w => w.UserExercises)
-            .FirstOrDefaultAsync(w =>  w.Id == workoutId);
+            .FirstOrDefaultAsync(w =>  w.Id == workoutId && w.UserId == userId);
         
         if (workout == null)
             return Result<bool>.Failed(ErrorCode.NotFound,"Workout not found");
@@ -325,11 +325,11 @@ public class WorkoutService : IWorkoutService
         });
     }
 
-    public async Task<Result<bool>> RemoveUserExerciseAsync(Guid exerciseId)
+    public async Task<Result<bool>> RemoveUserExerciseAsync(Guid userId, Guid exerciseId)
     {
         var exercise = await _context.UserExercises
             .Include(e => e.Workout)
-            .FirstOrDefaultAsync(e => e.Id == exerciseId);
+            .FirstOrDefaultAsync(e => e.Id == exerciseId && e.Workout.UserId == userId);
 
         if (exercise == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Exercise not found");

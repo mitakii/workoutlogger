@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BusinessLayer.DTO;
 using BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -24,24 +25,29 @@ public class UserExerciseController : ControllerBase
     }
     
     [HttpPost("{exerciseId:guid}")]
-    public async Task<IActionResult> AddSet(Guid exerciseId, double weight, int reps)
+    public async Task<IActionResult> AddSet(Guid exerciseId, [FromBody] UserExerciseSetRequest request)
     {
-        var result = await _userSetService.CreateUserSetAsync(exerciseId, weight, reps);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+
+        var result = await _userSetService.CreateUserSetAsync(userId, exerciseId, request.Weight, request.Reps);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
-    
+
     [HttpGet("userSets/{exerciseId:guid}")]
     public async Task<IActionResult> GetAllSets(Guid exerciseId)
     {
         var result = await _userSetService.GetUserSetsAsync(exerciseId);
-        
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
     [HttpDelete("userSet/{setId:guid}")]
     public async Task<IActionResult> DeleteSet(Guid setId)
     {
-        var result = await  _userSetService.DeleteUserSetAsync(setId);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+
+        var result = await  _userSetService.DeleteUserSetAsync(userId, setId);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
@@ -49,7 +55,10 @@ public class UserExerciseController : ControllerBase
     public async Task<IActionResult> UpdateSet
         (Guid setId, [FromBody] UserExerciseSetRequest request)
     {
-        var result = await _userSetService.UpdateUserSetAsync(setId, request.Weight, request.Reps);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+
+        var result = await _userSetService.UpdateUserSetAsync(userId, setId, request.Weight, request.Reps);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 }

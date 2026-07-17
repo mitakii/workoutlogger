@@ -19,7 +19,7 @@ public class StatisticsController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("/user/{userId:guid}")]
+    [HttpGet("user/{userId:guid}")]
     public async Task<IActionResult> GetUserStatistics(Guid userId)
     {
         var result = await _statistics.GetUserStatisticsAsync(userId);
@@ -27,7 +27,7 @@ public class StatisticsController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("/day/{date:datetime}")]
+    [HttpGet("day/{date:datetime}")]
     public async Task<IActionResult> GetDailyStatistics([FromRoute]DateTime date)
     {
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
@@ -40,7 +40,7 @@ public class StatisticsController : ControllerBase
     }
     
     [Authorize]
-    [HttpGet("/day/from/{from:datetime}/to/{to:datetime}")]
+    [HttpGet("day/from/{from:datetime}/to/{to:datetime}")]
     public async Task<IActionResult> GetDailyStatisticsRange([FromRoute]DateTime from, [FromRoute]DateTime to)
     {
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
@@ -53,7 +53,7 @@ public class StatisticsController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("/exercise/{exerciseId:guid}")]
+    [HttpGet("exercise/{exerciseId:guid}")]
     public async Task<IActionResult> GetExerciseStatistics([FromRoute]Guid exerciseId)
     {
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))

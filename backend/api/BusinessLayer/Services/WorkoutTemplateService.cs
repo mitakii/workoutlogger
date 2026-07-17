@@ -38,9 +38,10 @@ public class WorkoutTemplateService : IWorkoutTemplate
         return Result<Guid>.Success(template.Id);
     }
 
-    public async Task<Result<bool>> ApplyTemplateAsync(string userLanguage, Guid workoutId, Guid templateWorkoutId)
+    public async Task<Result<bool>> ApplyTemplateAsync(Guid userId, string userLanguage, Guid workoutId, Guid templateWorkoutId)
     {
-        var workout = await _context.Workouts.FindAsync(workoutId);
+        var workout = await _context.Workouts
+            .FirstOrDefaultAsync(w => w.Id == workoutId &&  w.UserId == userId);
         
         if(workout == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Workout not found");
@@ -48,7 +49,7 @@ public class WorkoutTemplateService : IWorkoutTemplate
         var templateSession = await _context.UserTemplates
             .AsNoTracking()
             .Include(w => w.Exercises)
-            .FirstOrDefaultAsync(w => w.Id == templateWorkoutId);
+            .FirstOrDefaultAsync(w => w.Id == templateWorkoutId && w.UserId == userId);
 
         if(templateSession == null)
             return  Result<bool>.Failed(ErrorCode.NotFound, "Template workout not found");
@@ -59,17 +60,17 @@ public class WorkoutTemplateService : IWorkoutTemplate
 
         foreach (var exerciseId in templateExercises)
         {
-            await _workoutService.AddUserExerciseAsync(workout.Id, exerciseId, userLanguage);
+            await _workoutService.AddUserExerciseAsync(userId, workout.Id, exerciseId, userLanguage);
         }
 
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<TemplateGetResponse>> GetTemplateAsync(Guid templateId, string language)
+    public async Task<Result<TemplateGetResponse>> GetTemplateAsync(Guid userId, Guid templateId, string language)
     {
         var template = await _context.UserTemplates
             .Include(t => t.Exercises)
-            .FirstOrDefaultAsync(w => w.Id == templateId);
+            .FirstOrDefaultAsync(w => w.Id == templateId && w.UserId == userId);
         
         if(template == null)
             return Result<TemplateGetResponse>.Failed(ErrorCode.NotFound, "Template not found");
@@ -135,8 +136,8 @@ public class WorkoutTemplateService : IWorkoutTemplate
         var workout = await _context.Workouts
             .Include(w => w.UserExercises)
             .ThenInclude(ue => ue.RefExercise)
-            .FirstOrDefaultAsync(w => w.Id == workoutId);
-        
+            .FirstOrDefaultAsync(w => w.Id == workoutId && w.UserId == userId);
+
         if(workout == null)
             return Result<Guid>.Failed(ErrorCode.NotFound, "Workout not found");
 
@@ -155,11 +156,11 @@ public class WorkoutTemplateService : IWorkoutTemplate
         return  Result<Guid>.Success(template.Id);
     }
 
-    public async Task<Result<bool>> AddExerciseAsync(Guid templateId, Guid exerciseId)
+    public async Task<Result<bool>> AddExerciseAsync(Guid userId, Guid templateId, Guid exerciseId)
     {
         var template = await _context.UserTemplates
             .Include(t => t.Exercises)
-            .FirstOrDefaultAsync(w => w.Id == templateId);
+            .FirstOrDefaultAsync(w => w.Id == templateId && w.UserId == userId);
         
         if(template == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Template not found");
@@ -176,9 +177,11 @@ public class WorkoutTemplateService : IWorkoutTemplate
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> UpdateTemplateAsync(Guid templateId, string name, string description)
+    public async Task<Result<bool>> UpdateTemplateAsync(Guid userId, Guid templateId, string name, string description)
     {
-        var template = await _context.UserTemplates.FirstOrDefaultAsync(w => w.Id == templateId);
+        var template = await _context.UserTemplates
+            .FirstOrDefaultAsync(w => w.Id == templateId && w.UserId == userId);
+        
         if(template == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Template not found");
 
@@ -195,11 +198,11 @@ public class WorkoutTemplateService : IWorkoutTemplate
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> DeleteExerciseAsync(Guid templateId, Guid exerciseId)
+    public async Task<Result<bool>> DeleteExerciseAsync(Guid userId, Guid templateId, Guid exerciseId)
     {
         var template = await _context.UserTemplates
             .Include(e => e.Exercises)
-            .FirstOrDefaultAsync(w => w.Id == templateId);
+            .FirstOrDefaultAsync(w => w.Id == templateId && w.UserId == userId);
 
         if(template == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Template not found");
@@ -213,9 +216,10 @@ public class WorkoutTemplateService : IWorkoutTemplate
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<bool>> DeleteTemplateAsync(Guid templateId)
+    public async Task<Result<bool>> DeleteTemplateAsync(Guid userId, Guid templateId)
     {
-        var template = await _context.UserTemplates.FirstOrDefaultAsync(w => w.Id == templateId);
+        var template = await _context.UserTemplates
+            .FirstOrDefaultAsync(w => w.Id == templateId && w.UserId == userId);
         if(template == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Template not found");
 
