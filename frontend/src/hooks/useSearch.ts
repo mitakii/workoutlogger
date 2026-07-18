@@ -5,7 +5,7 @@ import {
   searchTemplate,
   searchUser,
 } from "./react-query/functions";
-import { PageSize } from "@/pages/UserProfilePage";
+import { PAGE_SIZE } from "@/lib/constants";
 
 export const useSearch = (
   type: SearchType | SearchPickerType,
@@ -19,15 +19,15 @@ export const useSearch = (
 
       switch (type) {
         case "workoutExercise":
-          return searchExercise(query, PageSize, page);
+          return searchExercise(query, PAGE_SIZE, page);
         case "user":
-          return searchUser(query, PageSize, page);
+          return searchUser(query, PAGE_SIZE, page);
         case "template":
-          return searchTemplate(query, PageSize, page);
+          return searchTemplate(query, PAGE_SIZE, page);
         case "templateExercise":
-          return searchExercise(query, PageSize, page);
+          return searchExercise(query, PAGE_SIZE, page);
         case "exercise":
-          return searchExercise(query, PageSize, page);
+          return searchExercise(query, PAGE_SIZE, page);
 
         default:
           return [];

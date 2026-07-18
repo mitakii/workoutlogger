@@ -1,4 +1,4 @@
-import PagePagination from "@/components/profile/PagePagination";
+import PagePagination from "@/components/PagePagination";
 import SearchBar from "@/components/SearchBar";
 import SearchResult from "@/components/search/SearchResult";
 import { Spinner } from "@/components/ui/spinner";

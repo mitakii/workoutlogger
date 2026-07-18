@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Dumbbell } from "lucide-react";
 import type { Exercise } from "@/types/types";
-import { Card, CardDescription, CardHeader } from "../ui/card";
+import { Card } from "../ui/card";
 import { Field, FieldError } from "../ui/field";
 import { Button } from "../ui/button";
 
@@ -24,14 +25,33 @@ export const ExerciseSetTile = ({ exercise, addExercise }: Props) => {
   };
 
   return (
-    <Card className="p-2 mt-2">
-      <CardHeader className="pl-2">{exercise.name}</CardHeader>
-      <CardDescription className="pl-2">{exercise.description}</CardDescription>
+    <Card className="mt-2 p-3">
+      <div className="flex items-center gap-3">
+        {exercise.imageUrl ? (
+          <img
+            src={exercise.imageUrl}
+            alt={exercise.name}
+            className="h-16 w-16 shrink-0 rounded-lg bg-muted object-cover"
+          />
+        ) : (
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted">
+            <Dumbbell className="h-6 w-6 text-muted-foreground" />
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-sm font-semibold">{exercise.name}</h3>
+          {exercise.description && (
+            <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+              {exercise.description}
+            </p>
+          )}
+        </div>
+      </div>
       <Field>
-        <Button className="m-2" onClick={handleAddExercise}>
+        <Button className="mt-3 w-full" onClick={handleAddExercise}>
           Add Exercise
         </Button>
-        <FieldError> {error ?? { error }}</FieldError>
+        {error && <FieldError>{error}</FieldError>}
       </Field>
     </Card>
   );

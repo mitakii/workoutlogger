@@ -2,7 +2,7 @@ import { useState } from "react";
 import SearchResult from "@/components/search/SearchResult";
 import { useParams } from "react-router-dom";
 import type { SearchResults, SearchType } from "@/types/types";
-import PagePagination from "@/components/profile/PagePagination";
+import PagePagination from "@/components/PagePagination";
 import { useSearch } from "@/hooks/useSearch";
 import { Spinner } from "@/components/ui/spinner";
 import SearchBar from "../components/SearchBar";

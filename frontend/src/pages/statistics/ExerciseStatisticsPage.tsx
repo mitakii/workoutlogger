@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
-import { useExerciseStatistics } from "@/hooks/react-query";
+import { Dumbbell } from "lucide-react";
+import { useExerciseStatistics, useGetExercise } from "@/hooks/react-query";
 import { useUserContext } from "@/context/UserContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -15,6 +16,7 @@ const ExerciseStatisticsPage = () => {
     user?.id ?? "",
     exerciseId ?? ""
   );
+  const { data: exercise } = useGetExercise(exerciseId ?? "");
 
   if (isLoading) {
     return (
@@ -34,7 +36,29 @@ const ExerciseStatisticsPage = () => {
 
   return (
     <div className="px-4 py-6 max-w-lg mx-auto space-y-6">
-      <h1 className="text-xl font-bold">Exercise Statistics</h1>
+      <div className="flex items-center gap-4">
+        {exercise?.imageUrl ? (
+          <img
+            src={exercise.imageUrl}
+            alt={exercise.name}
+            className="h-16 w-16 shrink-0 rounded-lg bg-muted object-cover"
+          />
+        ) : (
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted">
+            <Dumbbell className="h-6 w-6 text-muted-foreground" />
+          </div>
+        )}
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold truncate">
+            {exercise?.name ?? "Exercise Statistics"}
+          </h1>
+          {exercise?.description && (
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {exercise.description}
+            </p>
+          )}
+        </div>
+      </div>
 
       <div className="grid grid-cols-3 gap-3">
         <StatCard label="Max Weight" value={`${stats.maxWeight ?? 0} kg`} />

@@ -32,6 +32,7 @@ import {
   getUserStatistics,
   getDailyStatisticsRange,
   getExerciseStatistics,
+  getExercise,
 } from "./functions";
 import {
   type GetSessionsApi,
@@ -464,5 +465,14 @@ export const useExerciseStatistics = (userId: string, exerciseId: string) => {
     enabled: !!userId && !!exerciseId,
     staleTime: 2 * 60 * 1000,
     retry: 2,
+  });
+};
+
+export const useGetExercise = (exerciseId: string) => {
+  return useQuery({
+    queryKey: ["exercise", exerciseId],
+    queryFn: () => getExercise(exerciseId),
+    enabled: !!exerciseId,
+    staleTime: 5 * 60 * 1000,
   });
 };

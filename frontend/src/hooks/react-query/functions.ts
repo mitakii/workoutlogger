@@ -162,6 +162,11 @@ export const deleteUserSet = async (userSet: UserSet) => {
     throw e;
   }
 };
+export const getExercise = async (exerciseId: string): Promise<Exercise> => {
+  const res = await api.get(`/Exercise/${exerciseId}`);
+  return res.data;
+};
+
 //search
 export const searchExercise = async (
   query: string,

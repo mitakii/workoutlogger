@@ -33,7 +33,7 @@ export const router = createBrowserRouter([
             element: <WorkoutPage />,
           },
           { path: "search/:type", element: <SearchPage /> },
-          { path: "u/:token", element: <UserProfilePage /> },
+          { path: "u/:username", element: <UserProfilePage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "searchPicker/:type/:id", element: <SearchPickerPage /> },
           { path: "editTemplate/:id", element: <TemplateEditPage /> },

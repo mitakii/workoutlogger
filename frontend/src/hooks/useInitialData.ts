@@ -1,7 +1,7 @@
 import type { SearchPickerType, SearchType } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { useGetUserTemplates } from "./react-query";
-import { PageSize } from "@/pages/UserProfilePage";
+import { PAGE_SIZE } from "@/lib/constants";
 import { getUserTemplates } from "./react-query/functions";
 
 export const useInitialData = (
@@ -13,7 +13,7 @@ export const useInitialData = (
     queryFn: async () => {
       switch (type) {
         case "template":
-          return getUserTemplates(page, PageSize);
+          return getUserTemplates(page, PAGE_SIZE);
 
         default:
           return [];

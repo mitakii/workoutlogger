@@ -5,16 +5,25 @@ import {
   PaginationItem,
   PaginationNext,
   PaginationPrevious,
-} from "../ui/pagination";
-import { PageSize } from "@/pages/UserProfilePage";
+} from "./ui/pagination";
+import { PAGE_SIZE } from "@/lib/constants";
 
 type Props = {
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   pageLength: number;
+  pageSize?: number;
 };
 
-const PagePagination = ({ page, setPage, pageLength }: Props) => {
+const PagePagination = ({
+  page,
+  setPage,
+  pageLength,
+  pageSize = PAGE_SIZE,
+}: Props) => {
+  const hasPreviousPage = page > 1;
+  const hasNextPage = pageLength >= pageSize;
+
   return (
     <div>
       <Pagination className="mt-2 mb-0">
@@ -22,22 +31,20 @@ const PagePagination = ({ page, setPage, pageLength }: Props) => {
           <PaginationItem>
             <PaginationPrevious
               className={
-                page === 1 ? "pointer-events-none opacity-50" : undefined
+                hasPreviousPage ? undefined : "pointer-events-none opacity-50"
               }
               onClick={() => {
-                if (page >= 1) setPage((prevPage) => prevPage - 1);
+                if (hasPreviousPage) setPage((prevPage) => prevPage - 1);
               }}
             />
           </PaginationItem>
           <PaginationItem>
             <PaginationNext
               className={
-                pageLength < PageSize
-                  ? "pointer-events-none opacity-50"
-                  : undefined
+                hasNextPage ? undefined : "pointer-events-none opacity-50"
               }
               onClick={() => {
-                if (pageLength >= PageSize) setPage((prevPage) => prevPage + 1);
+                if (hasNextPage) setPage((prevPage) => prevPage + 1);
               }}
             />
           </PaginationItem>
