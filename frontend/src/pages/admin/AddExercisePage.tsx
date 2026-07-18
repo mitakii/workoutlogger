@@ -1,4 +1,5 @@
 import z from "zod";
+import axios from "axios";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAddExercise } from "../../hooks/react-query";
@@ -48,12 +49,18 @@ export const AddExercisePage = () => {
     try {
       await addExercise(form);
       reset();
-    } catch (e: any) {
-      const apiError = e.response?.data;
-      setError("nameTag", {
-        type: "server",
-        message: `${apiError.errors?.["NameTag"]}`,
-      });
+    } catch (e) {
+      if (!axios.isAxiosError(e)) {
+        setError("root", { message: "Unexpected error occured" });
+        return;
+      }
+
+      const nameTagError = e.response?.data?.errors?.["NameTag"];
+      if (nameTagError) {
+        setError("nameTag", { type: "server", message: nameTagError });
+      } else {
+        setError("root", { message: "Failed to add exercise" });
+      }
     }
   };
 

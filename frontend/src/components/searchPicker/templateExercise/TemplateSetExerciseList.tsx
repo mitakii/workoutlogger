@@ -13,14 +13,10 @@ const TemplateSetExerciseList = ({ exercises, templateId }: Props) => {
     useAddTemplateExercise(templateId);
 
   const handleAddExercise = async (exercise: Exercise) => {
-    try {
-      await addTemplateExercise({
-        templateId: templateId,
-        exerciseId: exercise.id,
-      });
-    } catch (e) {
-      throw e;
-    }
+    await addTemplateExercise({
+      templateId: templateId,
+      exerciseId: exercise.id,
+    });
   };
 
   return (

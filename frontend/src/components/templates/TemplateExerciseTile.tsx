@@ -11,11 +11,11 @@ type Props = {
 const TemplateExerciseTile = ({ exercise, removeExercise }: Props) => {
   const [error, setError] = useState("");
 
-  const handleAddExercise = async () => {
+  const handleRemoveExercise = async () => {
     try {
       await removeExercise(exercise);
     } catch (e) {
-      setError("Exercise already exist");
+      setError("Failed to remove exercise");
     }
   };
 
@@ -24,10 +24,10 @@ const TemplateExerciseTile = ({ exercise, removeExercise }: Props) => {
       <CardHeader className="pl-2">{exercise.name}</CardHeader>
       <CardDescription className="pl-2">{exercise.description}</CardDescription>
       <Field className="">
-        <Button className="" onClick={handleAddExercise}>
+        <Button className="" onClick={handleRemoveExercise}>
           Remove Exercise
         </Button>
-        <FieldError> {error ?? { error }}</FieldError>
+        {error && <FieldError>{error}</FieldError>}
       </Field>
     </Card>
   );

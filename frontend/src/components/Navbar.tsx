@@ -1,4 +1,6 @@
 import { useMatches, useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import { Menu } from "lucide-react";
 import "../index.css";
 import { useUserContext } from "../context/UserContext";
 import {
@@ -34,8 +36,6 @@ const Navbar = () => {
   const logoutUser = async () => {
     try {
       await logout();
-    } catch (e) {
-      throw e;
     } finally {
       navigate("/");
     }
@@ -51,12 +51,14 @@ const Navbar = () => {
     >
       <div className="">
         <div className="flex items-center justify-between">
-          <h1 className="font-semibold text-base" onClick={() => navigate("/")}>
+          <Link to="/" className="font-semibold text-base">
             Logger
-          </h1>
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">☰</Button>
+              <Button variant="outline" size="icon">
+                <Menu />
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40" align="start">
               {isLoggedIn() ? (
@@ -75,7 +77,7 @@ const Navbar = () => {
                   <DropdownMenuGroup>
                     <DropdownMenuLabel>Statistics</DropdownMenuLabel>
                     <DropdownMenuItem onClick={() => navigate("/statistics")}>
-                      Statistics
+                      Overview
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => navigate("/search/exercise")}

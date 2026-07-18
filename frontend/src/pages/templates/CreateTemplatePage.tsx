@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import type z from "zod";
 
 export type CreateTemplateInput = z.infer<typeof createTemplateSchema>;
@@ -41,7 +42,11 @@ const CreateTemplatePage = () => {
       const res = await createTemplate(form);
       navigate(`/editTemplate/${res}`);
     } catch (e) {
-      throw e;
+      if (!axios.isAxiosError(e)) {
+        setError("root", { message: "Unexpected error occured" });
+        return;
+      }
+      setError("root", { message: "Failed to create template" });
     }
   };
   return (

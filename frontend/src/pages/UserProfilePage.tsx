@@ -31,7 +31,11 @@ const UserProfilePage = () => {
   } = useGetUserByUsername(username ?? "");
 
   const [page, setPage] = useState<number>(1);
-  const { data: sessions, isLoading: sessionsLoading } = useGetUserSessions({
+  const {
+    data: sessions,
+    isLoading: sessionsLoading,
+    isError: sessionsError,
+  } = useGetUserSessions({
     username: userProfile?.username ?? "",
     page,
     pageSize: PAGE_SIZE,
@@ -123,6 +127,10 @@ const UserProfilePage = () => {
           <div className="flex items-center justify-center py-6">
             <Spinner />
           </div>
+        ) : sessionsError ? (
+          <p className="text-sm text-muted-foreground">
+            Failed to load workouts.
+          </p>
         ) : !sessions || sessions.length === 0 ? (
           <p className="text-sm text-muted-foreground">No workouts yet.</p>
         ) : (

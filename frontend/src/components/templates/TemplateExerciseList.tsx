@@ -13,14 +13,10 @@ const TemplateExerciseList = ({ exercises, templateId }: Props) => {
     useDeleteTemplateExercise(templateId);
 
   const handleRemoveExercise = async (exercise: Exercise) => {
-    try {
-      await deleteTemplateExercise({
-        templateId: templateId,
-        exerciseId: exercise.id,
-      });
-    } catch (e) {
-      throw e;
-    }
+    await deleteTemplateExercise({
+      templateId: templateId,
+      exerciseId: exercise.id,
+    });
   };
 
   return (

@@ -25,13 +25,9 @@ const SearchPage = () => {
 
   const showData = searchData.length == 0 ? initialData : searchData;
 
-  const handleSearch = async (debounceValue: string) => {
-    try {
-      setSearching(true);
-      setQuery(debounceValue);
-    } catch (e) {
-      console.log(e);
-    }
+  const handleSearch = (debounceValue: string) => {
+    setSearching(true);
+    setQuery(debounceValue);
   };
 
   return (

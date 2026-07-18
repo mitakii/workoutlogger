@@ -8,13 +8,21 @@ import { Link, useParams } from "react-router-dom";
 
 const TemplateEditPage = () => {
   const { id } = useParams();
-  const { data, isLoading } = useGetUserTemplate(id!);
+  const { data, isLoading, isError } = useGetUserTemplate(id!);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-128">
         <Spinner />
       </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
+        Failed to load template. Try again later.
+      </p>
     );
   }
 

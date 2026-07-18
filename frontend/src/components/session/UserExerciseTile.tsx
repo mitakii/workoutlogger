@@ -6,9 +6,11 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "../ui/button";
+import { FieldError } from "../ui/field";
 import type { UserExercise, UserSet } from "@/types/types";
 import { useAddUserSet, useDeleteUserExercise } from "@/hooks/react-query";
 import { UserSetTile } from "./UserSetTile";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +27,7 @@ type Props = {
 export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
   const { mutateAsync: addSet } = useAddUserSet(userExercise.id);
   const { mutateAsync: deleteExercise } = useDeleteUserExercise();
+  const [error, setError] = useState("");
 
   const handleAddSet = async () => {
     try {
@@ -37,7 +40,7 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
 
       await addSet(newSet);
     } catch (e) {
-      throw e;
+      setError("Failed to add set");
     }
   };
 
@@ -45,7 +48,7 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
     try {
       await deleteExercise(exerciseId);
     } catch (e) {
-      throw e;
+      setError("Failed to delete exercise");
     }
   };
 
@@ -91,6 +94,7 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
         >
           Add set
         </Button>
+        {error && <FieldError>{error}</FieldError>}
       </CardContent>
     </Card>
   );

@@ -7,7 +7,6 @@ import {
   useStatus,
 } from "../hooks/react-query";
 import { Spinner } from "@/components/ui/spinner";
-import { Underline } from "lucide-react";
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
@@ -42,27 +41,15 @@ const UserProvider = ({ children }: Props) => {
     password: string,
     language: string
   ) => {
-    try {
-      await registerApi({ username, email, password, language });
-    } catch (e) {
-      throw e;
-    }
+    await registerApi({ username, email, password, language });
   };
 
   const loginUser = async (username: string, password: string) => {
-    try {
-      await loginApi({ username, password });
-    } catch (e) {
-      throw e;
-    }
+    await loginApi({ username, password });
   };
 
   const logout = async () => {
-    try {
-      await logoutApi();
-    } catch (e) {
-      throw e;
-    }
+    await logoutApi();
   };
 
   return (

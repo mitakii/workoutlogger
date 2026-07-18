@@ -19,13 +19,9 @@ const SearchPickerPage = () => {
 
   const { data = [], isLoading, isFetching } = useSearch(type!, page, query);
 
-  const handleSearch = async (debounceValue: string) => {
-    try {
-      setSearching(true);
-      setQuery(debounceValue);
-    } catch (e) {
-      console.log(e);
-    }
+  const handleSearch = (debounceValue: string) => {
+    setSearching(true);
+    setQuery(debounceValue);
   };
 
   return (

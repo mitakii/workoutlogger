@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import { FieldError } from "@/components/ui/field";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +13,8 @@ import {
   useDeleteTemplate,
   useLastSession,
 } from "@/hooks/react-query";
-import { getLastSession } from "@/hooks/react-query/functions";
 import type { UserTemplate } from "@/types/types";
-import React from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
@@ -26,21 +26,26 @@ const TemplateTile = ({ template }: Props) => {
   const { data: session } = useLastSession();
   const { mutateAsync: deleteTemplate } = useDeleteTemplate();
   const { mutateAsync: applyTemplate } = useApplyTemplate();
+  const [error, setError] = useState("");
 
   const handleDeleteTemplate = async (templateId: string) => {
     try {
       await deleteTemplate(templateId);
     } catch (e) {
-      throw e;
+      setError("Failed to delete template");
     }
   };
 
-  const handleApplyTemplate = async (workoutId: string, templateId: string) => {
+  const handleApplyTemplate = async (workoutId?: string, templateId?: string) => {
+    if (!workoutId || !templateId) {
+      setError("Start a session before applying a template");
+      return;
+    }
     try {
       await applyTemplate({ workoutId, templateId });
       navigate(`/session/${workoutId}`);
     } catch (e) {
-      throw e;
+      setError("Failed to apply template");
     }
   };
   return (
@@ -67,7 +72,7 @@ const TemplateTile = ({ template }: Props) => {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() =>
-                      handleApplyTemplate(session?.workoutId!, template.id)
+                      handleApplyTemplate(session?.workoutId, template.id)
                     }
                   >
                     Apply to workout
@@ -83,6 +88,7 @@ const TemplateTile = ({ template }: Props) => {
           {template.description}
         </CardDescription>
       )}
+      {error && <FieldError className="pl-4">{error}</FieldError>}
     </Card>
   );
 };

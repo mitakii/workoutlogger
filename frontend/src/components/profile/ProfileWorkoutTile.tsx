@@ -9,7 +9,6 @@ import {
 import { Button } from "../ui/button";
 import { ChevronsUpDown } from "lucide-react";
 import ProfileExerciseTile from "./ProfileExerciseTile";
-import { useWorkoutToTemplate } from "@/hooks/react-query";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,15 +36,12 @@ export const days = [
 
 const ProfileWorkoutTile = ({ session }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { mutateAsync: createTemplate } = useWorkoutToTemplate();
   const navigate = useNavigate();
   const date = new Date(session.startTime).toLocaleDateString();
   const day = new Date(session.startTime).getDay();
 
-  const handleCreateTemplate = async () => {
-    try {
-      navigate(`/createTemplate/${session.workoutId}`);
-    } catch (e) {}
+  const handleCreateTemplate = () => {
+    navigate(`/createTemplate/${session.workoutId}`);
   };
 
   return (

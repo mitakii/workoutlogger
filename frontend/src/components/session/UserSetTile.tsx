@@ -15,6 +15,7 @@ import {
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { useDeleteUserSet, useUpdateUserSet } from "@/hooks/react-query";
 import type { UserSet } from "@/types/types";
+import { FieldError } from "../ui/field";
 
 type Props = {
   sessionId: string;
@@ -24,6 +25,7 @@ type Props = {
 export const UserSetTile = ({ sessionId, userSet }: Props) => {
   const [reps, setReps] = useState<number>(userSet.reps);
   const [weight, setWeight] = useState<number>(userSet.weight);
+  const [error, setError] = useState("");
   const isHydrated = useRef(false);
 
   const { mutateAsync: updateSet } = useUpdateUserSet(sessionId, userSet);
@@ -33,7 +35,7 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
     try {
       await deleteSet(userSet);
     } catch (e) {
-      console.log(e);
+      setError("Failed to delete set");
     }
   };
 
@@ -44,19 +46,27 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
         return;
       }
       if (reps === 0 && weight === 0) return;
-      await updateSet({
-        reps: reps,
-        weight: weight,
-        id: userSet.id,
-        order: userSet.order,
-      } as UserSet);
+      try {
+        await updateSet({
+          reps: reps,
+          weight: weight,
+          id: userSet.id,
+          order: userSet.order,
+        } as UserSet);
+        setError("");
+      } catch (e) {
+        setError("Failed to save set, changes reverted");
+        setReps(userSet.reps);
+        setWeight(userSet.weight);
+      }
     },
     700,
     [reps, weight]
   );
 
   return (
-    <Card className="flex flex-row justify-between p-2 mt-1.5 items-center">
+    <div className="mt-1.5">
+    <Card className="flex flex-row justify-between p-2 items-center">
       <div className="border-input data-focus-within:border-ring data-focus-within:ring-ring/50 data-focus-within:has-aria-invalid:border-destructive data-focus-within:has-aria-invalid:ring-destructive/20 dark:bg-input/30 dark:data-focus-within:has-aria-invalid:ring-destructive/40 relative inline-flex h-8 w-full min-w-0 items-center overflow-hidden rounded-lg border bg-transparent text-base whitespace-nowrap transition-colors outline-none data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-focus-within:ring-3 md:text-sm">
         <Button
           slot="decrement"
@@ -120,5 +130,7 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
         </DropdownMenuContent>
       </DropdownMenu>
     </Card>
+    {error && <FieldError className="mt-1">{error}</FieldError>}
+    </div>
   );
 };
