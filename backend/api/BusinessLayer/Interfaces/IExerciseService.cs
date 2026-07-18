@@ -10,7 +10,7 @@ public interface IExerciseService
     public Task<Result<string>> CreateAsync(ExerciseCreateRequest exercise);
     public Task<Result<bool>> DeleteAsync(Guid exerciseId);
     
-    public Task<Result<ExerciseGetResponse>> GetByIdAsync(Guid exerciseId);
+    public Task<Result<ExerciseGetResponse>> GetByIdAsync(Guid exerciseId, string language);
     public Task<Result<ExerciseGetResponse>> GetByNameAsync(string exerciseName, string language);
     public Task<Result<PagedResult<ExerciseGetResponse>>> GetAllAsync(SearchRequest request, string language);
     

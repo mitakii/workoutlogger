@@ -92,13 +92,17 @@ public class StatisticsService : IStatisticsService
         return Result<bool>.Success(true);
     }
 
+    private const string BenchPressNameTag = "barbell_bench_press";
+    private const string SquatNameTag = "barbell_squat";
+    private const string DeadliftNameTag = "barbell_deadlift";
+
     public async Task RecalculateUserStatisticsAsync(Guid userId)
     {
         var statistics = await _context.UserStatistics.FirstOrDefaultAsync(us => us.UserId == userId);
 
         if (statistics == null)
             throw new Exception("Statistics not found");
-        
+
         var data = await _context.DailyStatistics
             .AsNoTracking()
             .Where(d => d.UserId == userId)
@@ -123,6 +127,21 @@ public class StatisticsService : IStatisticsService
 
         statistics.TotalSets = data.TotalSets;
         statistics.TotalVolume = data.TotalVolume;
+
+        var maxLifts = await _context.UserExercises
+            .AsNoTracking()
+            .Where(ue => ue.Workout.UserId == userId && (
+                ue.RefExercise.NameTag == BenchPressNameTag ||
+                ue.RefExercise.NameTag == SquatNameTag ||
+                ue.RefExercise.NameTag == DeadliftNameTag))
+            .SelectMany(ue => ue.UserExerciseSets, (ue, set) => new { ue.RefExercise.NameTag, set.Weight })
+            .GroupBy(x => x.NameTag)
+            .Select(g => new { NameTag = g.Key, MaxWeight = g.Max(x => x.Weight) })
+            .ToListAsync();
+
+        statistics.MaxBenchPress = maxLifts.FirstOrDefault(m => m.NameTag == BenchPressNameTag)?.MaxWeight ?? 0;
+        statistics.MaxSquat = maxLifts.FirstOrDefault(m => m.NameTag == SquatNameTag)?.MaxWeight ?? 0;
+        statistics.MaxDeadlift = maxLifts.FirstOrDefault(m => m.NameTag == DeadliftNameTag)?.MaxWeight ?? 0;
 
         statistics.LastUpdated = DateTime.UtcNow;
 
@@ -340,7 +359,7 @@ public class StatisticsService : IStatisticsService
         
         statistic.MaxWeight = userExerciseStatistic.MaxWeight;
         statistic.TotalSets = userExerciseStatistic.TotalSets;
-        statistic.TotalVolume = userExerciseStatistic.TotalSets;
+        statistic.TotalVolume = userExerciseStatistic.TotalVolume;
         statistic.LastTimeExecuted = DateOnly.FromDateTime(DateTime.Now);
         statistic.LastUpdate = DateTime.UtcNow;
 

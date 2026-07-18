@@ -57,17 +57,28 @@ public class ExerciseService : IExerciseService
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<ExerciseGetResponse>> GetByIdAsync(Guid exerciseId)
+    public async Task<Result<ExerciseGetResponse>> GetByIdAsync(Guid exerciseId, string language)
     {
-        var exercise = await _dbContext.Exercises.FindAsync(exerciseId);
-        if(exercise == null)
+        var translation = await _dbContext.ExerciseTranslations
+            .AsNoTracking()
+            .Where(t => t.ExerciseId == exerciseId && t.Language == language)
+            .Select(t => new
+            {
+                t.Name,
+                t.Description,
+                t.Exercise.MediaUrl,
+            })
+            .FirstOrDefaultAsync();
+
+        if(translation == null)
             return Result<ExerciseGetResponse>.Failed(ErrorCode.NotFound, "Exercise not found");
-        
+
         return Result<ExerciseGetResponse>.Success(new ExerciseGetResponse
         {
-            Id = exercise.Id,
-            Name = exercise.NameTag,
-            Description = exercise.Description,
+            Id = exerciseId,
+            Name = translation.Name,
+            ImageUrl = translation.MediaUrl,
+            Description = translation.Description,
         });
     }
 
@@ -124,6 +135,7 @@ public class ExerciseService : IExerciseService
                     new ExerciseGetResponse
                     {
                         Id = t.ExerciseId,
+                        ImageUrl = t.Exercise.MediaUrl,
                         Name = t.Name,
                         Description = t.Description,
                     }).ToListAsync()

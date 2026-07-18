@@ -63,7 +63,14 @@ public class ExerciseController : ControllerBase
     [HttpGet("{exerciseId:guid}")]
     public async Task<IActionResult> Get(Guid exerciseId)
     {
-        var result = await _exerciseService.GetByIdAsync(exerciseId);
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+
+        var userLanguage = await _userService.GetUserLanguageAsync(userId);
+        if (!userLanguage.Succeeded)
+            return userLanguage.ToIActionResultErrors();
+
+        var result = await _exerciseService.GetByIdAsync(exerciseId, userLanguage.Data!);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
 
