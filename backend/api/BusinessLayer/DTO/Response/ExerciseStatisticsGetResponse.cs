@@ -19,5 +19,7 @@ public class ExerciseStatisticsGetResponse
     public double TotalDuration { get; set; }
     public double TotalDistanceKm { get; set; }
     
+    public Dictionary<DateOnly, double> TotalProgression {get; set;}
+    
     public DateTime LastTimeExecuted { get; set; }
 }

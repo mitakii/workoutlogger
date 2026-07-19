@@ -169,7 +169,7 @@ public class StatisticsService : IStatisticsService
             TotalExercises = s.TotalExercises,
             TotalSets = s.TotalSets,
             UserId = s.UserId,
-        }).ToList();
+        }).OrderBy(d => d.Date).ToList();
         
         return Result<List<DailyStatisticsGetResponse>>.Success(result);
     }
@@ -294,6 +294,24 @@ public class StatisticsService : IStatisticsService
         if (result == null)
             return Result<ExerciseStatisticsGetResponse>.Failed(ErrorCode.NotFound, "Statistics not found");
 
+        var dateFrom =DateOnly.FromDateTime(DateTime.UtcNow - TimeSpan.FromDays(30));
+        var dateTo = DateOnly.FromDateTime(DateTime.UtcNow);
+        
+        var exercisesProgression = await _context.UserExercises
+            .AsNoTracking()
+            .Include(ue => ue.Workout)
+            .Include(ue => ue.UserExerciseSets)
+            .Where(ue => ue.Workout.UserId == userId 
+                         && ue.RefExerciseId == exerciseId 
+                         && ue.Workout.DateOnlyCreated >= dateFrom 
+                         && ue.Workout.DateOnlyCreated <= dateTo)
+            .GroupBy(x => x.Workout.DateOnlyCreated)
+            .Select(g => new
+            {
+                maxWeight = g.SelectMany(ue => ue.UserExerciseSets).Max(s => s.Weight),
+                date = g.Key
+            }).ToDictionaryAsync(ue => ue.date, ue => ue.maxWeight);
+        
         return Result<ExerciseStatisticsGetResponse>.Success(new ExerciseStatisticsGetResponse()
         {
             ExerciseId = result.ExerciseId,
@@ -304,6 +322,7 @@ public class StatisticsService : IStatisticsService
             MaxDistanceKm = result.MaxDistanceKm,
             TotalDuration = result.TotalDuration,
             TotalSets = result.TotalSets,
+            TotalProgression = exercisesProgression,
         });
     }
 
