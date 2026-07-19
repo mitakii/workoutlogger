@@ -44,8 +44,7 @@ const RecentActivity = () => {
         {sessions.map((session) => (
           <Card
             key={session.workoutId}
-            className="cursor-pointer p-3 transition-colors hover:bg-accent/50"
-            onClick={() => navigate(`/session/${session.workoutId}`)}
+            className="p-3 transition-colors hover:bg-accent/50"
           >
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">

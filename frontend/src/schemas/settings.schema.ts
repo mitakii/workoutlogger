@@ -26,3 +26,25 @@ export const changeLanguageScheme = z.object({
   newLanguage: z.string().max(4, "language is required"),
   password: z.string().min(1, "Password is required"),
 });
+
+const MAX_PROFILE_PICTURE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_PROFILE_PICTURE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+];
+
+export const changePfpScheme = z.object({
+  profilePicture: z
+    .custom<FileList>()
+    .refine((files) => files?.length === 1, "Profile picture is required")
+    .refine(
+      (files) => files?.[0]?.size <= MAX_PROFILE_PICTURE_SIZE,
+      "Image must be smaller than 5MB"
+    )
+    .refine(
+      (files) => ALLOWED_PROFILE_PICTURE_TYPES.includes(files?.[0]?.type),
+      "Only JPEG, PNG or WEBP images are allowed"
+    ),
+  password: z.string().min(1, "Password is required"),
+});

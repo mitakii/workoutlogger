@@ -60,7 +60,7 @@ const ChangeUsername = () => {
   };
 
   return (
-    <div>
+    <div className="pt-2">
       <Card>
         <CardHeader>
           <CardTitle>Change username</CardTitle>

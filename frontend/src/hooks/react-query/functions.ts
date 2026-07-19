@@ -192,6 +192,14 @@ export const changeLanguage = async (newLanguage: string, password: string) => {
   await api.patch("/User/changeLanguage", { newLanguage, password });
 };
 
+export const changePfp = async (profilePicture: File, password: string) => {
+  const formData = new FormData();
+  formData.append("profilePicture", profilePicture);
+  formData.append("password", password);
+
+  await api.patch("/User/changePfp", formData);
+};
+
 // auth
 
 export const loginApi = async (
@@ -215,14 +223,20 @@ export const registerApi = async (
   username: string,
   email: string,
   password: string,
-  language: string
+  language: string,
+  profilePicture: File
 ) => {
-  return await axios.post(`${import.meta.env.VITE_API_URL}/register`, {
-    username,
-    email,
-    password,
-    language,
-  });
+  const formData = new FormData();
+  formData.append("username", username);
+  formData.append("email", email);
+  formData.append("password", password);
+  formData.append("language", language);
+  formData.append("profilePicture", profilePicture);
+
+  return await axios.post(
+    `${import.meta.env.VITE_API_URL}/register`,
+    formData
+  );
 };
 
 export const logoutApi = async () => {

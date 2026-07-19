@@ -19,6 +19,7 @@ import {
   changeUsername,
   changePassword,
   changeLanguage,
+  changePfp,
   searchUser,
   createWorkoutTemplate,
   deleteTemplate,
@@ -45,6 +46,7 @@ import {
 import type { ChangeUsernameInput } from "@/components/settings/ChangeUsername";
 import type { ChangePasswordInput } from "@/components/settings/ChangePassword";
 import type { ChangeLanguageIput } from "@/components/settings/ChangeLanguage";
+import type { ChangePfpInput } from "@/components/settings/ChangePfp";
 
 export const useLastSession = () => {
   return useQuery({
@@ -258,6 +260,19 @@ export const useChangeLanguage = () => {
   });
 };
 
+export const useChangePfp = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ profilePicture, password }: ChangePfpInput) =>
+      changePfp(profilePicture[0], password),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["User", "currentUser"],
+      });
+    },
+  });
+};
+
 // auth
 
 type UserLogin = {
@@ -279,6 +294,7 @@ type UserRegister = {
   email: string;
   password: string;
   language: string;
+  profilePicture: File;
 };
 
 export const useRegister = () => {
@@ -288,7 +304,8 @@ export const useRegister = () => {
         register.username,
         register.email,
         register.password,
-        register.language
+        register.language,
+        register.profilePicture
       ),
   });
 };

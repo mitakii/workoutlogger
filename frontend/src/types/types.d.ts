@@ -72,6 +72,7 @@ export type ExerciseStatistics = {
   totalVolume: number;
   totalDuration: number;
   totalDistanceKm: number;
+  totalProgression: Record<string, number>;
 };
 
 export type BackendError = {

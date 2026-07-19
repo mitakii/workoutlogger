@@ -19,11 +19,16 @@ const SearchPage = () => {
     data: searchData = [],
     isLoading,
     isFetching,
+    isError: searchIsError,
   } = useSearch(type!, page, query);
 
-  const { data: initialData = [] } = useInitialData(type!, page);
+  const { data: initialData = [], isError: initialIsError } = useInitialData(
+    type!,
+    page
+  );
 
   const showData = searchData.length == 0 ? initialData : searchData;
+  const isError = query.trim().length > 0 ? searchIsError : initialIsError;
 
   const handleSearch = (debounceValue: string) => {
     setSearching(true);
@@ -40,19 +45,29 @@ const SearchPage = () => {
         </div>
       )}
 
-      {!isLoading && searching && showData.length === 0 && (
-        <div>{type} not found</div>
+      {!isLoading && isError && (
+        <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
+          Something went wrong while searching. Try again later.
+        </p>
       )}
 
-      {showData.length > 0 && (
+      {!isLoading && !isError && searching && showData.length === 0 && (
+        <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
+          No {type} found.
+        </p>
+      )}
+
+      {!isError && showData.length > 0 && (
         <SearchResult type={type!} results={showData as SearchResults} />
       )}
 
-      <PagePagination
-        page={page}
-        setPage={setPage}
-        pageLength={showData.length}
-      />
+      {!isError && (
+        <PagePagination
+          page={page}
+          setPage={setPage}
+          pageLength={showData.length}
+        />
+      )}
     </div>
   );
 };

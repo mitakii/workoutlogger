@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Dumbbell } from "lucide-react";
 import { useExerciseStatistics, useGetExercise } from "@/hooks/react-query";
@@ -7,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import StatCard from "@/components/statistics/StatCard";
 import StatRow from "@/components/statistics/StatRow";
+import WeightProgressionChart from "@/components/statistics/WeightProgressionChart";
 import { fmtVol } from "@/lib/utils";
 
 const ExerciseStatisticsPage = () => {
@@ -17,6 +19,13 @@ const ExerciseStatisticsPage = () => {
     exerciseId ?? ""
   );
   const { data: exercise } = useGetExercise(exerciseId ?? "");
+
+  const progressionData = useMemo(() => {
+    if (!stats) return [];
+    return Object.entries(stats.totalProgression)
+      .map(([date, weight]) => ({ date, weight }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [stats]);
 
   if (isLoading) {
     return (
@@ -88,6 +97,21 @@ const ExerciseStatisticsPage = () => {
           <StatRow label="Total Volume" value={fmtVol(stats.totalVolume)} />
         </CardContent>
       </Card>
+
+      <Separator />
+
+      <div>
+        <h2 className="text-sm font-semibold mb-3">
+          Weight Progression — Last 30 Days
+        </h2>
+        {progressionData.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-6">
+            No weight progression data in the last 30 days.
+          </p>
+        ) : (
+          <WeightProgressionChart data={progressionData} />
+        )}
+      </div>
     </div>
   );
 };

@@ -17,7 +17,12 @@ const SearchPickerPage = () => {
 
   const [searching, setSearching] = useState(false);
 
-  const { data = [], isLoading, isFetching } = useSearch(type!, page, query);
+  const {
+    data = [],
+    isLoading,
+    isFetching,
+    isError,
+  } = useSearch(type!, page, query);
 
   const handleSearch = (debounceValue: string) => {
     setSearching(true);
@@ -34,11 +39,19 @@ const SearchPickerPage = () => {
         </div>
       )}
 
-      {!isLoading && searching && data.length === 0 && (
-        <div>{type} not found</div>
+      {!isLoading && isError && (
+        <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
+          Something went wrong while searching. Try again later.
+        </p>
       )}
 
-      {data.length > 0 && (
+      {!isLoading && !isError && searching && data.length === 0 && (
+        <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
+          No {type} found.
+        </p>
+      )}
+
+      {!isError && data.length > 0 && (
         <SearchPickerResult
           type={type!}
           results={data as SearchPickerResults}
@@ -46,7 +59,9 @@ const SearchPickerPage = () => {
         />
       )}
 
-      <PagePagination page={page} setPage={setPage} pageLength={data.length} />
+      {!isError && (
+        <PagePagination page={page} setPage={setPage} pageLength={data.length} />
+      )}
     </div>
   );
 };

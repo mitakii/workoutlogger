@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useUserContext } from "../../context/UserContext";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
@@ -13,6 +14,11 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -23,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { Camera } from "lucide-react";
 import { registerSchema } from "@/schemas/auth.schema";
 import type { BackendError } from "@/types/types";
 
@@ -31,6 +38,7 @@ export type RegisterFormInput = z.infer<typeof registerSchema>;
 export const Register = () => {
   const { registerUser } = useUserContext();
   const navigate = useNavigate();
+  const [pfpPreview, setPfpPreview] = useState<string | null>(null);
 
   const {
     register,
@@ -40,13 +48,22 @@ export const Register = () => {
     formState: { errors },
   } = useForm<RegisterFormInput>({ resolver: zodResolver(registerSchema) });
 
+  const handlePfpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setPfpPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return file ? URL.createObjectURL(file) : null;
+    });
+  };
+
   const handleRegister = async (form: RegisterFormInput) => {
     try {
       await registerUser(
         form.userName,
         form.email,
         form.password,
-        form.language
+        form.language,
+        form.profilePicture[0]
       );
       navigate("/");
     } catch (e) {
@@ -101,6 +118,27 @@ export const Register = () => {
         <CardContent>
           <FieldGroup>
             <form action="" onSubmit={handleSubmit(handleRegister)}>
+              <Field className="items-center">
+                <FieldLabel>Add profile picture</FieldLabel>
+                <label htmlFor="profilePicture" className="cursor-pointer">
+                  <Avatar className="size-20">
+                    {pfpPreview && (
+                      <AvatarImage src={pfpPreview} alt="Profile picture preview" />
+                    )}
+                    <AvatarFallback>
+                      <Camera className="size-6 text-muted-foreground" />
+                    </AvatarFallback>
+                  </Avatar>
+                </label>
+                <Input
+                  id="profilePicture"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  {...register("profilePicture", { onChange: handlePfpChange })}
+                />
+                <FieldError errors={[errors.profilePicture]}></FieldError>
+              </Field>
               <Field>
                 <FieldLabel className="mt-2">Login</FieldLabel>
                 <Input
