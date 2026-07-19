@@ -7,6 +7,7 @@ using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using PresentationLayer.Attributes;
 using PresentationLayer.DTO;
 using PresentationLayer.Extensions;
 
@@ -25,14 +26,14 @@ public class UserController : ControllerBase
         _userService = userService;
         _userManager = userManager;
     }
-    
+
     [HttpGet("{userId:guid}")]
     public async Task<IActionResult> GetProfileById(Guid userId)
     {
         var result = await _userService.GetUserAsync(userId);
         return result.Succeeded ? Ok(result.Data) : NotFound();
     }
-    
+
     [HttpGet("{username}")]
     public async Task<IActionResult> GetProfileByName(string username)
     {
@@ -42,7 +43,7 @@ public class UserController : ControllerBase
         var result = await _userService.GetUserByNameAsync(username);
         return result.Succeeded ? Ok(result.Data) : NotFound();
     }
-    
+
     [HttpGet("search")]
     public async Task<IActionResult> SearchUsers([FromQuery] SearchRequest request)
     {
@@ -50,27 +51,27 @@ public class UserController : ControllerBase
             return BadRequest(ModelState.Values
                 .SelectMany(v => v.Errors
                     .Select(e => e.ErrorMessage)));
-        
-        var result = await _userService.GetPagedUsersAsync(request.Query,  request.Page, request.PageSize);
+
+        var result = await _userService.GetPagedUsersAsync(request.Query, request.Page, request.PageSize);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
-    
+
     [HttpPatch("changeLanguage")]
     public async Task<IActionResult> ChangeLanguage(ChangeLanguageRequest request)
     {
         if (string.IsNullOrEmpty(request.NewLanguage))
             return BadRequest();
-        
+
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
-        
-        var user  = await _userManager.FindByIdAsync(userId.ToString());
-        if(user == null)
+
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
             return NotFound("User not found");
-        
-        if(! await _userManager.CheckPasswordAsync(user, request.Password))
+
+        if (!await _userManager.CheckPasswordAsync(user, request.Password))
             return Unauthorized("Invalid password");
-        
+
         var result = await _userService.ChangeUserLanguageAsync(userId, request.NewLanguage);
 
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
@@ -79,49 +80,74 @@ public class UserController : ControllerBase
     [HttpPatch("changeUsername")]
     public async Task<IActionResult> ChangeUsername(ChangeUsernameRequest request)
     {
-        if(string.IsNullOrEmpty(request.NewUsername))
+        if (string.IsNullOrEmpty(request.NewUsername))
             return BadRequest("Username is empty");
-        
-        if( await _userManager.FindByNameAsync(request.NewUsername)  != null)
+
+        if (await _userManager.FindByNameAsync(request.NewUsername) != null)
             return BadRequest("Username already exists");
-        
+
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
-        
-        var user  = await _userManager.FindByIdAsync(userId.ToString());
-        if(user == null)
+
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
             return NotFound("User not found");
-        
-        if(!await _userManager.CheckPasswordAsync(user, request.Password))
+
+        if (!await _userManager.CheckPasswordAsync(user, request.Password))
             return Unauthorized("Invalid password");
-        
-        if(user.UserName == request.NewUsername)
+
+        if (user.UserName == request.NewUsername)
             return BadRequest("Username is the same");
-        
+
         var result = await _userService.ChangeUsernameAsync(user, request.NewUsername);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
-    
+
     [HttpPatch("changePassword")]
     public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
     {
-        if(string.IsNullOrEmpty(request.OldPassword) || string.IsNullOrEmpty(request.NewPassword))
+        if (string.IsNullOrEmpty(request.OldPassword) || string.IsNullOrEmpty(request.NewPassword))
             return BadRequest("Passwords are empty");
-        
         
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             return Unauthorized();
-        
-        var user  = await _userManager.FindByIdAsync(userId.ToString());
-        if(user == null)
+
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
             return NotFound("User not found");
 
         var passwordChange = await _userManager
             .ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
-        
-        if(!passwordChange.Succeeded)
+
+        if (!passwordChange.Succeeded)
             return BadRequest("Passwords do not match");
-        
+
         return Ok();
     }
+    
+    [ValidateImage]
+    [HttpPatch("changePfp")]
+    public async Task<IActionResult> ChangeUserProfilePicture([FromForm] UpdateUserPfp request)
+    {
+        if (string.IsNullOrEmpty(request.Password))
+            return BadRequest("Password is empty");
+
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
+            return NotFound("User not found");
+
+        if (!await _userManager.CheckPasswordAsync(user, request.Password))
+            return Unauthorized("Invalid password");
+
+        var result = await _userService.ChangeUserPfpAsync(userId, request.ProfilePicture);
+
+        if(!result.Succeeded)
+            return result.ToIActionResultErrors();
+
+        return Ok();
+    }
+
 }

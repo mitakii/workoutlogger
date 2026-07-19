@@ -2,6 +2,7 @@ using BusinessLayer.DTO;
 using BusinessLayer.Exceptions;
 using BusinessLayer.Helpers;
 using DataAccessLayer.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace BusinessLayer.Interfaces;
 
@@ -13,4 +14,5 @@ public interface IUserService
     public Task<Result<bool>> ChangeUsernameAsync(User user, string newUsername);
     public Task<Result<PagedResult<UserGetResponse>>> GetPagedUsersAsync(string query, int pageIndex, int pageSize);
     public Task<Result<string>> GetUserLanguageAsync(Guid userId);
+    public Task<Result<bool>> ChangeUserPfpAsync(Guid userId, IFormFile photo);
 }

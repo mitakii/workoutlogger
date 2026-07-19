@@ -10,6 +10,7 @@ using DataAccessLayer.Data;
 using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using PresentationLayer.Filters;
 
@@ -22,6 +23,11 @@ var key = builder.Configuration["JWTOptions:SigningKey"] ?? throw new InvalidOpe
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 5 * 1024 * 1024;
+});
 
 builder.Services.AddCors(options =>
 {

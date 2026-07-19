@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using PresentationLayer.Attributes;
 using PresentationLayer.Extensions;
 
 namespace PresentationLayer.Controllers;
@@ -21,19 +22,21 @@ public class AuthController : ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IBackgroundJobService _jobs;
+    private readonly ICloudinaryService _cloudinary;
 
     public AuthController(ILogger<AuthController> logger,
         ITokenService tokenService,
         UserManager<User> userManager,
         SignInManager<User> signInManager,
         IOptions<JwtOptions> jwtOptions,
-        IBackgroundJobService jobs)
+        IBackgroundJobService jobs, ICloudinaryService cloudinary)
     {
         _logger = logger;
         _tokenService = tokenService;
         _userManager = userManager;
         _signInManager = signInManager;
         _jobs = jobs;
+        _cloudinary = cloudinary;
         _jwtOptions = jwtOptions.Value;
     }
     
@@ -108,14 +111,23 @@ public class AuthController : ControllerBase
     }
 
     [AllowAnonymous]
+    [ValidateImage]
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
+    public async Task<IActionResult> Register([FromForm] UserRegisterRequest request)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+        
+        var pfpResult = await _cloudinary.AddPhotoAsync(request.ProfilePicture);
+        if (!pfpResult.Succeeded)
+            return pfpResult.ToIActionResultErrors();
+        
         var user = new User
         {
             UserName = request.Username,
             Email = request.Email,
             Language =  request.Language,
+            UserPfpUrl = pfpResult.Data.Url.AbsoluteUri,
         };
         var userResult = await _userManager.CreateAsync(user, request.Password);
 

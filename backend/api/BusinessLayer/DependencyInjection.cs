@@ -1,3 +1,4 @@
+using BusinessLayer.DTO;
 using BusinessLayer.Interfaces;
 using BusinessLayer.Security;
 using BusinessLayer.Services;
@@ -18,6 +19,10 @@ public static class DependencyInjection
         builder.Services.AddScoped<IWorkoutTemplate, WorkoutTemplateService>();
         builder.Services.AddScoped<IStatisticsService, StatisticsService>();
         builder.Services.AddScoped<IBackgroundJobService, HangfireJobService>();
+        
+        builder.Services.Configure<CloudinarySettings>(
+            builder.Configuration.GetSection("CloudinarySettings"));
+        builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
         
         builder.Services.Configure<JwtOptions>(
             builder.Configuration.GetSection("JWTOptions"));

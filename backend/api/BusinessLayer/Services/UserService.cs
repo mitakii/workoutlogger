@@ -5,6 +5,7 @@ using BusinessLayer.Helpers;
 using BusinessLayer.Interfaces;
 using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,10 +15,12 @@ public class UserService : IUserService
 {
     private readonly UserManager<User> _userManager;
     private readonly AppDbContext _context;
-    public UserService(UserManager<User> userManager, AppDbContext context)
+    private readonly ICloudinaryService _cloudinaryService;
+    public UserService(UserManager<User> userManager, AppDbContext context, ICloudinaryService cloudinaryService)
     {
         _userManager = userManager;
         _context = context;
+        _cloudinaryService = cloudinaryService;
     }
     
     public async Task<Result<bool>> ChangeUserLanguageAsync(Guid userId, string language)
@@ -93,6 +96,23 @@ public class UserService : IUserService
             return Result<string>.Failed(ErrorCode.NotFound, "User not found");
         
         return Result<string>.Success(user.Language);
+    }
+
+    public async Task<Result<bool>> ChangeUserPfpAsync(Guid userId, IFormFile photo)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        
+        if (user == null)
+            return Result<bool>.Failed(ErrorCode.NotFound, "User not found");
+        
+        var uploadResult = await _cloudinaryService.AddPhotoAsync(photo);
+
+        if (!uploadResult.Succeeded)
+            return Result<bool>.Failed(ErrorCode.InternalError, uploadResult.ErrorMessages);
+
+        user.UserPfpUrl = uploadResult.Data.Url.AbsoluteUri;
+        await _userManager.UpdateAsync(user);
+        return Result<bool>.Success(true);
     }
 
     private static UserGetResponse MapToResponse(User user)
