@@ -5,15 +5,18 @@ import "./index.css";
 import { router } from "./routes/Routes.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import UserProvider from "./context/UserContext.tsx";
+import ThemeProvider from "./context/ThemeContext.tsx";
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <UserProvider>
-        <RouterProvider router={router} />
-      </UserProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <UserProvider>
+          <RouterProvider router={router} />
+        </UserProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   </StrictMode>
 );

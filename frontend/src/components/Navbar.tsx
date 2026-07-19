@@ -1,8 +1,9 @@
 import { useMatches, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, Moon, Sun } from "lucide-react";
 import "../index.css";
 import { useUserContext } from "../context/UserContext";
+import { useTheme } from "../context/ThemeContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +28,7 @@ export const getNavFromRoute = (route: any): NavAction[] => {
 
 const Navbar = () => {
   const { logout, user, isLoggedIn } = useUserContext();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const direction = useScrollDirection();
   const matches = useMatches();
@@ -54,12 +56,21 @@ const Navbar = () => {
           <Link to="/" className="font-semibold text-base">
             Logger
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Menu />
-              </Button>
-            </DropdownMenuTrigger>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun /> : <Moon />}
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Menu />
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40" align="start">
               {isLoggedIn() ? (
                 <div>
@@ -116,8 +127,9 @@ const Navbar = () => {
                   </DropdownMenuGroup>
                 </div>
               )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </nav>
