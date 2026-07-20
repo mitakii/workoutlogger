@@ -10,6 +10,7 @@ import {
   useGetUserTemplates,
 } from "@/hooks/react-query";
 import type { UserTemplate } from "@/types/types";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 const QuickStartTemplates = () => {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ const QuickStartTemplates = () => {
   const { mutateAsync: createSession } = useCreateSession();
   const { mutateAsync: applyTemplate } = useApplyTemplate();
   const [error, setError] = useState("");
+  const [pendingTemplate, setPendingTemplate] = useState<UserTemplate | null>(
+    null
+  );
 
   const handleQuickStart = async (template: UserTemplate) => {
     try {
@@ -28,6 +32,8 @@ const QuickStartTemplates = () => {
       navigate(`/session/${session.workoutId}`);
     } catch (e) {
       setError("Failed to start session from template");
+    } finally {
+      setPendingTemplate(null);
     }
   };
 
@@ -52,7 +58,7 @@ const QuickStartTemplates = () => {
           <Card
             key={template.id}
             className="cursor-pointer p-3 transition-colors hover:bg-accent/50"
-            onClick={() => handleQuickStart(template)}
+            onClick={() => setPendingTemplate(template)}
           >
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -71,6 +77,22 @@ const QuickStartTemplates = () => {
           </Card>
         ))}
       </div>
+      <ConfirmDialog
+        open={pendingTemplate !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingTemplate(null);
+        }}
+        title="Start a new session from this template?"
+        description={
+          pendingTemplate
+            ? `This will start a new workout session and add all exercises from "${pendingTemplate.name}".`
+            : undefined
+        }
+        confirmLabel="Start Session"
+        onConfirm={() => {
+          if (pendingTemplate) handleQuickStart(pendingTemplate);
+        }}
+      />
     </div>
   );
 };

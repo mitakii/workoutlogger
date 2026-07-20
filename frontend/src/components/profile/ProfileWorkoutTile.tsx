@@ -19,6 +19,8 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { useDeleteWorkout } from "@/hooks/react-query";
+import ConfirmDialog from "../ConfirmDialog";
 
 type Props = {
   session: UserSession;
@@ -36,12 +38,24 @@ export const days = [
 
 const ProfileWorkoutTile = ({ session }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
   const date = new Date(session.startTime).toLocaleDateString();
   const day = new Date(session.startTime).getDay();
+  const { mutateAsync: deleteWorkout } = useDeleteWorkout();
 
   const handleCreateTemplate = () => {
     navigate(`/createTemplate/${session.workoutId}`);
+  };
+
+  const handleDeleteWorkout = async () => {
+    try {
+      await deleteWorkout(session.workoutId);
+    } catch (e) {
+      console.error("Failed to delete workout", e);
+    } finally {
+      setDeleteDialogOpen(false);
+    }
   };
 
   return (
@@ -75,10 +89,26 @@ const ProfileWorkoutTile = ({ session }: Props) => {
                       <DropdownMenuItem onClick={() => handleCreateTemplate()}>
                         Create Template
                       </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => setDeleteDialogOpen(true)}
+                      >
+                        Delete Workout
+                      </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <ConfirmDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                title="Delete workout?"
+                description="This will permanently delete this workout and all its exercises and sets. This cannot be undone."
+                confirmLabel="Delete"
+                variant="destructive"
+                onConfirm={handleDeleteWorkout}
+              />
             </div>
           </div>
           <CollapsibleContent className="flex flex-col gap-2">

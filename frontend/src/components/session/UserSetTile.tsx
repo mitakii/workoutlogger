@@ -211,8 +211,8 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-40" align="start">
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={handleSetDelete}>
-                Delete
+              <DropdownMenuItem variant="destructive" onClick={handleSetDelete}>
+                Delete set
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>

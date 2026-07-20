@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import ConfirmDialog from "../ConfirmDialog";
 
 type Props = {
   sessionId: string;
@@ -28,6 +29,7 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
   const { mutateAsync: addSet } = useAddUserSet(userExercise.id);
   const { mutateAsync: deleteExercise } = useDeleteUserExercise();
   const [error, setError] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleAddSet = async () => {
     try {
@@ -49,6 +51,8 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
       await deleteExercise(exerciseId);
     } catch (e) {
       setError("Failed to delete exercise");
+    } finally {
+      setDeleteDialogOpen(false);
     }
   };
 
@@ -66,7 +70,8 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
                 <div>
                   <DropdownMenuGroup>
                     <DropdownMenuItem
-                      onClick={() => handleDeleteExercise(userExercise.id)}
+                      variant="destructive"
+                      onClick={() => setDeleteDialogOpen(true)}
                     >
                       Delete exercise
                     </DropdownMenuItem>
@@ -74,6 +79,15 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
+            <ConfirmDialog
+              open={deleteDialogOpen}
+              onOpenChange={setDeleteDialogOpen}
+              title="Delete exercise?"
+              description="This will remove this exercise and all its sets from the workout. This cannot be undone."
+              confirmLabel="Delete"
+              variant="destructive"
+              onConfirm={() => handleDeleteExercise(userExercise.id)}
+            />
           </div>
         </div>
         <CardDescription>{userExercise.exerciseDescription}</CardDescription>

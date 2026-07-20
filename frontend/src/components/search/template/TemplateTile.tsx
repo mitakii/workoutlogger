@@ -16,6 +16,7 @@ import {
 import type { UserTemplate } from "@/types/types";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 type Props = {
   template: UserTemplate;
@@ -27,16 +28,23 @@ const TemplateTile = ({ template }: Props) => {
   const { mutateAsync: deleteTemplate } = useDeleteTemplate();
   const { mutateAsync: applyTemplate } = useApplyTemplate();
   const [error, setError] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [applyDialogOpen, setApplyDialogOpen] = useState(false);
 
   const handleDeleteTemplate = async (templateId: string) => {
     try {
       await deleteTemplate(templateId);
     } catch (e) {
       setError("Failed to delete template");
+    } finally {
+      setDeleteDialogOpen(false);
     }
   };
 
-  const handleApplyTemplate = async (workoutId?: string, templateId?: string) => {
+  const handleApplyTemplate = async (
+    workoutId?: string,
+    templateId?: string
+  ) => {
     if (!workoutId || !templateId) {
       setError("Start a session before applying a template");
       return;
@@ -46,6 +54,8 @@ const TemplateTile = ({ template }: Props) => {
       navigate(`/session/${workoutId}`);
     } catch (e) {
       setError("Failed to apply template");
+    } finally {
+      setApplyDialogOpen(false);
     }
   };
   return (
@@ -66,21 +76,45 @@ const TemplateTile = ({ template }: Props) => {
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => handleDeleteTemplate(template.id)}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() =>
-                      handleApplyTemplate(session?.workoutId, template.id)
-                    }
+                    onClick={() => {
+                      if (!session?.workoutId) {
+                        setError("Start a session before applying a template");
+                        return;
+                      }
+                      setApplyDialogOpen(true);
+                    }}
                   >
                     Apply to workout
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => setDeleteDialogOpen(true)}
+                  >
+                    Delete
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
+          <ConfirmDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            title="Delete template?"
+            description="This will permanently delete this template. This cannot be undone."
+            confirmLabel="Delete"
+            variant="destructive"
+            onConfirm={() => handleDeleteTemplate(template.id)}
+          />
+          <ConfirmDialog
+            open={applyDialogOpen}
+            onOpenChange={setApplyDialogOpen}
+            title="Apply template to current workout?"
+            description="This will add all exercises from this template to your in-progress workout."
+            confirmLabel="Apply"
+            onConfirm={() =>
+              handleApplyTemplate(session?.workoutId, template.id)
+            }
+          />
         </div>
       </div>
       {template.description.trimEnd() && (

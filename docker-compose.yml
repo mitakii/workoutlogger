@@ -10,8 +10,18 @@ services:
 
       ASPNETCORE_URLS: http://+:8080
 
-    ports:
-      - "8080:8080"
+      ConnectionStrings__DefaultConnection: ${DB_CONNECTION_STRING}
+
+      JWTOptions__Issuer: ${JWT_ISSUER}
+      JWTOptions__Audience: ${JWT_AUDIENCE}
+      JWTOptions__SigningKey: ${JWT_SIGNING_KEY}
+
+      CloudinarySettings__CloudName: ${CLOUDINARY_CLOUD_NAME}
+      CloudinarySettings__ApiKey: ${CLOUDINARY_API_KEY}
+      CloudinarySettings__ApiSecret: ${CLOUDINARY_API_SECRET}
+
+    expose:
+      - "8080"
 
     restart: unless-stopped
 

@@ -30,6 +30,7 @@ import {
   getUserTemplate,
   applyTemplate,
   deleteUserExercise,
+  deleteWorkout,
   getUserStatistics,
   getDailyStatisticsRange,
   getExerciseStatistics,
@@ -117,6 +118,19 @@ export const useDeleteUserExercise = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["workout-session", "Current"],
+      });
+    },
+  });
+};
+
+export const useDeleteWorkout = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (workoutId: string) => deleteWorkout(workoutId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["workout-session"],
       });
     },
   });

@@ -112,6 +112,11 @@ export const deleteUserExercise = async (exerciseId: string) => {
   return res.data;
 };
 
+export const deleteWorkout = async (workoutId: string) => {
+  const res = await api.delete(`/Workout/${workoutId}`);
+  return res.data;
+};
+
 export const updateUserSet = async (userSet: UserSet) => {
   const res = await api.patch(`/UserExercise/userSet/${userSet.id}`, userSet);
   return res.data;
