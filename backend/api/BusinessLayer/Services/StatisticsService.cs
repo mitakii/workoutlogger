@@ -7,6 +7,7 @@ using DataAccessLayer.Data;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BusinessLayer.Services;
 
@@ -15,12 +16,14 @@ public class StatisticsService : IStatisticsService
     private readonly AppDbContext _context;
     private readonly IStatisticsRepository _statisticsRepository;
     private readonly IBackgroundJobService _backgroundJobService;
+    private readonly ILogger<StatisticsService> _logger;
 
-    public StatisticsService(AppDbContext context, IStatisticsRepository statisticsRepository, IBackgroundJobService backgroundJobService)
+    public StatisticsService(AppDbContext context, IStatisticsRepository statisticsRepository, IBackgroundJobService backgroundJobService, ILogger<StatisticsService> logger)
     {
         _context = context;
         _statisticsRepository = statisticsRepository;
         _backgroundJobService = backgroundJobService;
+        _logger = logger;
     }
 
     public async Task ProcessDirtyStatistics()
@@ -77,6 +80,8 @@ public class StatisticsService : IStatisticsService
         await _context.UserStatistics.AddAsync(userStatistic);
         await _context.SaveChangesAsync();
 
+        _logger.LogInformation("Created user {UserId} statistics", userStatistic.UserId);
+        
         return Result<bool>.Success(true);
     }
 
@@ -89,6 +94,9 @@ public class StatisticsService : IStatisticsService
 
         _context.UserStatistics.Remove(userStatistic);
         await _context.SaveChangesAsync();
+        
+        _logger.LogInformation("Deleted user {UserId} statistics", userStatistic.UserId);
+        
         return Result<bool>.Success(true);
     }
 
@@ -101,7 +109,10 @@ public class StatisticsService : IStatisticsService
         var statistics = await _context.UserStatistics.FirstOrDefaultAsync(us => us.UserId == userId);
 
         if (statistics == null)
-            throw new Exception("Statistics not found");
+        {
+            _logger.LogInformation("No user statistics found for user {UserId}", userId);
+            return;
+        }
 
         var data = await _context.DailyStatistics
             .AsNoTracking()
@@ -118,9 +129,25 @@ public class StatisticsService : IStatisticsService
             .FirstOrDefaultAsync();
 
         if (data == null)
-            throw new Exception("Statistics data not found");
+        {
+            statistics.LastUpdated = DateTime.UtcNow;
+            statistics.TotalWorkouts = 0;
+            statistics.TotalDistanceKm = 0;
+            statistics.TotalExercises = 0;
 
-        statistics.LastUpdated = DateTime.UtcNow;
+            statistics.TotalSets = 0;
+            statistics.TotalVolume = 0;
+            statistics.MaxBenchPress = 0;
+            statistics.MaxSquat = 0;
+            statistics.MaxDeadlift = 0;
+            
+            _context.UserStatistics.Update(statistics);
+            await _context.SaveChangesAsync();
+            
+            _logger.LogInformation("No user statistics data found for user {UserId}", userId);
+            return;
+        }
+        
         statistics.TotalWorkouts = data.TotalWorkouts;
         statistics.TotalDistanceKm = data.TotalDistanceKm;
         statistics.TotalExercises = data.TotalExercises;
@@ -208,6 +235,8 @@ public class StatisticsService : IStatisticsService
         await _context.DailyStatistics.AddAsync(statistic);
         await _context.SaveChangesAsync();
         
+        _logger.LogInformation("Daily Statistics created: {statisticId} for user {userId}",  statistic.Id, userId);
+        
         _backgroundJobService.Enqueue<IStatisticsService>(x => x.RecalculateStreak(userId));
         
         return Result<bool>.Success(true);
@@ -219,8 +248,12 @@ public class StatisticsService : IStatisticsService
             .FirstOrDefaultAsync(s => s.Date == date && s.UserId == userId);
         if (statistic == null)
             return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
+        
         _context.DailyStatistics.Remove(statistic);
         await _context.SaveChangesAsync();
+        
+        _logger.LogInformation("Daily statistics deleted: {statisticId} for user {userId} at {date}", statistic.Id, userId, date);
+        
         return Result<bool>.Success(true);
     }
 
@@ -232,6 +265,9 @@ public class StatisticsService : IStatisticsService
             return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
         _context.DailyStatistics.Remove(statistic);
         await _context.SaveChangesAsync();
+        
+        _logger.LogInformation("Daily statistics deleted: {statisticId} for user {userId} at {date}", statistic.Id, statistic.UserId, statistic.Date);
+        
         return Result<bool>.Success(true);
     }
 
@@ -239,9 +275,12 @@ public class StatisticsService : IStatisticsService
     {
         var statistic = await  _context.DailyStatistics
             .FirstOrDefaultAsync(s => s.UserId == userId && s.Date == date);
-        
+
         if (statistic == null)
-            throw new Exception("Daily statistics not found");
+        {
+            _logger.LogInformation("Daily statistics at {date} for user {userId} not found", date, userId);            
+            return;
+        }
 
         var data = await _context.Workouts
             .AsNoTracking()
@@ -262,16 +301,25 @@ public class StatisticsService : IStatisticsService
             .FirstOrDefaultAsync();
 
         if (data == null)
-            throw new  Exception("Daily statistics data not found");
+        {
+            _logger.LogInformation("Daily statistics data at {date} for user {userId} not found", date, userId);
+            
+            _context.DailyStatistics.Remove(statistic);
+            var queueStatistics = await _context.StatisticsUpdateQueues.Where(s => s.UserId == userId &&  s.Date == statistic.Date).FirstOrDefaultAsync();
+            if(queueStatistics != null)
+                _context.StatisticsUpdateQueues.Remove(queueStatistics);
+            
+            await _context.SaveChangesAsync();
+            
+            _backgroundJobService.Enqueue<IStatisticsService>(x => x.RecalculateStreak(userId));
+            return;
+        }
         
         statistic.TotalWorkouts = data.TotalWorkoutsCount;
         statistic.TotalVolume = data.TotalVolume;
         statistic.TotalSets = data.TotalSetsCount;
         statistic.TotalExercises = data.TotalExercisesCount;
         statistic.Workouts = data.WorkoutIds;
-        
-        // todo: add types to exercises
-        // statistic.TotalDistanceKm =
         
         _context.DailyStatistics.Update(statistic);
         await _context.SaveChangesAsync();
@@ -350,6 +398,9 @@ public class StatisticsService : IStatisticsService
         
         _context.ExerciseStatistics.Remove(statistic);
         await _context.SaveChangesAsync();
+        
+        _logger.LogInformation("Deleted exercise statistic with id {exerciseId} for user {userId}",  exerciseId, userId);
+        
         return Result<bool>.Success(true);
     }
 
@@ -357,9 +408,12 @@ public class StatisticsService : IStatisticsService
     {
         var statistic = await _context.ExerciseStatistics
             .FirstOrDefaultAsync(es => es.UserId == userId && es.ExerciseId == refExerciseId);
-        
+
         if (statistic == null)
+        {
+            _logger.LogInformation("Exercise statistic {exerciseId} not found for user {userId}",refExerciseId, userId);            
             return Result<bool>.Failed(ErrorCode.NotFound, "Statistics not found");
+        }
         
         var userExerciseStatistic = await _context.UserExercises
             .AsNoTracking()
@@ -372,9 +426,12 @@ public class StatisticsService : IStatisticsService
                 TotalSets = x.SelectMany(ue => ue.UserExerciseSets).Count(),
             })
             .FirstOrDefaultAsync();
-        
-        if(userExerciseStatistic == null)
+
+        if (userExerciseStatistic == null)
+        {
+            _logger.LogInformation("No exercise statistics data of exercise: {exerciseId} found for user {userId}", refExerciseId, userId);
             return Result<bool>.Failed(ErrorCode.NotFound, "UserExercise not found");
+        }
         
         statistic.MaxWeight = userExerciseStatistic.MaxWeight;
         statistic.TotalSets = userExerciseStatistic.TotalSets;
