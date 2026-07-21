@@ -6,6 +6,7 @@
 # dotenv files
 .env
 .env.*
+!frontend/.env.production
 
 # User-specific files
 *.rsuser
@@ -505,3 +506,4 @@ CLAUDE.md
 backend-analysis.pdf
 .gitignore
 frontend-analysis.pdf
+domain-https-setup-guide.pdf

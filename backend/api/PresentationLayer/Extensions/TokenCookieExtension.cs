@@ -13,15 +13,15 @@ public static class TokenCookieExtension
         context.Response.Cookies.Append("refreshToken", tokens.RefreshToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = false,
+            Secure = true,
             SameSite = SameSiteMode.Lax,
             Path = "/api/refresh",
-            Expires = DateTimeOffset.Now.AddDays(options.RefreshTokenDays) 
+            Expires = DateTimeOffset.Now.AddDays(options.RefreshTokenDays)
         });
         context.Response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions
         {
             HttpOnly = true,
-            Secure = false,
+            Secure = true,
             SameSite = SameSiteMode.Lax,
             Path = "/",
             Expires = DateTimeOffset.Now.AddHours(options.AccessTokenHours)

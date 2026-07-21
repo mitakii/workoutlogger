@@ -18,9 +18,9 @@ public static class DependencyInjection
         builder.Services
             .AddIdentityCore<User>(options =>
             {
-                // options.Password.RequireUppercase = true;
-                // options.Password.RequiredLength = 8;
-                // options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireDigit = true;
 
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
