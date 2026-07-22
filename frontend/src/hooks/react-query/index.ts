@@ -12,7 +12,7 @@ import {
   registerApi,
   logoutApi,
   statusApi,
-  updateUserSet,
+  updateUserSets,
   deleteUserSet,
   getUserByName,
   getUserSessions,
@@ -169,32 +169,37 @@ export const useAddUserSet = (userExerciseId: string) => {
   });
 };
 
-export const useUpdateUserSet = (sessionId: string, userSet: UserSet) => {
+export const useUpdateUserSets = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (userSet: UserSet) => updateUserSet(userSet),
+    mutationFn: (sets: UserSet[]) => updateUserSets(sets),
 
-    onMutate: async () => {
+    onMutate: async (sets: UserSet[]) => {
       await queryClient.cancelQueries({
-        queryKey: ["workout-session", sessionId],
+        queryKey: ["workout-session", "Current"],
       });
 
       const previous = queryClient.getQueryData<UserSession>([
         "workout-session",
-        sessionId,
+        "Current",
       ]);
 
+      const setsById = new Map(sets.map((set) => [set.id, set]));
+
       queryClient.setQueryData(
-        ["workout-session", sessionId],
+        ["workout-session", "Current"],
         (old: UserSession) => {
           if (!old) return old;
           return {
             ...old,
             userExercises: old.userExercises.map((exercise: UserExercise) => ({
               ...exercise,
-              sets: exercise.sets?.map((set) =>
-                set.id === userSet.id ? { ...set, weight: userSet.weight } : set
-              ),
+              sets: exercise.sets?.map((set) => {
+                const update = setsById.get(set.id);
+                return update
+                  ? { ...set, weight: update.weight, reps: update.reps }
+                  : set;
+              }),
             })),
           };
         }
@@ -204,7 +209,7 @@ export const useUpdateUserSet = (sessionId: string, userSet: UserSet) => {
 
     onError: (_, __, context) => {
       queryClient.setQueryData(
-        ["workout-session", sessionId],
+        ["workout-session", "Current"],
         context?.previous
       );
     },
@@ -308,7 +313,7 @@ type UserRegister = {
   email: string;
   password: string;
   language: string;
-  profilePicture: File;
+  profilePicture?: File;
 };
 
 export const useRegister = () => {

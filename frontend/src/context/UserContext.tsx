@@ -22,7 +22,7 @@ type UserContextType = {
     email: string,
     password: string,
     language: string,
-    profilePicture: File
+    profilePicture?: File
   ) => void;
   logout: () => Promise<void>;
   isLoggedIn: () => boolean;
@@ -41,7 +41,7 @@ const UserProvider = ({ children }: Props) => {
     email: string,
     password: string,
     language: string,
-    profilePicture: File
+    profilePicture?: File
   ) => {
     await registerApi({ username, email, password, language, profilePicture });
   };

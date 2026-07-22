@@ -23,13 +23,14 @@ public class AuthController : ControllerBase
     private readonly SignInManager<User> _signInManager;
     private readonly IBackgroundJobService _jobs;
     private readonly ICloudinaryService _cloudinary;
+    private readonly IUserService _userService;
 
     public AuthController(ILogger<AuthController> logger,
         ITokenService tokenService,
         UserManager<User> userManager,
         SignInManager<User> signInManager,
         IOptions<JwtOptions> jwtOptions,
-        IBackgroundJobService jobs, ICloudinaryService cloudinary)
+        IBackgroundJobService jobs, ICloudinaryService cloudinary, IUserService userService)
     {
         _logger = logger;
         _tokenService = tokenService;
@@ -37,6 +38,7 @@ public class AuthController : ControllerBase
         _signInManager = signInManager;
         _jobs = jobs;
         _cloudinary = cloudinary;
+        _userService = userService;
         _jwtOptions = jwtOptions.Value;
     }
     
@@ -57,6 +59,8 @@ public class AuthController : ControllerBase
             user.Email,
             user.Id,
             user.Language,
+            user.Description,
+            pfpUrl = user.UserPfpUrl,
             role
         });
     }
@@ -106,28 +110,25 @@ public class AuthController : ControllerBase
             user.UserName,
             user.Email,
             user.Id,
-            user.Language
+            user.Language,
+            user.Description,
+            pfpUrl = user.UserPfpUrl
         });
     }
 
     [AllowAnonymous]
-    [ValidateImage]
+    [ValidateImage(Required = false)]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromForm] UserRegisterRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
         
-        var pfpResult = await _cloudinary.AddPhotoAsync(request.ProfilePicture);
-        if (!pfpResult.Succeeded)
-            return pfpResult.ToIActionResultErrors();
-        
         var user = new User
         {
             UserName = request.Username,
             Email = request.Email,
             Language =  request.Language,
-            UserPfpUrl = pfpResult.Data.Url.AbsoluteUri,
         };
         var userResult = await _userManager.CreateAsync(user, request.Password);
 
@@ -135,7 +136,12 @@ public class AuthController : ControllerBase
             return BadRequest(userResult.Errors);
         
         await _userManager.AddToRoleAsync(user, "User");
-        
+
+        if (request.ProfilePicture is { Length: > 0 })
+        {
+            var pfpResult = await _cloudinary.AddPhotoAsync(request.ProfilePicture);
+            await _userService.ChangeUserPfpAsync(user.Id, pfpResult.Data.Url.AbsoluteUri);
+        }
         _jobs.Enqueue<IStatisticsService>(x => x.CreateStatisticsAsync(user.Id));
         
         return Ok();

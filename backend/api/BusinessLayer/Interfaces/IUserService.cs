@@ -15,4 +15,5 @@ public interface IUserService
     public Task<Result<PagedResult<UserGetResponse>>> GetPagedUsersAsync(string query, int pageIndex, int pageSize);
     public Task<Result<string>> GetUserLanguageAsync(Guid userId);
     public Task<Result<bool>> ChangeUserPfpAsync(Guid userId, IFormFile photo);
+    public Task<Result<bool>> ChangeUserPfpAsync(Guid userId, string photoUrl);
 }

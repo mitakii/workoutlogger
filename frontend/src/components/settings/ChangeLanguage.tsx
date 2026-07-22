@@ -22,12 +22,14 @@ import {
   SelectValue,
 } from "../ui/select";
 import { useChangeLanguage } from "@/hooks/react-query";
+import { useUserContext } from "@/context/UserContext";
 import type z from "zod";
 import axios from "axios";
 
 export type ChangeLanguageIput = z.infer<typeof changeLanguageScheme>;
 
 const ChangeLanguage = () => {
+  const { user } = useUserContext();
   const [isChanged, setChanged] = useState<boolean>(false);
   const { mutateAsync: changeLanguage } = useChangeLanguage();
   const {
@@ -39,13 +41,16 @@ const ChangeLanguage = () => {
     reset,
   } = useForm<ChangeLanguageIput>({
     resolver: zodResolver(changeLanguageScheme),
+    defaultValues: {
+      newLanguage: user?.language ?? "en",
+    },
   });
 
   const handleChangeLanguage = async (form: ChangeLanguageIput) => {
     try {
       await changeLanguage(form);
       setChanged(true);
-      reset();
+      reset({ newLanguage: form.newLanguage, password: "" });
     } catch (e) {
       if (!axios.isAxiosError(e)) {
         setError("root", {

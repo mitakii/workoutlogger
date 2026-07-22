@@ -114,6 +114,39 @@ public class SetService : IUserSetService
         return Result<bool>.Success(true);
     }
 
+    public async Task<Result<bool>> UpdateUserSetsAsync(Guid userId, List<UserSetUpdateItem> sets)
+    {
+        if (sets.Count == 0)
+            return Result<bool>.Success(true);
+
+        var ids = sets.Select(s => s.Id).ToList();
+
+        var dbSets = await _context.UserExerciseSet
+            .Include(s => s.Exercise)
+            .ThenInclude(e => e.Workout)
+            .Where(s => ids.Contains(s.Id) && s.Exercise.Workout.UserId == userId)
+            .ToListAsync();
+
+        var updatesById = sets.ToDictionary(s => s.Id);
+        var dirtyDates = new HashSet<(Guid userId, DateOnly date)>();
+
+        foreach (var set in dbSets)
+        {
+            var update = updatesById[set.Id];
+            set.Weight = update.Weight;
+            set.Reps = update.Reps;
+
+            dirtyDates.Add((set.Exercise.Workout.UserId, set.Exercise.Workout.DateOnlyCreated));
+        }
+
+        await _context.SaveChangesAsync();
+
+        foreach (var (dirtyUserId, date) in dirtyDates)
+            await _statisticsRepository.MarkDirty(dirtyUserId, date);
+
+        return Result<bool>.Success(true);
+    }
+
     public async Task<Result<string>> DeleteUserSetAsync(Guid userId, Guid setId)
     {
         var set =  await _context.UserExerciseSet

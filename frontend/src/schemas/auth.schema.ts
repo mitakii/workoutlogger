@@ -1,15 +1,14 @@
 import z from "zod";
 
 const MAX_PROFILE_PICTURE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_PROFILE_PICTURE_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-];
+const ALLOWED_PROFILE_PICTURE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export const registerSchema = z
   .object({
-    userName: z.string().min(4, "Username is required"),
+    userName: z
+      .string()
+      .min(4, "Username is required")
+      .max(20, "Username too long"),
     email: z.email("email is required"),
     password: z
       .string()
@@ -19,19 +18,17 @@ export const registerSchema = z
       .regex(/[0-9]/, "Password must contain at least one number")
       .regex(/[^A-Za-z0-9]/, "Password must contain at least one symbol"),
     confirmPassword: z.string(),
-    language: z.string().max(4, "language is required"),
+    language: z.enum(["en", "pl", "uk"], "Language is required"),
     profilePicture: z
       .custom<FileList>()
+      .optional()
       .refine(
-        (files) => files?.length === 1,
-        "Profile picture is required"
-      )
-      .refine(
-        (files) => files?.[0]?.size <= MAX_PROFILE_PICTURE_SIZE,
+        (files) => !files?.[0] || files[0].size <= MAX_PROFILE_PICTURE_SIZE,
         "Image must be smaller than 5MB"
       )
       .refine(
-        (files) => ALLOWED_PROFILE_PICTURE_TYPES.includes(files?.[0]?.type),
+        (files) =>
+          !files?.[0] || ALLOWED_PROFILE_PICTURE_TYPES.includes(files[0].type),
         "Only JPEG, PNG or WEBP images are allowed"
       ),
   })

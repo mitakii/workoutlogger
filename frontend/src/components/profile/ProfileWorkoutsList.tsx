@@ -4,9 +4,10 @@ import { Spinner } from "../ui/spinner";
 
 type Props = {
   sessions: UserSession[];
+  isCurrentUser: boolean;
 };
 
-const ProfileWorkoutsList = ({ sessions }: Props) => {
+const ProfileWorkoutsList = ({ sessions, isCurrentUser }: Props) => {
   if (!sessions)
     return (
       <div className="flex h-screen w-screen items-center justify-center">
@@ -16,7 +17,11 @@ const ProfileWorkoutsList = ({ sessions }: Props) => {
   return (
     <div>
       {sessions.map((session) => (
-        <ProfileWorkoutTile key={session.workoutId} session={session} />
+        <ProfileWorkoutTile
+          key={session.workoutId}
+          session={session}
+          isCurrentUser={isCurrentUser}
+        />
       ))}
     </div>
   );

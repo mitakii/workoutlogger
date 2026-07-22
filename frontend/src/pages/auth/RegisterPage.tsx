@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { Camera } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 import { registerSchema } from "@/schemas/auth.schema";
 import type { BackendError } from "@/types/types";
 
@@ -45,7 +45,7 @@ export const Register = () => {
     handleSubmit,
     control,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<RegisterFormInput>({ resolver: zodResolver(registerSchema) });
 
   const handlePfpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +63,7 @@ export const Register = () => {
         form.email,
         form.password,
         form.language,
-        form.profilePicture[0]
+        form.profilePicture?.[0]
       );
       navigate("/");
     } catch (e) {
@@ -177,7 +177,7 @@ export const Register = () => {
                   name="language"
                   control={control}
                   render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full ">
                         <SelectValue placeholder="Select a Language" />
                       </SelectTrigger>
@@ -186,6 +186,7 @@ export const Register = () => {
                           <SelectLabel>Languages</SelectLabel>
                           <SelectItem value="en">English</SelectItem>
                           <SelectItem value="pl">Polish</SelectItem>
+                          <SelectItem value="uk">Ukrainian</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -194,7 +195,8 @@ export const Register = () => {
                 <FieldError errors={[errors.language]}></FieldError>
               </Field>
               <Field>
-                <Button type="submit" className="w-full mt-2">
+                <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="animate-spin" />}
                   Register
                 </Button>
                 <FieldError errors={[errors.root]} />

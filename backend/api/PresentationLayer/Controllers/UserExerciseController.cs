@@ -61,4 +61,14 @@ public class UserExerciseController : ControllerBase
         var result = await _userSetService.UpdateUserSetAsync(userId, setId, request.Weight, request.Reps);
         return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
     }
+
+    [HttpPatch("userSets")]
+    public async Task<IActionResult> UpdateSets([FromBody] BulkUpdateUserSetsRequest request)
+    {
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            return Unauthorized();
+
+        var result = await _userSetService.UpdateUserSetsAsync(userId, request.Sets);
+        return result.Succeeded ? Ok(result.Data) : result.ToIActionResultErrors();
+    }
 }

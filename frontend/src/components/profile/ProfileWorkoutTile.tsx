@@ -21,9 +21,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDeleteWorkout } from "@/hooks/react-query";
 import ConfirmDialog from "../ConfirmDialog";
+import { useUserContext } from "@/context/UserContext";
 
 type Props = {
   session: UserSession;
+  isCurrentUser: boolean;
 };
 
 export const days = [
@@ -36,7 +38,7 @@ export const days = [
   "Saturday",
 ];
 
-const ProfileWorkoutTile = ({ session }: Props) => {
+const ProfileWorkoutTile = ({ session, isCurrentUser }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
@@ -89,13 +91,18 @@ const ProfileWorkoutTile = ({ session }: Props) => {
                       <DropdownMenuItem onClick={() => handleCreateTemplate()}>
                         Create Template
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        variant="destructive"
-                        onClick={() => setDeleteDialogOpen(true)}
-                      >
-                        Delete Workout
-                      </DropdownMenuItem>
+                      {isCurrentUser && (
+                        <>
+                          {" "}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                          >
+                            Delete Workout
+                          </DropdownMenuItem>
+                        </>
+                      )}
                     </DropdownMenuGroup>
                   </div>
                 </DropdownMenuContent>

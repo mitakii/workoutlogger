@@ -8,6 +8,7 @@ import {
 import { Button } from "../ui/button";
 import { FieldError } from "../ui/field";
 import type { UserExercise, UserSet } from "@/types/types";
+import type { useSetUpdateQueue } from "@/hooks/useSetUpdateQueue";
 import { useAddUserSet, useDeleteUserExercise } from "@/hooks/react-query";
 import { UserSetTile } from "./UserSetTile";
 import { useState } from "react";
@@ -21,11 +22,11 @@ import {
 import ConfirmDialog from "../ConfirmDialog";
 
 type Props = {
-  sessionId: string;
   userExercise: UserExercise;
+  queueSetUpdate: ReturnType<typeof useSetUpdateQueue>;
 };
 
-export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
+export const UserExerciseTile = ({ userExercise, queueSetUpdate }: Props) => {
   const { mutateAsync: addSet } = useAddUserSet(userExercise.id);
   const { mutateAsync: deleteExercise } = useDeleteUserExercise();
   const [error, setError] = useState("");
@@ -99,7 +100,7 @@ export const UserExerciseTile = ({ sessionId, userExercise }: Props) => {
           <div className="pr-21">Reps</div>
         </div>
         {userExercise.sets?.map((s) => (
-          <UserSetTile key={s.id} userSet={s} sessionId={sessionId} />
+          <UserSetTile key={s.id} userSet={s} queueSetUpdate={queueSetUpdate} />
         ))}
         <Button
           variant="default"

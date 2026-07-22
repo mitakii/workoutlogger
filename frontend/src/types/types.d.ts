@@ -36,6 +36,7 @@ export type UserProfile = {
   role: "User" | "Admin";
   description: string;
   pfpUrl: string;
+  language: string;
 };
 
 export type UserStatistics = {

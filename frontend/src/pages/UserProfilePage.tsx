@@ -72,21 +72,21 @@ const UserProfilePage = () => {
             <AvatarImage src={userProfile.pfpUrl} />
             <AvatarFallback>{userProfile.username.slice(0, 2)}</AvatarFallback>
           </Avatar>
-          <div className="flex-1 flex flex-col gap-2">
+          <div className="flex flex-wrap gap-3">
             <h2 className="font-semibold text-sm">{userProfile.username}</h2>
             {userProfile.description && (
               <p className="text-sm text-wrap">{userProfile.description}</p>
             )}
+            {isOwnProfile && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/settings")}
+              >
+                Edit Profile
+              </Button>
+            )}
           </div>
-          {isOwnProfile && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/settings")}
-            >
-              Edit Profile
-            </Button>
-          )}
         </CardContent>
       </Card>
 
@@ -103,7 +103,10 @@ const UserProfilePage = () => {
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <StatCard label="Workouts" value={stats.totalWorkouts ?? 0} />
-              <StatCard label="Total Volume" value={fmtVol(stats.totalVolume)} />
+              <StatCard
+                label="Total Volume"
+                value={fmtVol(stats.totalVolume)}
+              />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <StreakCard
@@ -135,7 +138,10 @@ const UserProfilePage = () => {
           <p className="text-sm text-muted-foreground">No workouts yet.</p>
         ) : (
           <div>
-            <ProfileWorkoutsList sessions={sessions} />
+            <ProfileWorkoutsList
+              sessions={sessions}
+              isCurrentUser={isOwnProfile}
+            />
             <PagePagination
               pageLength={sessions.length}
               page={page}

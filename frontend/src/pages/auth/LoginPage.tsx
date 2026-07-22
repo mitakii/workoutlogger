@@ -21,6 +21,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { loginSchema } from "@/schemas/auth.schema";
+import { Loader2 } from "lucide-react";
 
 export type LoginFormInput = z.infer<typeof loginSchema>;
 
@@ -31,7 +32,7 @@ export const Login = () => {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<LoginFormInput>({
     resolver: zodResolver(loginSchema),
@@ -92,7 +93,10 @@ export const Login = () => {
                 <FieldError errors={[errors.password]}></FieldError>
               </Field>
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="animate-spin" />}
+                  Login
+                </Button>
                 <FieldError errors={[errors.root]} />
                 <FieldDescription className="text-center">
                   Don`t have an account? <a href="/register">Sign up</a>

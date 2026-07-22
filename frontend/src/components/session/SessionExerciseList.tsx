@@ -1,11 +1,14 @@
 import type { UserSession } from "@/types/types";
 import { UserExerciseTile } from "./UserExerciseTile";
+import { useSetUpdateQueue } from "@/hooks/useSetUpdateQueue";
 
 type Props = {
   session: UserSession;
 };
 
 const SessionExerciseList = ({ session }: Props) => {
+  const queueSetUpdate = useSetUpdateQueue();
+
   if (!session) {
     return <div> No active session</div>;
   }
@@ -16,7 +19,7 @@ const SessionExerciseList = ({ session }: Props) => {
         <UserExerciseTile
           key={e.id}
           userExercise={e}
-          sessionId={session.workoutId}
+          queueSetUpdate={queueSetUpdate}
         />
       ))}
     </div>

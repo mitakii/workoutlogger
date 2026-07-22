@@ -115,6 +115,18 @@ public class UserService : IUserService
         return Result<bool>.Success(true);
     }
 
+    public async Task<Result<bool>> ChangeUserPfpAsync(Guid userId, string photoUrl)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if(user == null)
+            return Result<bool>.Failed(ErrorCode.NotFound, "User not found");
+        
+        user.UserPfpUrl = photoUrl;
+        
+        await _userManager.UpdateAsync(user);
+        return Result<bool>.Success(true);
+    }
+
     private static UserGetResponse MapToResponse(User user)
     {
         return new UserGetResponse

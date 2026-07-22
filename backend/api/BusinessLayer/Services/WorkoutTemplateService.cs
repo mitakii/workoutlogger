@@ -136,7 +136,7 @@ public class WorkoutTemplateService : IWorkoutTemplate
         var workout = await _context.Workouts
             .Include(w => w.UserExercises)
             .ThenInclude(ue => ue.RefExercise)
-            .FirstOrDefaultAsync(w => w.Id == workoutId && w.UserId == userId);
+            .FirstOrDefaultAsync(w => w.Id == workoutId);
 
         if(workout == null)
             return Result<Guid>.Failed(ErrorCode.NotFound, "Workout not found");

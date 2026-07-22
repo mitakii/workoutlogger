@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import { useDebounce } from "react-use";
-
 import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -13,16 +11,17 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { MinusIcon, PlusIcon } from "lucide-react";
-import { useDeleteUserSet, useUpdateUserSet } from "@/hooks/react-query";
+import { useDeleteUserSet } from "@/hooks/react-query";
+import type { useSetUpdateQueue } from "@/hooks/useSetUpdateQueue";
 import type { UserSet } from "@/types/types";
 import { FieldError } from "../ui/field";
 
 type Props = {
-  sessionId: string;
   userSet: UserSet;
+  queueSetUpdate: ReturnType<typeof useSetUpdateQueue>;
 };
 
-export const UserSetTile = ({ sessionId, userSet }: Props) => {
+export const UserSetTile = ({ userSet, queueSetUpdate }: Props) => {
   const [reps, setReps] = useState<number>(userSet.reps);
   const [weight, setWeight] = useState<number>(userSet.weight);
   const [weightText, setWeightText] = useState<string>(String(userSet.weight));
@@ -30,7 +29,6 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
   const [error, setError] = useState("");
   const hasEdited = useRef(false);
 
-  const { mutateAsync: updateSet } = useUpdateUserSet(sessionId, userSet);
   const { mutateAsync: deleteSet } = useDeleteUserSet();
 
   const handleSetDelete = async () => {
@@ -110,29 +108,25 @@ export const UserSetTile = ({ sessionId, userSet }: Props) => {
 
   useEffect(() => stopHold, []);
 
-  useDebounce(
-    async () => {
-      if (!hasEdited.current) return;
-      if (reps === 0 && weight === 0) return;
-      try {
-        await updateSet({
-          reps: reps,
-          weight: weight,
-          id: userSet.id,
-          order: userSet.order,
-        } as UserSet);
-        setError("");
-      } catch (e) {
+  useEffect(() => {
+    if (!hasEdited.current) return;
+    if (reps === 0 && weight === 0) return;
+
+    queueSetUpdate({
+      id: userSet.id,
+      weight,
+      reps,
+      order: userSet.order,
+    })
+      .then(() => setError(""))
+      .catch(() => {
         setError("Failed to save set, changes reverted");
         setReps(userSet.reps);
         setWeight(userSet.weight);
         setRepsText(String(userSet.reps));
         setWeightText(String(userSet.weight));
-      }
-    },
-    700,
-    [reps, weight]
-  );
+      });
+  }, [reps, weight, userSet.id, userSet.order, queueSetUpdate]);
 
   return (
     <div className="mt-1.5">

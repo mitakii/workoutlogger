@@ -117,8 +117,8 @@ export const deleteWorkout = async (workoutId: string) => {
   return res.data;
 };
 
-export const updateUserSet = async (userSet: UserSet) => {
-  const res = await api.patch(`/UserExercise/userSet/${userSet.id}`, userSet);
+export const updateUserSets = async (sets: UserSet[]) => {
+  const res = await api.patch(`/UserExercise/userSets`, { sets });
   return res.data;
 };
 
@@ -177,6 +177,7 @@ export const getUserByName = async (
     role: res.data.role,
     description: res.data.description,
     pfpUrl: res.data.pfpUrl,
+    language: res.data.language,
   };
 };
 
@@ -229,14 +230,14 @@ export const registerApi = async (
   email: string,
   password: string,
   language: string,
-  profilePicture: File
+  profilePicture?: File
 ) => {
   const formData = new FormData();
   formData.append("username", username);
   formData.append("email", email);
   formData.append("password", password);
   formData.append("language", language);
-  formData.append("profilePicture", profilePicture);
+  if (profilePicture) formData.append("profilePicture", profilePicture);
 
   return await axios.post(
     `${import.meta.env.VITE_API_URL}/register`,
@@ -258,6 +259,7 @@ export const statusApi = async (): Promise<UserProfile | null> => {
       role: res.data.role,
       description: res.data.description,
       pfpUrl: res.data.pfpUrl,
+      language: res.data.language,
     };
     return user;
   } catch (e) {
