@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ClipboardList } from "lucide-react";
 import { Card } from "./ui/card";
 import { Spinner } from "./ui/spinner";
@@ -14,6 +15,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 
 const QuickStartTemplates = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation("home");
   const { data: templates, isLoading } = useGetUserTemplates(1, 5);
   const { mutateAsync: createSession } = useCreateSession();
   const { mutateAsync: applyTemplate } = useApplyTemplate();
@@ -31,7 +33,7 @@ const QuickStartTemplates = () => {
       });
       navigate(`/session/${session.workoutId}`);
     } catch (e) {
-      setError("Failed to start session from template");
+      setError(t("quickStartTemplates.startError"));
     } finally {
       setPendingTemplate(null);
     }
@@ -50,7 +52,7 @@ const QuickStartTemplates = () => {
   return (
     <div className="mt-4">
       <h2 className="text-sm font-semibold text-muted-foreground">
-        Quick Start
+        {t("quickStartTemplates.heading")}
       </h2>
       {error && <FieldError className="mt-1">{error}</FieldError>}
       <div className="mt-2 flex flex-col gap-2">
@@ -69,8 +71,9 @@ const QuickStartTemplates = () => {
                   {template.name}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {template.exercises.length} exercise
-                  {template.exercises.length === 1 ? "" : "s"}
+                  {t("quickStartTemplates.exerciseCount", {
+                    count: template.exercises.length,
+                  })}
                 </p>
               </div>
             </div>
@@ -82,13 +85,15 @@ const QuickStartTemplates = () => {
         onOpenChange={(open) => {
           if (!open) setPendingTemplate(null);
         }}
-        title="Start a new session from this template?"
+        title={t("quickStartTemplates.confirmTitle")}
         description={
           pendingTemplate
-            ? `This will start a new workout session and add all exercises from "${pendingTemplate.name}".`
+            ? t("quickStartTemplates.confirmDescription", {
+                templateName: pendingTemplate.name,
+              })
             : undefined
         }
-        confirmLabel="Start Session"
+        confirmLabel={t("quickStartTemplates.confirmLabel")}
         onConfirm={() => {
           if (pendingTemplate) handleQuickStart(pendingTemplate);
         }}

@@ -1,0 +1,21 @@
+{
+  "createTemplatePage": {
+    "title": "Створити шаблон",
+    "nameLabel": "Назва",
+    "namePlaceholder": "назва",
+    "descriptionLabel": "Опис",
+    "descriptionPlaceholder": "опис",
+    "submit": "Створити",
+    "unexpectedError": "Сталася непередбачена помилка",
+    "createError": "Не вдалося створити шаблон"
+  },
+  "templateEditPage": {
+    "addExercise": "Додати вправу",
+    "loadError": "Не вдалося завантажити шаблон. Спробуйте пізніше.",
+    "notFound": "Шаблон не знайдено"
+  },
+  "templateExerciseTile": {
+    "removeButton": "Видалити вправу",
+    "removeError": "Не вдалося видалити вправу"
+  }
+}

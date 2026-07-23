@@ -1,0 +1,37 @@
+{
+  "userProfilePage": {
+    "userNotFound": "User not found.",
+    "editProfileButton": "Edit Profile",
+    "statisticsHeading": "Statistics",
+    "noStatisticsYet": "No statistics yet.",
+    "workoutsStatLabel": "Workouts",
+    "totalVolumeStatLabel": "Total Volume",
+    "workoutsHeading": "Workouts",
+    "failedToLoadWorkouts": "Failed to load workouts.",
+    "noWorkoutsYet": "No workouts yet."
+  },
+  "profileExerciseTile": {
+    "toggleDetails": "Toggle details"
+  },
+  "profileSetTile": {
+    "weightLabel": "Weight",
+    "repsLabel": "Reps"
+  },
+  "profileWorkoutTile": {
+    "toggleDetails": "Toggle details",
+    "createTemplate": "Create Template",
+    "deleteWorkout": "Delete Workout",
+    "deleteConfirmTitle": "Delete workout?",
+    "deleteConfirmDescription": "This will permanently delete this workout and all its exercises and sets. This cannot be undone.",
+    "deleteConfirmButton": "Delete",
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    }
+  }
+}

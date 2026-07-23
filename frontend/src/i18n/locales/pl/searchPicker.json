@@ -1,0 +1,10 @@
+{
+  "searchPickerPage": {
+    "error": "Coś poszło nie tak podczas wyszukiwania. Spróbuj ponownie później.",
+    "noResults": "Nie znaleziono: {{type}}."
+  },
+  "exerciseSetTile": {
+    "addExercise": "Dodaj ćwiczenie",
+    "alreadyExists": "To ćwiczenie już istnieje"
+  }
+}

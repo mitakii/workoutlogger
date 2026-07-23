@@ -1,0 +1,10 @@
+{
+  "searchPickerPage": {
+    "error": "Під час пошуку щось пішло не так. Спробуйте пізніше.",
+    "noResults": "Нічого не знайдено: {{type}}."
+  },
+  "exerciseSetTile": {
+    "addExercise": "Додати вправу",
+    "alreadyExists": "Ця вправа вже додана"
+  }
+}

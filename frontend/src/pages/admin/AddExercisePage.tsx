@@ -2,6 +2,7 @@ import z from "zod";
 import axios from "axios";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { useAddExercise } from "../../hooks/react-query";
 import { TranslationSchema } from "../../schemas/Exercise.schema";
 
@@ -16,6 +17,7 @@ const exerciseScheme = z.object({
 type ExerciseFormInput = z.infer<typeof exerciseScheme>;
 
 export const AddExercisePage = () => {
+  const { t } = useTranslation("admin");
   const { mutateAsync: addExercise } = useAddExercise();
 
   const {
@@ -51,7 +53,7 @@ export const AddExercisePage = () => {
       reset();
     } catch (e) {
       if (!axios.isAxiosError(e)) {
-        setError("root", { message: "Unexpected error occured" });
+        setError("root", { message: t("addExercise.unexpectedError") });
         return;
       }
 
@@ -59,7 +61,7 @@ export const AddExercisePage = () => {
       if (nameTagError) {
         setError("nameTag", { type: "server", message: nameTagError });
       } else {
-        setError("root", { message: "Failed to add exercise" });
+        setError("root", { message: t("addExercise.addFailed") });
       }
     }
   };
@@ -68,18 +70,22 @@ export const AddExercisePage = () => {
     <div>
       {errors.root?.message}
       <form action="" onSubmit={handleSubmit(handleExercisePost)}>
-        <input type="text" placeholder="name tag" {...register("nameTag")} />
+        <input
+          type="text"
+          placeholder={t("addExercise.nameTagPlaceholder")}
+          {...register("nameTag")}
+        />
         {errors.nameTag ? <p>{errors.nameTag.message}</p> : ""}
 
         <input type="text" {...register("mediaUrl")} />
         {errors.mediaUrl ? <p>{errors.mediaUrl.message}</p> : ""}
-        <div>Translations</div>
+        <div>{t("addExercise.translationsLabel")}</div>
 
         {fields.map((field, index) => (
           <div key={field.id}>
             <input
               type="text"
-              placeholder="language"
+              placeholder={t("addExercise.languagePlaceholder")}
               {...register(`translations.${index}.language`)}
             />
             {errors.translations?.[index]?.language ? (
@@ -89,7 +95,7 @@ export const AddExercisePage = () => {
             )}
             <input
               type="text"
-              placeholder="name"
+              placeholder={t("addExercise.namePlaceholder")}
               {...register(`translations.${index}.name`)}
             />
             {errors.translations?.[index]?.name ? (
@@ -99,7 +105,7 @@ export const AddExercisePage = () => {
             )}
             <input
               type="text"
-              placeholder="description"
+              placeholder={t("addExercise.descriptionPlaceholder")}
               {...register(`translations.${index}.description`)}
             />
             {errors.translations?.[index]?.description ? (
@@ -116,12 +122,12 @@ export const AddExercisePage = () => {
           onClick={() => append({ language: "", name: "", description: "" })}
         >
           {" "}
-          add new translation
+          {t("addExercise.addTranslation")}
         </button>
         {errors.translations ? <p>{errors.translations.message}</p> : ""}
         <br />
         <br />
-        <button type="submit">Save</button>
+        <button type="submit">{t("addExercise.save")}</button>
       </form>
     </div>
   );

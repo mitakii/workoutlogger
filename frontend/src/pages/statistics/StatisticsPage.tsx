@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useUserStatistics, useDailyStatisticsRange } from "@/hooks/react-query";
 import { useUserContext } from "@/context/UserContext";
 import { Separator } from "@/components/ui/separator";
@@ -10,6 +11,7 @@ import VolumeChart from "@/components/statistics/VolumeChart";
 import { fmtVol } from "@/lib/utils";
 
 const StatisticsPage = () => {
+  const { t } = useTranslation("statistics");
   const { user } = useUserContext();
 
   const today = useMemo(() => new Date(), []);
@@ -36,20 +38,20 @@ const StatisticsPage = () => {
   if (isError || !stats) {
     return (
       <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
-        Statistics not available yet. Complete a workout to get started.
+        {t("statisticsPage.notAvailable")}
       </p>
     );
   }
 
   return (
     <div className="px-4 py-6 max-w-2xl mx-auto space-y-6">
-      <h1 className="text-xl font-bold">Statistics</h1>
+      <h1 className="text-xl font-bold">{t("statisticsPage.title")}</h1>
 
       <div className="grid grid-cols-2 gap-3">
-        <StatCard label="Workouts" value={stats.totalWorkouts ?? 0} />
-        <StatCard label="Exercises" value={stats.totalExercises ?? 0} />
-        <StatCard label="Total Sets" value={stats.totalSets ?? 0} />
-        <StatCard label="Total Volume" value={fmtVol(stats.totalVolume)} />
+        <StatCard label={t("statisticsPage.workouts")} value={stats.totalWorkouts ?? 0} />
+        <StatCard label={t("statisticsPage.exercises")} value={stats.totalExercises ?? 0} />
+        <StatCard label={t("statisticsPage.totalSets")} value={stats.totalSets ?? 0} />
+        <StatCard label={t("statisticsPage.totalVolume")} value={fmtVol(stats.totalVolume)} />
       </div>
 
       <Separator />
@@ -69,14 +71,14 @@ const StatisticsPage = () => {
       <Separator />
 
       <div>
-        <h2 className="text-sm font-semibold mb-3">Volume — Last 30 Days</h2>
+        <h2 className="text-sm font-semibold mb-3">{t("statisticsPage.volumeSectionTitle")}</h2>
         {dailyLoading ? (
           <div className="flex justify-center py-8">
             <Spinner />
           </div>
         ) : dailyData.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-6">
-            No workout data in the last 30 days.
+            {t("statisticsPage.noVolumeData")}
           </p>
         ) : (
           <VolumeChart data={dailyData} />
@@ -84,7 +86,7 @@ const StatisticsPage = () => {
       </div>
 
       <p className="text-xs text-muted-foreground text-right">
-        Last updated:{" "}
+        {t("statisticsPage.lastUpdated")}{" "}
         {new Date(stats.lastUpdated).toLocaleDateString("en", {
           day: "numeric",
           month: "short",

@@ -7,6 +7,7 @@ import {
   XAxis,
   type TooltipContentProps,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 export type ProgressionPoint = {
   date: string;
@@ -21,13 +22,16 @@ const fmtLabel = (date: string) =>
   new Date(date).toLocaleDateString("en", { month: "short", day: "numeric" });
 
 const WeightProgressionTooltip = ({ active, payload }: TooltipContentProps) => {
+  const { t } = useTranslation("statistics");
   if (!active || !payload?.length) return null;
   const point = payload[0].payload as ProgressionPoint;
 
   return (
     <div className="rounded-md border border-border bg-card px-2.5 py-1.5 text-xs shadow-sm space-y-0.5">
       <p className="text-muted-foreground">{fmtLabel(point.date)}</p>
-      <p className="font-medium text-card-foreground">{point.weight} kg</p>
+      <p className="font-medium text-card-foreground">
+        {t("weightProgressionChart.tooltipWeight", { weight: point.weight })}
+      </p>
     </div>
   );
 };

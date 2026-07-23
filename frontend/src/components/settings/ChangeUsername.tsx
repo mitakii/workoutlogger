@@ -9,10 +9,12 @@ import { useChangeUsername } from "@/hooks/react-query";
 import { changeUsernameScheme } from "@/schemas/settings.schema";
 import { useState } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 export type ChangeUsernameInput = z.infer<typeof changeUsernameScheme>;
 
 const ChangeUsername = () => {
+  const { t } = useTranslation("common");
   const { mutateAsync: changeUsername } = useChangeUsername();
   const [isChanged, setChanged] = useState<boolean>(false);
   const {
@@ -33,7 +35,7 @@ const ChangeUsername = () => {
     } catch (e) {
       if (!axios.isAxiosError(e)) {
         setError("root", {
-          message: "Unexpected error occured",
+          message: t("errors.unexpectedError"),
         });
         return;
       }
@@ -45,15 +47,15 @@ const ChangeUsername = () => {
         });
       } else if (status === 401) {
         setError("password", {
-          message: "Password is invalid",
+          message: t("errors.invalidPassword"),
         });
       } else if (status === 500) {
         setError("root", {
-          message: "Internal server error",
+          message: t("errors.internalServerError"),
         });
       } else {
         setError("root", {
-          message: "Something went wrong",
+          message: t("errors.somethingWentWrong"),
         });
       }
     }
@@ -63,12 +65,12 @@ const ChangeUsername = () => {
     <div className="pt-2">
       <Card>
         <CardHeader>
-          <CardTitle>Change username</CardTitle>
+          <CardTitle>{t("settings.changeUsernameTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           <form action="" onSubmit={handleSubmit(handleChangeUsername)}>
             <Field className="">
-              <FieldLabel>New username</FieldLabel>
+              <FieldLabel>{t("settings.newUsernameLabel")}</FieldLabel>
               <Input
                 id="username"
                 placeholder="new username"
@@ -77,7 +79,7 @@ const ChangeUsername = () => {
               <FieldError errors={[errors.newUsername]}></FieldError>
             </Field>
             <Field className="pt-2">
-              <FieldLabel>Password</FieldLabel>
+              <FieldLabel>{t("settings.passwordLabel")}</FieldLabel>
               <Input
                 id="password"
                 type="password"
@@ -87,8 +89,10 @@ const ChangeUsername = () => {
               <FieldError errors={[errors.password]}></FieldError>
             </Field>
             <Field className="pt-2">
-              <Button type="submit">Change</Button>
-              {isChanged && <div className="pl-2">Username changed</div>}
+              <Button type="submit">{t("settings.changeButton")}</Button>
+              {isChanged && (
+                <div className="pl-2">{t("settings.usernameChangedNotice")}</div>
+              )}
               <FieldError errors={[errors.root]}></FieldError>
             </Field>
           </form>

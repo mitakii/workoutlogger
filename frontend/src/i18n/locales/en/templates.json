@@ -1,0 +1,21 @@
+{
+  "createTemplatePage": {
+    "title": "Create template",
+    "nameLabel": "Name",
+    "namePlaceholder": "name",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "description",
+    "submit": "Create",
+    "unexpectedError": "Unexpected error occured",
+    "createError": "Failed to create template"
+  },
+  "templateEditPage": {
+    "addExercise": "Add Exercise",
+    "loadError": "Failed to load template. Try again later.",
+    "notFound": "No template found"
+  },
+  "templateExerciseTile": {
+    "removeButton": "Remove Exercise",
+    "removeError": "Failed to remove exercise"
+  }
+}

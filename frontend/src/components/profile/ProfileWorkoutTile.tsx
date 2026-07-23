@@ -1,5 +1,6 @@
 import type { UserSession } from "@/types/types";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card } from "../ui/card";
 import {
   Collapsible,
@@ -29,16 +30,17 @@ type Props = {
 };
 
 export const days = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+] as const;
 
 const ProfileWorkoutTile = ({ session, isCurrentUser }: Props) => {
+  const { t } = useTranslation("profile");
   const [isOpen, setIsOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
@@ -72,12 +74,14 @@ const ProfileWorkoutTile = ({ session, isCurrentUser }: Props) => {
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="icon" className="size-8">
                 <ChevronsUpDown />
-                <span className="sr-only">Toggle details</span>
+                <span className="sr-only">
+                  {t("profileWorkoutTile.toggleDetails")}
+                </span>
               </Button>
             </CollapsibleTrigger>
             <div className="">
               <h4 className="text-sm font-semibold">
-                {date} {days[day]}
+                {date} {t(`profileWorkoutTile.days.${days[day]}`)}
               </h4>
             </div>
             <div className="ml-auto">
@@ -89,7 +93,7 @@ const ProfileWorkoutTile = ({ session, isCurrentUser }: Props) => {
                   <div>
                     <DropdownMenuGroup>
                       <DropdownMenuItem onClick={() => handleCreateTemplate()}>
-                        Create Template
+                        {t("profileWorkoutTile.createTemplate")}
                       </DropdownMenuItem>
                       {isCurrentUser && (
                         <>
@@ -99,7 +103,7 @@ const ProfileWorkoutTile = ({ session, isCurrentUser }: Props) => {
                             variant="destructive"
                             onClick={() => setDeleteDialogOpen(true)}
                           >
-                            Delete Workout
+                            {t("profileWorkoutTile.deleteWorkout")}
                           </DropdownMenuItem>
                         </>
                       )}
@@ -110,9 +114,9 @@ const ProfileWorkoutTile = ({ session, isCurrentUser }: Props) => {
               <ConfirmDialog
                 open={deleteDialogOpen}
                 onOpenChange={setDeleteDialogOpen}
-                title="Delete workout?"
-                description="This will permanently delete this workout and all its exercises and sets. This cannot be undone."
-                confirmLabel="Delete"
+                title={t("profileWorkoutTile.deleteConfirmTitle")}
+                description={t("profileWorkoutTile.deleteConfirmDescription")}
+                confirmLabel={t("profileWorkoutTile.deleteConfirmButton")}
                 variant="destructive"
                 onConfirm={handleDeleteWorkout}
               />

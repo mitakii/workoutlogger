@@ -16,10 +16,12 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import type z from "zod";
+import { useTranslation } from "react-i18next";
 
 export type CreateTemplateInput = z.infer<typeof createTemplateSchema>;
 
 const CreateTemplatePage = () => {
+  const { t } = useTranslation("templates");
   const navigate = useNavigate();
   const { id } = useParams();
   const { mutateAsync: createTemplate } = useWorkoutToTemplate();
@@ -43,31 +45,39 @@ const CreateTemplatePage = () => {
       navigate(`/editTemplate/${res}`);
     } catch (e) {
       if (!axios.isAxiosError(e)) {
-        setError("root", { message: "Unexpected error occured" });
+        setError("root", { message: t("createTemplatePage.unexpectedError") });
         return;
       }
-      setError("root", { message: "Failed to create template" });
+      setError("root", { message: t("createTemplatePage.createError") });
     }
   };
   return (
     <div className="flex w-full items-center justify-center p-6 md:p-10">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Create template</CardTitle>
+          <CardTitle>{t("createTemplatePage.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <FieldGroup>
             <form action="" onSubmit={handleSubmit(handleCreateTemplate)}>
               <Field>
-                <FieldLabel className="mt-2">Name</FieldLabel>
-                <Input type="text" placeholder="name" {...register("name")} />
+                <FieldLabel className="mt-2">
+                  {t("createTemplatePage.nameLabel")}
+                </FieldLabel>
+                <Input
+                  type="text"
+                  placeholder={t("createTemplatePage.namePlaceholder")}
+                  {...register("name")}
+                />
                 <FieldError errors={[errors.name]}></FieldError>
               </Field>
               <Field>
-                <FieldLabel className="mt-2">Description</FieldLabel>
+                <FieldLabel className="mt-2">
+                  {t("createTemplatePage.descriptionLabel")}
+                </FieldLabel>
                 <Input
                   type="text"
-                  placeholder="description"
+                  placeholder={t("createTemplatePage.descriptionPlaceholder")}
                   {...register("description")}
                 />
                 <FieldError errors={[errors.description]}></FieldError>
@@ -75,7 +85,7 @@ const CreateTemplatePage = () => {
 
               <Field>
                 <Button type="submit" className="w-full mt-2">
-                  Create
+                  {t("createTemplatePage.submit")}
                 </Button>
                 <FieldError errors={[errors.root]} />
               </Field>

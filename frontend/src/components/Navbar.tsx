@@ -1,6 +1,7 @@
 import { useMatches, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { Menu, Moon, Sun } from "lucide-react";
+import { Globe, Menu, Moon, Sun } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import "../index.css";
 import { useUserContext } from "../context/UserContext";
 import { useTheme } from "../context/ThemeContext";
@@ -10,6 +11,8 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
@@ -17,6 +20,7 @@ import { Button } from "./ui/button";
 import { useScrollDirection } from "@/hooks/scrollDirection";
 import type { NavAction } from "@/types/types";
 import { useEffect } from "react";
+import { supportedLanguages } from "@/i18n";
 
 type RouteHandle = {
   nav?: NavAction[];
@@ -29,6 +33,7 @@ export const getNavFromRoute = (route: any): NavAction[] => {
 const Navbar = () => {
   const { logout, user, isLoggedIn } = useUserContext();
   const { theme, toggleTheme } = useTheme();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const direction = useScrollDirection();
   const matches = useMatches();
@@ -54,17 +59,43 @@ const Navbar = () => {
       <div className="">
         <div className="flex items-center justify-between">
           <Link to="/" className="font-semibold text-base">
-            Logger
+            {t("nav.brand")}
           </Link>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="icon"
               onClick={toggleTheme}
-              aria-label="Toggle theme"
+              aria-label={t("nav.toggleTheme")}
             >
               {theme === "dark" ? <Sun /> : <Moon />}
             </Button>
+            {!isLoggedIn() && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label={t("nav.changeLanguage")}
+                  >
+                    <Globe />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-40" align="start">
+                  <DropdownMenuLabel>{t("nav.changeLanguage")}</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup
+                    value={i18n.language}
+                    onValueChange={(lang) => i18n.changeLanguage(lang)}
+                  >
+                    {supportedLanguages.map((lang) => (
+                      <DropdownMenuRadioItem key={lang} value={lang}>
+                        {t(`nav.languages.${lang}`)}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -75,54 +106,54 @@ const Navbar = () => {
               {isLoggedIn() ? (
                 <div>
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t("nav.myAccount")}</DropdownMenuLabel>
                     <DropdownMenuItem
                       onClick={() => navigate(`/u/${user?.username}`)}
                     >
-                      Profile
+                      {t("nav.profile")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/search/user")}>
-                      Find user
+                      {t("nav.findUser")}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel>Statistics</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t("nav.statistics")}</DropdownMenuLabel>
                     <DropdownMenuItem onClick={() => navigate("/statistics")}>
-                      Overview
+                      {t("nav.overview")}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => navigate("/search/exercise")}
                     >
-                      Exercise Stats
+                      {t("nav.exerciseStats")}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel>Template</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t("nav.template")}</DropdownMenuLabel>
                     <DropdownMenuItem
                       onClick={() => navigate("search/template")}
                     >
-                      User templates
+                      {t("nav.userTemplates")}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem onClick={() => navigate("/settings")}>
-                      Settings
+                      {t("nav.settings")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={logoutUser}>
-                      Log out
+                      {t("nav.logout")}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </div>
               ) : (
                 <div>
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel>User Account</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t("nav.userAccount")}</DropdownMenuLabel>
                     <DropdownMenuItem onClick={() => navigate("/login")}>
-                      Login
+                      {t("nav.login")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/register")}>
-                      Register
+                      {t("nav.register")}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </div>

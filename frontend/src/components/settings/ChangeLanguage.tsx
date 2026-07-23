@@ -25,11 +25,13 @@ import { useChangeLanguage } from "@/hooks/react-query";
 import { useUserContext } from "@/context/UserContext";
 import type z from "zod";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 export type ChangeLanguageIput = z.infer<typeof changeLanguageScheme>;
 
 const ChangeLanguage = () => {
   const { user } = useUserContext();
+  const { t } = useTranslation();
   const [isChanged, setChanged] = useState<boolean>(false);
   const { mutateAsync: changeLanguage } = useChangeLanguage();
   const {
@@ -54,18 +56,18 @@ const ChangeLanguage = () => {
     } catch (e) {
       if (!axios.isAxiosError(e)) {
         setError("root", {
-          message: "Unexpected error occured",
+          message: t("errors.unexpectedError"),
         });
         return;
       }
       const status = e.response?.status;
       if (status === 500) {
         setError("root", {
-          message: "Internal server error",
+          message: t("errors.internalServerError"),
         });
       } else {
         setError("root", {
-          message: "Something went wrong",
+          message: t("errors.somethingWentWrong"),
         });
       }
     }
@@ -75,15 +77,15 @@ const ChangeLanguage = () => {
     <div className="pt-2">
       <Card>
         <CardHeader>
-          <CardTitle>Change Language</CardTitle>
+          <CardTitle>{t("settings.changeLanguageTitle")}</CardTitle>
           <CardDescription>
-            Change language for exercises name and description
+            {t("settings.changeLanguageDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form action="" onSubmit={handleSubmit(handleChangeLanguage)}>
             <Field className="mt-2">
-              <FieldLabel>Language</FieldLabel>
+              <FieldLabel>{t("settings.languageLabel")}</FieldLabel>
               <Controller
                 name="newLanguage"
                 control={control}
@@ -98,6 +100,7 @@ const ChangeLanguage = () => {
                           <SelectLabel>Languages</SelectLabel>
                           <SelectItem value="en">English</SelectItem>
                           <SelectItem value="pl">Polish</SelectItem>
+                          <SelectItem value="uk">Ukrainian</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -107,7 +110,7 @@ const ChangeLanguage = () => {
               <FieldError errors={[errors.newLanguage]}></FieldError>
             </Field>
             <Field className="pt-2">
-              <FieldLabel>Password</FieldLabel>
+              <FieldLabel>{t("settings.passwordLabel")}</FieldLabel>
               <Input
                 id="password"
                 type="password"
@@ -117,8 +120,10 @@ const ChangeLanguage = () => {
               <FieldError errors={[errors.password]}></FieldError>
             </Field>
             <Field className="pt-2">
-              <Button type="submit">Change</Button>
-              {isChanged && <div className="pl-2">Language changed</div>}
+              <Button type="submit">{t("settings.changeButton")}</Button>
+              {isChanged && (
+                <div className="pl-2">{t("settings.changedNotice")}</div>
+              )}
               <FieldError errors={[errors.root]}></FieldError>
             </Field>
           </form>

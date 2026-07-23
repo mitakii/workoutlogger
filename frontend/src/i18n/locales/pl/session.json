@@ -1,0 +1,31 @@
+{
+  "workoutPage": {
+    "loadError": "Nie udało się wczytać sesji treningowej. Spróbuj ponownie później.",
+    "noSession": "Nie znaleziono sesji treningowej",
+    "addExercise": "Dodaj ćwiczenie"
+  },
+  "sessionMenu": {
+    "openLastSession": "Otwórz ostatnią sesję",
+    "startNewSession": "Rozpocznij nową sesję",
+    "createError": "Nie udało się rozpocząć nowej sesji"
+  },
+  "sessionExerciseList": {
+    "noActiveSession": "Brak aktywnej sesji"
+  },
+  "userExerciseTile": {
+    "deleteExercise": "Usuń ćwiczenie",
+    "deleteConfirmTitle": "Usunąć ćwiczenie?",
+    "deleteConfirmDescription": "Spowoduje to usunięcie tego ćwiczenia oraz wszystkich jego serii z treningu. Tej operacji nie można cofnąć.",
+    "deleteConfirmLabel": "Usuń",
+    "weightLabel": "Ciężar",
+    "repsLabel": "Powtórzenia",
+    "addSet": "Dodaj serię",
+    "addSetError": "Nie udało się dodać serii",
+    "deleteExerciseError": "Nie udało się usunąć ćwiczenia"
+  },
+  "userSetTile": {
+    "deleteSet": "Usuń serię",
+    "deleteError": "Nie udało się usunąć serii",
+    "saveError": "Nie udało się zapisać serii, zmiany zostały cofnięte"
+  }
+}

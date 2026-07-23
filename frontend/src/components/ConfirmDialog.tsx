@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,11 +26,12 @@ const ConfirmDialog = ({
   onOpenChange,
   title,
   description,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   variant = "default",
   onConfirm,
 }: Props) => {
+  const { t } = useTranslation("common");
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -40,9 +42,11 @@ const ConfirmDialog = ({
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
+          <AlertDialogCancel>
+            {cancelLabel ?? t("actions.cancel")}
+          </AlertDialogCancel>
           <AlertDialogAction variant={variant} onClick={onConfirm}>
-            {confirmLabel}
+            {confirmLabel ?? t("actions.confirm")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

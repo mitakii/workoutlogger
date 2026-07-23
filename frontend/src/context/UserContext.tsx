@@ -1,4 +1,5 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import type { UserProfile } from "../types/types";
 import {
   useLogin,
@@ -7,6 +8,7 @@ import {
   useStatus,
 } from "../hooks/react-query";
 import { Spinner } from "@/components/ui/spinner";
+import { supportedLanguages } from "@/i18n";
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
@@ -33,6 +35,16 @@ const UserProvider = ({ children }: Props) => {
   const { mutateAsync: registerApi } = useRegister();
   const { mutateAsync: loginApi } = useLogin();
   const { mutateAsync: logoutApi } = useLogout();
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    if (
+      user?.language &&
+      supportedLanguages.includes(user.language as (typeof supportedLanguages)[number])
+    ) {
+      i18n.changeLanguage(user.language);
+    }
+  }, [user?.language, i18n]);
 
   const isLoggedIn = () => user != null;
 

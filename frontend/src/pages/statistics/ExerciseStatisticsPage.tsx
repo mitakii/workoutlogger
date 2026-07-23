@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Dumbbell } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useExerciseStatistics, useGetExercise } from "@/hooks/react-query";
 import { useUserContext } from "@/context/UserContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import WeightProgressionChart from "@/components/statistics/WeightProgressionCha
 import { fmtVol } from "@/lib/utils";
 
 const ExerciseStatisticsPage = () => {
+  const { t } = useTranslation("statistics");
   const { exerciseId } = useParams<{ exerciseId: string }>();
   const { user } = useUserContext();
   const { data: stats, isLoading, isError } = useExerciseStatistics(
@@ -38,7 +40,7 @@ const ExerciseStatisticsPage = () => {
   if (isError || !stats) {
     return (
       <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
-        No statistics found for this exercise. Add it to a workout first.
+        {t("exerciseStatisticsPage.notFound")}
       </p>
     );
   }
@@ -59,7 +61,7 @@ const ExerciseStatisticsPage = () => {
         )}
         <div className="min-w-0">
           <h1 className="text-xl font-bold truncate">
-            {exercise?.name ?? "Exercise Statistics"}
+            {exercise?.name ?? t("exerciseStatisticsPage.defaultTitle")}
           </h1>
           {exercise?.description && (
             <p className="text-sm text-muted-foreground mt-0.5">
@@ -70,31 +72,46 @@ const ExerciseStatisticsPage = () => {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        <StatCard label="Max Weight" value={`${stats.maxWeight ?? 0} kg`} />
-        <StatCard label="Total Sets" value={stats.totalSets ?? 0} />
-        <StatCard label="Volume" value={fmtVol(stats.totalVolume)} />
+        <StatCard
+          label={t("exerciseStatisticsPage.maxWeight")}
+          value={`${stats.maxWeight ?? 0} ${t("exerciseStatisticsPage.kgUnit")}`}
+        />
+        <StatCard label={t("exerciseStatisticsPage.totalSets")} value={stats.totalSets ?? 0} />
+        <StatCard label={t("exerciseStatisticsPage.volume")} value={fmtVol(stats.totalVolume)} />
       </div>
 
       <Separator />
 
       <Card>
         <CardHeader className="pb-1 pt-4">
-          <CardTitle className="text-sm">Breakdown</CardTitle>
+          <CardTitle className="text-sm">{t("exerciseStatisticsPage.breakdownTitle")}</CardTitle>
         </CardHeader>
         <CardContent className="divide-y">
           {(stats.maxDuration ?? 0) > 0 && (
-            <StatRow label="Max Duration" value={`${stats.maxDuration!.toFixed(0)} min`} />
+            <StatRow
+              label={t("exerciseStatisticsPage.maxDuration")}
+              value={`${stats.maxDuration!.toFixed(0)} ${t("exerciseStatisticsPage.minUnit")}`}
+            />
           )}
           {(stats.maxDistanceKm ?? 0) > 0 && (
-            <StatRow label="Max Distance" value={`${stats.maxDistanceKm!.toFixed(2)} km`} />
+            <StatRow
+              label={t("exerciseStatisticsPage.maxDistance")}
+              value={`${stats.maxDistanceKm!.toFixed(2)} ${t("exerciseStatisticsPage.kmUnit")}`}
+            />
           )}
           {(stats.totalDuration ?? 0) > 0 && (
-            <StatRow label="Total Duration" value={`${stats.totalDuration!.toFixed(0)} min`} />
+            <StatRow
+              label={t("exerciseStatisticsPage.totalDuration")}
+              value={`${stats.totalDuration!.toFixed(0)} ${t("exerciseStatisticsPage.minUnit")}`}
+            />
           )}
           {(stats.totalDistanceKm ?? 0) > 0 && (
-            <StatRow label="Total Distance" value={`${stats.totalDistanceKm!.toFixed(2)} km`} />
+            <StatRow
+              label={t("exerciseStatisticsPage.totalDistance")}
+              value={`${stats.totalDistanceKm!.toFixed(2)} ${t("exerciseStatisticsPage.kmUnit")}`}
+            />
           )}
-          <StatRow label="Total Volume" value={fmtVol(stats.totalVolume)} />
+          <StatRow label={t("exerciseStatisticsPage.totalVolumeRow")} value={fmtVol(stats.totalVolume)} />
         </CardContent>
       </Card>
 
@@ -102,11 +119,11 @@ const ExerciseStatisticsPage = () => {
 
       <div>
         <h2 className="text-sm font-semibold mb-3">
-          Weight Progression — Last 30 Days
+          {t("exerciseStatisticsPage.progressionSectionTitle")}
         </h2>
         {progressionData.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-6">
-            No weight progression data in the last 30 days.
+            {t("exerciseStatisticsPage.noProgressionData")}
           </p>
         ) : (
           <WeightProgressionChart data={progressionData} />

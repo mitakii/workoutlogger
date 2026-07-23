@@ -1,4 +1,5 @@
 import type { UserSet } from "@/types/types";
+import { useTranslation } from "react-i18next";
 import { Input } from "../ui/input";
 
 type Props = {
@@ -6,11 +7,12 @@ type Props = {
 };
 
 const ProfileSetTile = ({ userSet }: Props) => {
+  const { t } = useTranslation("profile");
   return (
     <div className="grid grid-cols-4 place-items-center">
-      <div>Weight</div>
+      <div>{t("profileSetTile.weightLabel")}</div>
       <Input disabled value={userSet.weight} className="text-center"></Input>
-      <div>Reps</div>
+      <div>{t("profileSetTile.repsLabel")}</div>
       <Input disabled value={userSet.reps} className="text-center"></Input>
     </div>
   );

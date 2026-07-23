@@ -1,0 +1,31 @@
+{
+  "workoutPage": {
+    "loadError": "Не вдалося завантажити тренувальну сесію. Спробуйте пізніше.",
+    "noSession": "Тренувальну сесію не знайдено",
+    "addExercise": "Додати вправу"
+  },
+  "sessionMenu": {
+    "openLastSession": "Відкрити останню сесію",
+    "startNewSession": "Почати нову сесію",
+    "createError": "Не вдалося почати нову сесію"
+  },
+  "sessionExerciseList": {
+    "noActiveSession": "Немає активної сесії"
+  },
+  "userExerciseTile": {
+    "deleteExercise": "Видалити вправу",
+    "deleteConfirmTitle": "Видалити вправу?",
+    "deleteConfirmDescription": "Це призведе до видалення цієї вправи та всіх її підходів із тренування. Цю дію неможливо скасувати.",
+    "deleteConfirmLabel": "Видалити",
+    "weightLabel": "Вага",
+    "repsLabel": "Повторення",
+    "addSet": "Додати підхід",
+    "addSetError": "Не вдалося додати підхід",
+    "deleteExerciseError": "Не вдалося видалити вправу"
+  },
+  "userSetTile": {
+    "deleteSet": "Видалити підхід",
+    "deleteError": "Не вдалося видалити підхід",
+    "saveError": "Не вдалося зберегти підхід, зміни скасовано"
+  }
+}

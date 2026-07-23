@@ -7,6 +7,7 @@ import {
   XAxis,
   type TooltipContentProps,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 import type { DailyStatistic } from "@/types/types";
 import { fmtVol } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ const fmtLabel = (date: string) =>
   new Date(date).toLocaleDateString("en", { month: "short", day: "numeric" });
 
 const VolumeTooltip = ({ active, payload }: TooltipContentProps) => {
+  const { t } = useTranslation("statistics");
   if (!active || !payload?.length) return null;
   const point = payload[0].payload as DailyStatistic;
 
@@ -28,7 +30,10 @@ const VolumeTooltip = ({ active, payload }: TooltipContentProps) => {
         {fmtVol(point.totalVolume)}
       </p>
       <p className="text-muted-foreground">
-        {point.totalExercises} exercises &middot; {point.totalSets} sets
+        {t("volumeChart.tooltipSummary", {
+          exercises: point.totalExercises,
+          sets: point.totalSets,
+        })}
       </p>
     </div>
   );

@@ -1,0 +1,23 @@
+{
+  "searchPage": {
+    "errorMessage": "Something went wrong while searching. Try again later.",
+    "noResults": "No {{type}} found."
+  },
+  "searchBar": {
+    "placeholder": "Search..."
+  },
+  "templateTile": {
+    "edit": "Edit",
+    "applyToWorkout": "Apply to workout",
+    "delete": "Delete",
+    "deleteFailed": "Failed to delete template",
+    "applyFailed": "Failed to apply template",
+    "startSessionRequired": "Start a session before applying a template",
+    "deleteDialogTitle": "Delete template?",
+    "deleteDialogDescription": "This will permanently delete this template. This cannot be undone.",
+    "deleteConfirmLabel": "Delete",
+    "applyDialogTitle": "Apply template to current workout?",
+    "applyDialogDescription": "This will add all exercises from this template to your in-progress workout.",
+    "applyConfirmLabel": "Apply"
+  }
+}

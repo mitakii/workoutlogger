@@ -1,0 +1,37 @@
+{
+  "userProfilePage": {
+    "userNotFound": "Nie znaleziono użytkownika.",
+    "editProfileButton": "Edytuj profil",
+    "statisticsHeading": "Statystyki",
+    "noStatisticsYet": "Brak statystyk.",
+    "workoutsStatLabel": "Treningi",
+    "totalVolumeStatLabel": "Łączna objętość",
+    "workoutsHeading": "Treningi",
+    "failedToLoadWorkouts": "Nie udało się załadować treningów.",
+    "noWorkoutsYet": "Brak treningów."
+  },
+  "profileExerciseTile": {
+    "toggleDetails": "Przełącz szczegóły"
+  },
+  "profileSetTile": {
+    "weightLabel": "Ciężar",
+    "repsLabel": "Powtórzenia"
+  },
+  "profileWorkoutTile": {
+    "toggleDetails": "Przełącz szczegóły",
+    "createTemplate": "Utwórz szablon",
+    "deleteWorkout": "Usuń trening",
+    "deleteConfirmTitle": "Usunąć trening?",
+    "deleteConfirmDescription": "Spowoduje to trwałe usunięcie tego treningu wraz ze wszystkimi ćwiczeniami i seriami. Tej operacji nie można cofnąć.",
+    "deleteConfirmButton": "Usuń",
+    "days": {
+      "sunday": "Niedziela",
+      "monday": "Poniedziałek",
+      "tuesday": "Wtorek",
+      "wednesday": "Środa",
+      "thursday": "Czwartek",
+      "friday": "Piątek",
+      "saturday": "Sobota"
+    }
+  }
+}

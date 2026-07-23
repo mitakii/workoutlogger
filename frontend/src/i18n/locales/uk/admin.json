@@ -1,0 +1,13 @@
+{
+  "addExercise": {
+    "nameTagPlaceholder": "тег назви",
+    "languagePlaceholder": "мова",
+    "namePlaceholder": "назва",
+    "descriptionPlaceholder": "опис",
+    "translationsLabel": "Переклади",
+    "addTranslation": "додати новий переклад",
+    "save": "Зберегти",
+    "unexpectedError": "Сталася неочікувана помилка",
+    "addFailed": "Не вдалося додати вправу"
+  }
+}

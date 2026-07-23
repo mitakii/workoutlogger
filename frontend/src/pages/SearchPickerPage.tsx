@@ -7,8 +7,10 @@ import type { SearchPickerType, SearchPickerResults } from "@/types/types";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import SearchPickerResult from "@/components/searchPicker/SearchPickerResult";
+import { useTranslation } from "react-i18next";
 
 const SearchPickerPage = () => {
+  const { t } = useTranslation("searchPicker");
   const { type } = useParams<{ type: SearchPickerType }>();
   const { id } = useParams();
 
@@ -41,13 +43,13 @@ const SearchPickerPage = () => {
 
       {!isLoading && isError && (
         <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
-          Something went wrong while searching. Try again later.
+          {t("searchPickerPage.error")}
         </p>
       )}
 
       {!isLoading && !isError && searching && data.length === 0 && (
         <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
-          No {type} found.
+          {t("searchPickerPage.noResults", { type })}
         </p>
       )}
 

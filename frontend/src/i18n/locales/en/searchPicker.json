@@ -1,0 +1,10 @@
+{
+  "searchPickerPage": {
+    "error": "Something went wrong while searching. Try again later.",
+    "noResults": "No {{type}} found."
+  },
+  "exerciseSetTile": {
+    "addExercise": "Add Exercise",
+    "alreadyExists": "Exercise already exist"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "brand": "Logger",
+    "toggleTheme": "Przełącz motyw",
+    "myAccount": "Moje konto",
+    "profile": "Profil",
+    "findUser": "Znajdź użytkownika",
+    "statistics": "Statystyki",
+    "overview": "Podsumowanie",
+    "exerciseStats": "Statystyki ćwiczeń",
+    "template": "Szablon",
+    "userTemplates": "Szablony użytkownika",
+    "settings": "Ustawienia",
+    "logout": "Wyloguj się",
+    "userAccount": "Konto użytkownika",
+    "login": "Zaloguj się",
+    "register": "Zarejestruj się",
+    "changeLanguage": "Zmień język",
+    "languages": {
+      "en": "English",
+      "pl": "Polski",
+      "uk": "Українська"
+    }
+  },
+  "settings": {
+    "changeLanguageTitle": "Zmień język",
+    "changeLanguageDescription": "Zmień język nazw i opisów ćwiczeń",
+    "languageLabel": "Język",
+    "passwordLabel": "Hasło",
+    "changeButton": "Zmień",
+    "changedNotice": "Język został zmieniony",
+    "changePasswordTitle": "Zmień hasło",
+    "oldPasswordLabel": "Stare hasło",
+    "newPasswordLabel": "Nowe hasło",
+    "confirmPasswordLabel": "Potwierdź hasło",
+    "passwordChangedNotice": "Hasło zostało zmienione",
+    "changePfpTitle": "Zmień zdjęcie profilowe",
+    "addPfpLabel": "Dodaj zdjęcie profilowe",
+    "pfpChangedNotice": "Zdjęcie profilowe zostało zmienione",
+    "changeUsernameTitle": "Zmień nazwę użytkownika",
+    "newUsernameLabel": "Nowa nazwa użytkownika",
+    "usernameChangedNotice": "Nazwa użytkownika została zmieniona"
+  },
+  "actions": {
+    "confirm": "Potwierdź",
+    "cancel": "Anuluj",
+    "goHome": "Wróć na stronę główną"
+  },
+  "errors": {
+    "unexpectedError": "Wystąpił nieoczekiwany błąd",
+    "somethingWentWrong": "Coś poszło nie tak",
+    "internalServerError": "Błąd wewnętrzny serwera",
+    "invalidPassword": "Nieprawidłowe hasło"
+  },
+  "errorBoundary": {
+    "title": "Coś poszło nie tak",
+    "description": "Na tej stronie wystąpił nieoczekiwany błąd."
+  },
+  "notFound": {
+    "message": "no nie"
+  }
+}

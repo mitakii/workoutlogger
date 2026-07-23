@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "brand": "Logger",
+    "toggleTheme": "Toggle theme",
+    "myAccount": "My Account",
+    "profile": "Profile",
+    "findUser": "Find user",
+    "statistics": "Statistics",
+    "overview": "Overview",
+    "exerciseStats": "Exercise Stats",
+    "template": "Template",
+    "userTemplates": "User templates",
+    "settings": "Settings",
+    "logout": "Log out",
+    "userAccount": "User Account",
+    "login": "Login",
+    "register": "Register",
+    "changeLanguage": "Change language",
+    "languages": {
+      "en": "English",
+      "pl": "Polski",
+      "uk": "Українська"
+    }
+  },
+  "settings": {
+    "changeLanguageTitle": "Change Language",
+    "changeLanguageDescription": "Change language for exercises name and description",
+    "languageLabel": "Language",
+    "passwordLabel": "Password",
+    "changeButton": "Change",
+    "changedNotice": "Language changed",
+    "changePasswordTitle": "Change password",
+    "oldPasswordLabel": "Old password",
+    "newPasswordLabel": "New Password",
+    "confirmPasswordLabel": "Confirm password",
+    "passwordChangedNotice": "Password changed",
+    "changePfpTitle": "Change profile picture",
+    "addPfpLabel": "Add profile picture",
+    "pfpChangedNotice": "Profile picture changed",
+    "changeUsernameTitle": "Change username",
+    "newUsernameLabel": "New username",
+    "usernameChangedNotice": "Username changed"
+  },
+  "actions": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "goHome": "Go home"
+  },
+  "errors": {
+    "unexpectedError": "Unexpected error occured",
+    "somethingWentWrong": "Something went wrong",
+    "internalServerError": "Internal server error",
+    "invalidPassword": "Password is invalid"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "This page ran into an unexpected error."
+  },
+  "notFound": {
+    "message": "nuh uh"
+  }
+}

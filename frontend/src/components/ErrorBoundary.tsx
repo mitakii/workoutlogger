@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
+import i18n from "@/i18n";
 
 type Props = {
   children: ReactNode;
@@ -27,14 +28,14 @@ export class ErrorBoundary extends Component<Props, State> {
         <div className="flex justify-center px-4 pt-16">
           <Card className="w-full max-w-sm">
             <CardHeader>
-              <CardTitle>Something went wrong</CardTitle>
+              <CardTitle>{i18n.t("common:errorBoundary.title")}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
               <p className="text-sm text-muted-foreground">
-                This page ran into an unexpected error.
+                {i18n.t("common:errorBoundary.description")}
               </p>
               <Button onClick={() => (window.location.href = "/")}>
-                Go home
+                {i18n.t("common:actions.goHome")}
               </Button>
             </CardContent>
           </Card>

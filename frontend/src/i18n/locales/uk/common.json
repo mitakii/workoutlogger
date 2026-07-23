@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "brand": "Logger",
+    "toggleTheme": "Змінити тему",
+    "myAccount": "Мій обліковий запис",
+    "profile": "Профіль",
+    "findUser": "Знайти користувача",
+    "statistics": "Статистика",
+    "overview": "Огляд",
+    "exerciseStats": "Статистика вправ",
+    "template": "Шаблон",
+    "userTemplates": "Шаблони користувача",
+    "settings": "Налаштування",
+    "logout": "Вийти",
+    "userAccount": "Обліковий запис",
+    "login": "Увійти",
+    "register": "Зареєструватися",
+    "changeLanguage": "Змінити мову",
+    "languages": {
+      "en": "English",
+      "pl": "Polski",
+      "uk": "Українська"
+    }
+  },
+  "settings": {
+    "changeLanguageTitle": "Змінити мову",
+    "changeLanguageDescription": "Змінити мову назв і описів вправ",
+    "languageLabel": "Мова",
+    "passwordLabel": "Пароль",
+    "changeButton": "Змінити",
+    "changedNotice": "Мову змінено",
+    "changePasswordTitle": "Змінити пароль",
+    "oldPasswordLabel": "Старий пароль",
+    "newPasswordLabel": "Новий пароль",
+    "confirmPasswordLabel": "Підтвердіть пароль",
+    "passwordChangedNotice": "Пароль змінено",
+    "changePfpTitle": "Змінити фото профілю",
+    "addPfpLabel": "Додати фото профілю",
+    "pfpChangedNotice": "Фото профілю змінено",
+    "changeUsernameTitle": "Змінити ім'я користувача",
+    "newUsernameLabel": "Нове ім'я користувача",
+    "usernameChangedNotice": "Ім'я користувача змінено"
+  },
+  "actions": {
+    "confirm": "Підтвердити",
+    "cancel": "Скасувати",
+    "goHome": "На головну"
+  },
+  "errors": {
+    "unexpectedError": "Сталася неочікувана помилка",
+    "somethingWentWrong": "Щось пішло не так",
+    "internalServerError": "Внутрішня помилка сервера",
+    "invalidPassword": "Невірний пароль"
+  },
+  "errorBoundary": {
+    "title": "Щось пішло не так",
+    "description": "На цій сторінці сталася неочікувана помилка."
+  },
+  "notFound": {
+    "message": "ні-ні"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "statisticsPage": {
+    "title": "Statystyki",
+    "notAvailable": "Statystyki nie są jeszcze dostępne. Ukończ trening, aby rozpocząć.",
+    "workouts": "Treningi",
+    "exercises": "Ćwiczenia",
+    "totalSets": "Serie łącznie",
+    "totalVolume": "Objętość łącznie",
+    "volumeSectionTitle": "Objętość — ostatnie 30 dni",
+    "noVolumeData": "Brak danych treningowych z ostatnich 30 dni.",
+    "lastUpdated": "Ostatnia aktualizacja:"
+  },
+  "exerciseStatisticsPage": {
+    "defaultTitle": "Statystyki ćwiczenia",
+    "notFound": "Nie znaleziono statystyk dla tego ćwiczenia. Dodaj je najpierw do treningu.",
+    "maxWeight": "Maks. ciężar",
+    "totalSets": "Serie łącznie",
+    "volume": "Objętość",
+    "kgUnit": "kg",
+    "breakdownTitle": "Szczegóły",
+    "maxDuration": "Maks. czas trwania",
+    "maxDistance": "Maks. dystans",
+    "totalDuration": "Czas trwania łącznie",
+    "totalDistance": "Dystans łącznie",
+    "totalVolumeRow": "Objętość łącznie",
+    "minUnit": "min",
+    "kmUnit": "km",
+    "progressionSectionTitle": "Progresja ciężaru — ostatnie 30 dni",
+    "noProgressionData": "Brak danych o progresji ciężaru z ostatnich 30 dni."
+  },
+  "streakCard": {
+    "title": "Passa",
+    "current": "Bieżąca",
+    "longest": "Najdłuższa",
+    "weeksUnit": "tyg."
+  },
+  "topLiftsCard": {
+    "title": "Najlepsze wyniki",
+    "bench": "Wyciskanie",
+    "squat": "Przysiad",
+    "deadlift": "Martwy ciąg",
+    "kgUnit": "kg"
+  },
+  "volumeChart": {
+    "tooltipSummary": "{{exercises}} ćwiczeń · {{sets}} serii"
+  },
+  "weightProgressionChart": {
+    "tooltipWeight": "{{weight}} kg"
+  }
+}

@@ -12,6 +12,7 @@ import type { useSetUpdateQueue } from "@/hooks/useSetUpdateQueue";
 import { useAddUserSet, useDeleteUserExercise } from "@/hooks/react-query";
 import { UserSetTile } from "./UserSetTile";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +28,7 @@ type Props = {
 };
 
 export const UserExerciseTile = ({ userExercise, queueSetUpdate }: Props) => {
+  const { t } = useTranslation("session");
   const { mutateAsync: addSet } = useAddUserSet(userExercise.id);
   const { mutateAsync: deleteExercise } = useDeleteUserExercise();
   const [error, setError] = useState("");
@@ -43,7 +45,7 @@ export const UserExerciseTile = ({ userExercise, queueSetUpdate }: Props) => {
 
       await addSet(newSet);
     } catch (e) {
-      setError("Failed to add set");
+      setError(t("userExerciseTile.addSetError"));
     }
   };
 
@@ -51,7 +53,7 @@ export const UserExerciseTile = ({ userExercise, queueSetUpdate }: Props) => {
     try {
       await deleteExercise(exerciseId);
     } catch (e) {
-      setError("Failed to delete exercise");
+      setError(t("userExerciseTile.deleteExerciseError"));
     } finally {
       setDeleteDialogOpen(false);
     }
@@ -74,7 +76,7 @@ export const UserExerciseTile = ({ userExercise, queueSetUpdate }: Props) => {
                       variant="destructive"
                       onClick={() => setDeleteDialogOpen(true)}
                     >
-                      Delete exercise
+                      {t("userExerciseTile.deleteExercise")}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </div>
@@ -83,9 +85,9 @@ export const UserExerciseTile = ({ userExercise, queueSetUpdate }: Props) => {
             <ConfirmDialog
               open={deleteDialogOpen}
               onOpenChange={setDeleteDialogOpen}
-              title="Delete exercise?"
-              description="This will remove this exercise and all its sets from the workout. This cannot be undone."
-              confirmLabel="Delete"
+              title={t("userExerciseTile.deleteConfirmTitle")}
+              description={t("userExerciseTile.deleteConfirmDescription")}
+              confirmLabel={t("userExerciseTile.deleteConfirmLabel")}
               variant="destructive"
               onConfirm={() => handleDeleteExercise(userExercise.id)}
             />
@@ -96,8 +98,8 @@ export const UserExerciseTile = ({ userExercise, queueSetUpdate }: Props) => {
 
       <CardContent className="flex flex-col justify-center">
         <div className="grid grid-cols-2 place-items-center mb-2">
-          <div className="pr-8">Weight</div>
-          <div className="pr-21">Reps</div>
+          <div className="pr-8">{t("userExerciseTile.weightLabel")}</div>
+          <div className="pr-21">{t("userExerciseTile.repsLabel")}</div>
         </div>
         {userExercise.sets?.map((s) => (
           <UserSetTile key={s.id} userSet={s} queueSetUpdate={queueSetUpdate} />
@@ -107,7 +109,7 @@ export const UserExerciseTile = ({ userExercise, queueSetUpdate }: Props) => {
           className="m-2 ml-0 mr-0"
           onClick={handleAddSet}
         >
-          Add set
+          {t("userExerciseTile.addSet")}
         </Button>
         {error && <FieldError>{error}</FieldError>}
       </CardContent>

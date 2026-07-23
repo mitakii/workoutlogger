@@ -1,0 +1,21 @@
+{
+  "createTemplatePage": {
+    "title": "Utwórz szablon",
+    "nameLabel": "Nazwa",
+    "namePlaceholder": "nazwa",
+    "descriptionLabel": "Opis",
+    "descriptionPlaceholder": "opis",
+    "submit": "Utwórz",
+    "unexpectedError": "Wystąpił nieoczekiwany błąd",
+    "createError": "Nie udało się utworzyć szablonu"
+  },
+  "templateEditPage": {
+    "addExercise": "Dodaj ćwiczenie",
+    "loadError": "Nie udało się załadować szablonu. Spróbuj ponownie później.",
+    "notFound": "Nie znaleziono szablonu"
+  },
+  "templateExerciseTile": {
+    "removeButton": "Usuń ćwiczenie",
+    "removeError": "Nie udało się usunąć ćwiczenia"
+  }
+}

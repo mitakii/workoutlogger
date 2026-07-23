@@ -3,19 +3,21 @@ import React, { useState } from "react";
 import { Card, CardDescription, CardHeader } from "../ui/card";
 import { Field, FieldError } from "../ui/field";
 import { Button } from "../ui/button";
+import { useTranslation } from "react-i18next";
 type Props = {
   exercise: Exercise;
   removeExercise: (e: Exercise) => void;
 };
 
 const TemplateExerciseTile = ({ exercise, removeExercise }: Props) => {
+  const { t } = useTranslation("templates");
   const [error, setError] = useState("");
 
   const handleRemoveExercise = async () => {
     try {
       await removeExercise(exercise);
     } catch (e) {
-      setError("Failed to remove exercise");
+      setError(t("templateExerciseTile.removeError"));
     }
   };
 
@@ -25,7 +27,7 @@ const TemplateExerciseTile = ({ exercise, removeExercise }: Props) => {
       <CardDescription className="pl-2">{exercise.description}</CardDescription>
       <Field className="">
         <Button className="" onClick={handleRemoveExercise}>
-          Remove Exercise
+          {t("templateExerciseTile.removeButton")}
         </Button>
         {error && <FieldError>{error}</FieldError>}
       </Field>

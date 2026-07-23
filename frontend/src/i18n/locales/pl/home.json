@@ -1,0 +1,49 @@
+{
+  "landingHero": {
+    "title": "Śledź swój trening. Zobacz efekty.",
+    "subtitle": "Zapisuj treningi, obserwuj wzrost siły w czasie i wracaj tam, gdzie skończyłeś — każda sesja, każda seria.",
+    "joinButton": "Dołącz do nas",
+    "loginButton": "Zaloguj się",
+    "features": {
+      "logSets": {
+        "title": "Zapisuj każdą serię",
+        "description": "Śledź ciężar, powtórzenia i ćwiczenia w trakcie treningu."
+      },
+      "seeProgress": {
+        "title": "Zobacz swoje postępy",
+        "description": "Wykresy progresji ciężarów i statystyki życiowe."
+      },
+      "reuseTemplates": {
+        "title": "Korzystaj z szablonów",
+        "description": "Zapisuj treningi jako szablony i uruchamiaj je jednym kliknięciem."
+      },
+      "followLifters": {
+        "title": "Obserwuj innych trenujących",
+        "description": "Przeglądaj publiczne profile i porównuj swoje postępy."
+      }
+    }
+  },
+  "quickStartTemplates": {
+    "heading": "Szybki start",
+    "startError": "Nie udało się rozpocząć sesji z szablonu",
+    "exerciseCount_one": "{{count}} ćwiczenie",
+    "exerciseCount_few": "{{count}} ćwiczenia",
+    "exerciseCount_many": "{{count}} ćwiczeń",
+    "exerciseCount_other": "{{count}} ćwiczenia",
+    "confirmTitle": "Rozpocząć nową sesję na podstawie tego szablonu?",
+    "confirmDescription": "Rozpocznie to nową sesję treningową i doda wszystkie ćwiczenia z szablonu \"{{templateName}}\".",
+    "confirmLabel": "Rozpocznij sesję"
+  },
+  "recentActivity": {
+    "heading": "Ostatnia aktywność",
+    "loadError": "Nie udało się wczytać ostatniej aktywności.",
+    "defaultWorkoutName": "Trening",
+    "exerciseCount_one": "{{count}} ćwiczenie",
+    "exerciseCount_few": "{{count}} ćwiczenia",
+    "exerciseCount_many": "{{count}} ćwiczeń",
+    "exerciseCount_other": "{{count}} ćwiczenia"
+  },
+  "liderBoard": {
+    "placeholder": "Ranking"
+  }
+}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card } from "../ui/card";
 import type { UserExercise } from "@/types/types";
 import {
@@ -15,6 +16,7 @@ type Props = {
 };
 
 const ProfileExerciseTile = ({ userExercise }: Props) => {
+  const { t } = useTranslation("profile");
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -28,7 +30,9 @@ const ProfileExerciseTile = ({ userExercise }: Props) => {
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="icon" className="size-8">
               <ChevronsUpDown />
-              <span className="sr-only">Toggle details</span>
+              <span className="sr-only">
+                {t("profileExerciseTile.toggleDetails")}
+              </span>
             </Button>
           </CollapsibleTrigger>
           <h4 className="text-sm font-semibold">{userExercise.exerciseName}</h4>

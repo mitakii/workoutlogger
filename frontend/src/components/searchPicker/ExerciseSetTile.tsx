@@ -5,6 +5,7 @@ import type { Exercise } from "@/types/types";
 import { Card } from "../ui/card";
 import { Field, FieldError } from "../ui/field";
 import { Button } from "../ui/button";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   exercise: Exercise;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export const ExerciseSetTile = ({ exercise, addExercise }: Props) => {
+  const { t } = useTranslation("searchPicker");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -20,7 +22,7 @@ export const ExerciseSetTile = ({ exercise, addExercise }: Props) => {
       await addExercise(exercise);
       navigate(-1);
     } catch (e) {
-      setError("Exercise already exist");
+      setError(t("exerciseSetTile.alreadyExists"));
     }
   };
 
@@ -49,7 +51,7 @@ export const ExerciseSetTile = ({ exercise, addExercise }: Props) => {
       </div>
       <Field>
         <Button className="mt-3 w-full" onClick={handleAddExercise}>
-          Add Exercise
+          {t("exerciseSetTile.addExercise")}
         </Button>
         {error && <FieldError>{error}</FieldError>}
       </Field>

@@ -1,0 +1,49 @@
+{
+  "landingHero": {
+    "title": "Слідкуй за своїми тренуваннями. Побач результат.",
+    "subtitle": "Записуй тренування, стеж за прогресом сили з часом і продовжуй з того місця, де зупинився — кожне заняття, кожен підхід.",
+    "joinButton": "Приєднатися",
+    "loginButton": "Увійти",
+    "features": {
+      "logSets": {
+        "title": "Записуй кожен підхід",
+        "description": "Відстежуй вагу, повторення та вправи під час тренування."
+      },
+      "seeProgress": {
+        "title": "Слідкуй за прогресом",
+        "description": "Графіки прогресу ваги та статистика за весь час."
+      },
+      "reuseTemplates": {
+        "title": "Використовуй шаблони",
+        "description": "Зберігай тренування як шаблони та запускай їх в один дотик."
+      },
+      "followLifters": {
+        "title": "Стеж за іншими спортсменами",
+        "description": "Переглядай публічні профілі та порівнюй свій прогрес."
+      }
+    }
+  },
+  "quickStartTemplates": {
+    "heading": "Швидкий старт",
+    "startError": "Не вдалося розпочати сесію за шаблоном",
+    "exerciseCount_one": "{{count}} вправа",
+    "exerciseCount_few": "{{count}} вправи",
+    "exerciseCount_many": "{{count}} вправ",
+    "exerciseCount_other": "{{count}} вправи",
+    "confirmTitle": "Розпочати нову сесію за цим шаблоном?",
+    "confirmDescription": "Це розпочне нову сесію тренування та додасть усі вправи з шаблону \"{{templateName}}\".",
+    "confirmLabel": "Розпочати сесію"
+  },
+  "recentActivity": {
+    "heading": "Остання активність",
+    "loadError": "Не вдалося завантажити останню активність.",
+    "defaultWorkoutName": "Тренування",
+    "exerciseCount_one": "{{count}} вправа",
+    "exerciseCount_few": "{{count}} вправи",
+    "exerciseCount_many": "{{count}} вправ",
+    "exerciseCount_other": "{{count}} вправи"
+  },
+  "liderBoard": {
+    "placeholder": "Рейтинг"
+  }
+}

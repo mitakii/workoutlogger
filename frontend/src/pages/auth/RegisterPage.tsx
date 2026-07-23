@@ -32,10 +32,12 @@ import axios from "axios";
 import { Camera, Loader2 } from "lucide-react";
 import { registerSchema } from "@/schemas/auth.schema";
 import type { BackendError } from "@/types/types";
+import { useTranslation } from "react-i18next";
 
 export type RegisterFormInput = z.infer<typeof registerSchema>;
 
 export const Register = () => {
+  const { t } = useTranslation("auth");
   const { registerUser } = useUserContext();
   const navigate = useNavigate();
   const [pfpPreview, setPfpPreview] = useState<string | null>(null);
@@ -69,7 +71,7 @@ export const Register = () => {
     } catch (e) {
       if (!axios.isAxiosError(e)) {
         setError("root", {
-          message: "Unexpected error occured",
+          message: t("register.unexpectedError"),
         });
         return;
       }
@@ -99,11 +101,11 @@ export const Register = () => {
         });
       } else if (status === 500) {
         setError("root", {
-          message: "Internal server error",
+          message: t("register.internalServerError"),
         });
       } else {
         setError("root", {
-          message: "Something went wrong",
+          message: t("register.somethingWentWrong"),
         });
       }
     }
@@ -113,13 +115,13 @@ export const Register = () => {
     <div className="flex w-full items-center justify-center p-6 md:p-10">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Register</CardTitle>
+          <CardTitle>{t("register.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <FieldGroup>
             <form action="" onSubmit={handleSubmit(handleRegister)}>
               <Field className="items-center">
-                <FieldLabel>Add profile picture</FieldLabel>
+                <FieldLabel>{t("register.addPfpLabel")}</FieldLabel>
                 <label htmlFor="profilePicture" className="cursor-pointer">
                   <Avatar className="size-20">
                     {pfpPreview && (
@@ -140,7 +142,7 @@ export const Register = () => {
                 <FieldError errors={[errors.profilePicture]}></FieldError>
               </Field>
               <Field>
-                <FieldLabel className="mt-2">Login</FieldLabel>
+                <FieldLabel className="mt-2">{t("register.usernameLabel")}</FieldLabel>
                 <Input
                   type="text"
                   placeholder="username"
@@ -149,12 +151,12 @@ export const Register = () => {
                 <FieldError errors={[errors.userName]}></FieldError>
               </Field>
               <Field>
-                <FieldLabel className="mt-2">Email</FieldLabel>
+                <FieldLabel className="mt-2">{t("register.emailLabel")}</FieldLabel>
                 <Input type="text" placeholder="email" {...register("email")} />
                 <FieldError errors={[errors.email]}></FieldError>
               </Field>
               <Field className="mt-2">
-                <FieldLabel>Password</FieldLabel>
+                <FieldLabel>{t("register.passwordLabel")}</FieldLabel>
                 <Input
                   type="password"
                   {...register("password")}
@@ -163,7 +165,7 @@ export const Register = () => {
                 <FieldError errors={[errors.password]}></FieldError>
               </Field>
               <Field className="mt-2">
-                <FieldLabel>Confirm Password</FieldLabel>
+                <FieldLabel>{t("register.confirmPasswordLabel")}</FieldLabel>
                 <Input
                   type="password"
                   {...register("confirmPassword")}
@@ -172,21 +174,21 @@ export const Register = () => {
                 <FieldError errors={[errors.confirmPassword]}></FieldError>
               </Field>
               <Field className="mt-2">
-                <FieldLabel>Language</FieldLabel>
+                <FieldLabel>{t("register.languageLabel")}</FieldLabel>
                 <Controller
                   name="language"
                   control={control}
                   render={({ field }) => (
                     <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full ">
-                        <SelectValue placeholder="Select a Language" />
+                        <SelectValue placeholder={t("register.languagePlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>Languages</SelectLabel>
-                          <SelectItem value="en">English</SelectItem>
-                          <SelectItem value="pl">Polish</SelectItem>
-                          <SelectItem value="uk">Ukrainian</SelectItem>
+                          <SelectLabel>{t("register.languagesGroupLabel")}</SelectLabel>
+                          <SelectItem value="en">{t("register.languageEnglish")}</SelectItem>
+                          <SelectItem value="pl">{t("register.languagePolish")}</SelectItem>
+                          <SelectItem value="uk">{t("register.languageUkrainian")}</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -197,11 +199,11 @@ export const Register = () => {
               <Field>
                 <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
                   {isSubmitting && <Loader2 className="animate-spin" />}
-                  Register
+                  {t("register.submit")}
                 </Button>
                 <FieldError errors={[errors.root]} />
                 <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="/login">Sign in</a>
+                  {t("register.haveAccount")} <a href="/login">{t("register.signIn")}</a>
                 </FieldDescription>
               </Field>
             </form>

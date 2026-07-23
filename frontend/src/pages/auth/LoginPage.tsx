@@ -22,10 +22,12 @@ import {
 } from "@/components/ui/field";
 import { loginSchema } from "@/schemas/auth.schema";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export type LoginFormInput = z.infer<typeof loginSchema>;
 
 export const Login = () => {
+  const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const { loginUser } = useUserContext();
   const {
@@ -48,7 +50,7 @@ export const Login = () => {
       navigate("/");
     } catch (e) {
       if (!axios.isAxiosError(e)) {
-        setError("root", { message: "Unexpected error occured" });
+        setError("root", { message: t("login.unexpectedError") });
         reset();
         return;
       }
@@ -56,7 +58,7 @@ export const Login = () => {
       const status = e.response?.status;
       if (status === 400 || status === 401) {
         setError("root", {
-          message: "Invalid credentials",
+          message: t("login.invalidCredentials"),
         });
       }
     }
@@ -66,16 +68,14 @@ export const Login = () => {
     <div className="flex w-full items-center justify-center p-6 md:p-10">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your username below to login to your account
-          </CardDescription>
+          <CardTitle>{t("login.title")}</CardTitle>
+          <CardDescription>{t("login.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form action="" onSubmit={handleSubmit(handleLogin)}>
             <FieldGroup>
               <Field>
-                <FieldLabel>Login</FieldLabel>
+                <FieldLabel>{t("login.usernameLabel")}</FieldLabel>
                 <Input
                   type="text"
                   placeholder="username"
@@ -84,7 +84,7 @@ export const Login = () => {
                 <FieldError errors={[errors.username]}></FieldError>
               </Field>
               <Field>
-                <FieldLabel>Password</FieldLabel>
+                <FieldLabel>{t("login.passwordLabel")}</FieldLabel>
                 <Input
                   type="password"
                   placeholder="password"
@@ -95,11 +95,11 @@ export const Login = () => {
               <Field>
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting && <Loader2 className="animate-spin" />}
-                  Login
+                  {t("login.submit")}
                 </Button>
                 <FieldError errors={[errors.root]} />
                 <FieldDescription className="text-center">
-                  Don`t have an account? <a href="/register">Sign up</a>
+                  {t("login.noAccount")} <a href="/register">{t("login.signUp")}</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>

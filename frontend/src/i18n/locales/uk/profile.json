@@ -1,0 +1,37 @@
+{
+  "userProfilePage": {
+    "userNotFound": "Користувача не знайдено.",
+    "editProfileButton": "Редагувати профіль",
+    "statisticsHeading": "Статистика",
+    "noStatisticsYet": "Статистики поки немає.",
+    "workoutsStatLabel": "Тренування",
+    "totalVolumeStatLabel": "Загальний обсяг",
+    "workoutsHeading": "Тренування",
+    "failedToLoadWorkouts": "Не вдалося завантажити тренування.",
+    "noWorkoutsYet": "Поки що немає тренувань."
+  },
+  "profileExerciseTile": {
+    "toggleDetails": "Показати деталі"
+  },
+  "profileSetTile": {
+    "weightLabel": "Вага",
+    "repsLabel": "Повторення"
+  },
+  "profileWorkoutTile": {
+    "toggleDetails": "Показати деталі",
+    "createTemplate": "Створити шаблон",
+    "deleteWorkout": "Видалити тренування",
+    "deleteConfirmTitle": "Видалити тренування?",
+    "deleteConfirmDescription": "Це остаточно видалить це тренування разом з усіма вправами та підходами. Цю дію не можна скасувати.",
+    "deleteConfirmButton": "Видалити",
+    "days": {
+      "sunday": "Неділя",
+      "monday": "Понеділок",
+      "tuesday": "Вівторок",
+      "wednesday": "Середа",
+      "thursday": "Четвер",
+      "friday": "П'ятниця",
+      "saturday": "Субота"
+    }
+  }
+}

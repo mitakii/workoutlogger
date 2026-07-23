@@ -12,10 +12,12 @@ import { useUserContext } from "@/context/UserContext";
 import { changePfpScheme } from "@/schemas/settings.schema";
 import { Camera } from "lucide-react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 export type ChangePfpInput = z.infer<typeof changePfpScheme>;
 
 const ChangePfp = () => {
+  const { t } = useTranslation("common");
   const { user } = useUserContext();
   const { mutateAsync: changePfp } = useChangePfp();
   const [isChanged, setChanged] = useState<boolean>(false);
@@ -50,7 +52,7 @@ const ChangePfp = () => {
     } catch (e) {
       if (!axios.isAxiosError(e)) {
         setError("root", {
-          message: "Unexpected error occured",
+          message: t("errors.unexpectedError"),
         });
         return;
       }
@@ -58,15 +60,15 @@ const ChangePfp = () => {
       const status = e.response?.status;
       if (status === 401) {
         setError("password", {
-          message: "Password is invalid",
+          message: t("errors.invalidPassword"),
         });
       } else if (status === 500) {
         setError("root", {
-          message: "Internal server error",
+          message: t("errors.internalServerError"),
         });
       } else {
         setError("root", {
-          message: "Something went wrong",
+          message: t("errors.somethingWentWrong"),
         });
       }
     }
@@ -76,12 +78,12 @@ const ChangePfp = () => {
     <div className="pt-2">
       <Card>
         <CardHeader>
-          <CardTitle>Change profile picture</CardTitle>
+          <CardTitle>{t("settings.changePfpTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           <form action="" onSubmit={handleSubmit(handleChangePfp)}>
             <Field className="items-center">
-              <FieldLabel>Add profile picture</FieldLabel>
+              <FieldLabel>{t("settings.addPfpLabel")}</FieldLabel>
               <label htmlFor="changePfp" className="cursor-pointer">
                 <Avatar className="size-20">
                   {pfpPreview ? (
@@ -107,7 +109,7 @@ const ChangePfp = () => {
               <FieldError errors={[errors.profilePicture]}></FieldError>
             </Field>
             <Field className="pt-2">
-              <FieldLabel>Password</FieldLabel>
+              <FieldLabel>{t("settings.passwordLabel")}</FieldLabel>
               <Input
                 id="password"
                 type="password"
@@ -117,8 +119,10 @@ const ChangePfp = () => {
               <FieldError errors={[errors.password]}></FieldError>
             </Field>
             <Field className="pt-2">
-              <Button type="submit">Change</Button>
-              {isChanged && <div className="pl-2">Profile picture changed</div>}
+              <Button type="submit">{t("settings.changeButton")}</Button>
+              {isChanged && (
+                <div className="pl-2">{t("settings.pfpChangedNotice")}</div>
+              )}
               <FieldError errors={[errors.root]}></FieldError>
             </Field>
           </form>

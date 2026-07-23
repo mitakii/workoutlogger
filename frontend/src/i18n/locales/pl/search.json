@@ -1,0 +1,23 @@
+{
+  "searchPage": {
+    "errorMessage": "Coś poszło nie tak podczas wyszukiwania. Spróbuj ponownie później.",
+    "noResults": "Nie znaleziono: {{type}}."
+  },
+  "searchBar": {
+    "placeholder": "Szukaj..."
+  },
+  "templateTile": {
+    "edit": "Edytuj",
+    "applyToWorkout": "Zastosuj do treningu",
+    "delete": "Usuń",
+    "deleteFailed": "Nie udało się usunąć szablonu",
+    "applyFailed": "Nie udało się zastosować szablonu",
+    "startSessionRequired": "Rozpocznij trening, zanim zastosujesz szablon",
+    "deleteDialogTitle": "Usunąć szablon?",
+    "deleteDialogDescription": "To trwale usunie ten szablon. Tej operacji nie można cofnąć.",
+    "deleteConfirmLabel": "Usuń",
+    "applyDialogTitle": "Zastosować szablon do bieżącego treningu?",
+    "applyDialogDescription": "To doda wszystkie ćwiczenia z tego szablonu do Twojego trwającego treningu.",
+    "applyConfirmLabel": "Zastosuj"
+  }
+}

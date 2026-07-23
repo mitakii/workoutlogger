@@ -1,0 +1,13 @@
+{
+  "addExercise": {
+    "nameTagPlaceholder": "name tag",
+    "languagePlaceholder": "language",
+    "namePlaceholder": "name",
+    "descriptionPlaceholder": "description",
+    "translationsLabel": "Translations",
+    "addTranslation": "add new translation",
+    "save": "Save",
+    "unexpectedError": "Unexpected error occured",
+    "addFailed": "Failed to add exercise"
+  }
+}

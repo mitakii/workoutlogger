@@ -1,0 +1,45 @@
+{
+  "landingHero": {
+    "title": "Track your training. See it add up.",
+    "subtitle": "Log workouts, follow your strength over time, and pick up where you left off — every session, every set.",
+    "joinButton": "Join us",
+    "loginButton": "Log in",
+    "features": {
+      "logSets": {
+        "title": "Log every set",
+        "description": "Track weight, reps, and exercises as you train."
+      },
+      "seeProgress": {
+        "title": "See your progress",
+        "description": "Weight progression charts and lifetime statistics."
+      },
+      "reuseTemplates": {
+        "title": "Reuse templates",
+        "description": "Save workouts as templates and start them in one tap."
+      },
+      "followLifters": {
+        "title": "Follow other lifters",
+        "description": "Browse public profiles and compare your progress."
+      }
+    }
+  },
+  "quickStartTemplates": {
+    "heading": "Quick Start",
+    "startError": "Failed to start session from template",
+    "exerciseCount_one": "{{count}} exercise",
+    "exerciseCount_other": "{{count}} exercises",
+    "confirmTitle": "Start a new session from this template?",
+    "confirmDescription": "This will start a new workout session and add all exercises from \"{{templateName}}\".",
+    "confirmLabel": "Start Session"
+  },
+  "recentActivity": {
+    "heading": "Recent Activity",
+    "loadError": "Failed to load recent activity.",
+    "defaultWorkoutName": "Workout",
+    "exerciseCount_one": "{{count}} exercise",
+    "exerciseCount_other": "{{count}} exercises"
+  },
+  "liderBoard": {
+    "placeholder": "LiderBoard"
+  }
+}

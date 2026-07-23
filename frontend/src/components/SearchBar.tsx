@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDebounce } from "react-use";
+import { useTranslation } from "react-i18next";
 import { Input } from "./ui/input";
 
 type SearchBarProps = {
@@ -7,6 +8,7 @@ type SearchBarProps = {
 };
 
 const SearchBar = ({ onSearch }: SearchBarProps) => {
+  const { t } = useTranslation("search");
   const [query, setQuery] = useState("");
 
   useDebounce(
@@ -23,7 +25,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
       <Input
         type="text"
         value={query}
-        placeholder="Search..."
+        placeholder={t("searchBar.placeholder")}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           setQuery(e.currentTarget.value);
         }}

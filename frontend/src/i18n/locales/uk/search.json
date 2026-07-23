@@ -1,0 +1,23 @@
+{
+  "searchPage": {
+    "errorMessage": "Щось пішло не так під час пошуку. Спробуйте пізніше.",
+    "noResults": "Нічого не знайдено: {{type}}."
+  },
+  "searchBar": {
+    "placeholder": "Пошук..."
+  },
+  "templateTile": {
+    "edit": "Редагувати",
+    "applyToWorkout": "Застосувати до тренування",
+    "delete": "Видалити",
+    "deleteFailed": "Не вдалося видалити шаблон",
+    "applyFailed": "Не вдалося застосувати шаблон",
+    "startSessionRequired": "Розпочніть тренування, перш ніж застосовувати шаблон",
+    "deleteDialogTitle": "Видалити шаблон?",
+    "deleteDialogDescription": "Це остаточно видалить цей шаблон. Цю дію неможливо скасувати.",
+    "deleteConfirmLabel": "Видалити",
+    "applyDialogTitle": "Застосувати шаблон до поточного тренування?",
+    "applyDialogDescription": "Це додасть усі вправи з цього шаблону до вашого поточного тренування.",
+    "applyConfirmLabel": "Застосувати"
+  }
+}

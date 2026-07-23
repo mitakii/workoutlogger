@@ -1,0 +1,50 @@
+{
+  "statisticsPage": {
+    "title": "Статистика",
+    "notAvailable": "Статистика ще недоступна. Завершіть тренування, щоб почати.",
+    "workouts": "Тренування",
+    "exercises": "Вправи",
+    "totalSets": "Всього підходів",
+    "totalVolume": "Загальний обсяг",
+    "volumeSectionTitle": "Обсяг — останні 30 днів",
+    "noVolumeData": "Немає даних про тренування за останні 30 днів.",
+    "lastUpdated": "Оновлено:"
+  },
+  "exerciseStatisticsPage": {
+    "defaultTitle": "Статистика вправи",
+    "notFound": "Статистику для цієї вправи не знайдено. Спочатку додайте її до тренування.",
+    "maxWeight": "Макс. вага",
+    "totalSets": "Всього підходів",
+    "volume": "Обсяг",
+    "kgUnit": "кг",
+    "breakdownTitle": "Деталі",
+    "maxDuration": "Макс. тривалість",
+    "maxDistance": "Макс. дистанція",
+    "totalDuration": "Загальна тривалість",
+    "totalDistance": "Загальна дистанція",
+    "totalVolumeRow": "Загальний обсяг",
+    "minUnit": "хв",
+    "kmUnit": "км",
+    "progressionSectionTitle": "Прогресія ваги — останні 30 днів",
+    "noProgressionData": "Немає даних про прогресію ваги за останні 30 днів."
+  },
+  "streakCard": {
+    "title": "Серія",
+    "current": "Поточна",
+    "longest": "Найдовша",
+    "weeksUnit": "тижн."
+  },
+  "topLiftsCard": {
+    "title": "Найкращі результати",
+    "bench": "Жим лежачи",
+    "squat": "Присідання",
+    "deadlift": "Станова тяга",
+    "kgUnit": "кг"
+  },
+  "volumeChart": {
+    "tooltipSummary": "{{exercises}} вправ · {{sets}} підходів"
+  },
+  "weightProgressionChart": {
+    "tooltipWeight": "{{weight}} кг"
+  }
+}

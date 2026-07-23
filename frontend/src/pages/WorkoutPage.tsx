@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { useLastSession } from "../hooks/react-query";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { useTranslation } from "react-i18next";
 
 const WorkoutPage = () => {
+  const { t } = useTranslation("session");
   const { data: session, isLoading, isError } = useLastSession();
 
   if (isLoading) {
@@ -18,18 +20,18 @@ const WorkoutPage = () => {
   if (isError) {
     return (
       <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
-        Failed to load workout session. Try again later.
+        {t("workoutPage.loadError")}
       </p>
     );
   }
 
-  if (!session) return <div>No workout session found</div>;
+  if (!session) return <div>{t("workoutPage.noSession")}</div>;
 
   return (
     <div className=" flex flex-col p-2 max-w-3xl mx-auto">
       <Button asChild>
         <Link to={`/searchPicker/workoutExercise/${session.workoutId}`}>
-          <div>Add Exercise</div>
+          <div>{t("workoutPage.addExercise")}</div>
         </Link>
       </Button>
 

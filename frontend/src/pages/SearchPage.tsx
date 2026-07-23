@@ -7,8 +7,10 @@ import { useSearch } from "@/hooks/useSearch";
 import { Spinner } from "@/components/ui/spinner";
 import SearchBar from "../components/SearchBar";
 import { useInitialData } from "@/hooks/useInitialData";
+import { useTranslation } from "react-i18next";
 
 const SearchPage = () => {
+  const { t } = useTranslation("search");
   const { type } = useParams<{ type: SearchType }>();
   const [page, setPage] = useState<number>(1);
   const [query, setQuery] = useState<string>("");
@@ -47,13 +49,13 @@ const SearchPage = () => {
 
       {!isLoading && isError && (
         <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
-          Something went wrong while searching. Try again later.
+          {t("searchPage.errorMessage")}
         </p>
       )}
 
       {!isLoading && !isError && searching && showData.length === 0 && (
         <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
-          No {type} found.
+          {t("searchPage.noResults", { type })}
         </p>
       )}
 

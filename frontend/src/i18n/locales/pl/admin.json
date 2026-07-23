@@ -1,0 +1,13 @@
+{
+  "addExercise": {
+    "nameTagPlaceholder": "tag nazwy",
+    "languagePlaceholder": "język",
+    "namePlaceholder": "nazwa",
+    "descriptionPlaceholder": "opis",
+    "translationsLabel": "Tłumaczenia",
+    "addTranslation": "dodaj nowe tłumaczenie",
+    "save": "Zapisz",
+    "unexpectedError": "Wystąpił nieoczekiwany błąd",
+    "addFailed": "Nie udało się dodać ćwiczenia"
+  }
+}

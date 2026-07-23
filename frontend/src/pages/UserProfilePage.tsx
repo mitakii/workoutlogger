@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   useGetUserByUsername,
@@ -20,6 +21,7 @@ import { PAGE_SIZE } from "@/lib/constants";
 import { fmtVol } from "@/lib/utils";
 
 const UserProfilePage = () => {
+  const { t } = useTranslation("profile");
   const { username } = useParams<{ username?: string }>();
   const navigate = useNavigate();
   const { user: loggedInUser } = useUserContext();
@@ -60,7 +62,7 @@ const UserProfilePage = () => {
   if (isError || !userProfile)
     return (
       <p className="px-4 pt-6 text-center text-muted-foreground text-sm">
-        User not found.
+        {t("userProfilePage.userNotFound")}
       </p>
     );
 
@@ -83,7 +85,7 @@ const UserProfilePage = () => {
                 size="sm"
                 onClick={() => navigate("/settings")}
               >
-                Edit Profile
+                {t("userProfilePage.editProfileButton")}
               </Button>
             )}
           </div>
@@ -91,20 +93,27 @@ const UserProfilePage = () => {
       </Card>
 
       <div>
-        <h2 className="text-lg font-semibold mb-3">Statistics</h2>
+        <h2 className="text-lg font-semibold mb-3">
+          {t("userProfilePage.statisticsHeading")}
+        </h2>
         <Separator className="mb-3" />
         {statsLoading ? (
           <div className="flex items-center justify-center py-6">
             <Spinner />
           </div>
         ) : statsError || !stats ? (
-          <p className="text-sm text-muted-foreground">No statistics yet.</p>
+          <p className="text-sm text-muted-foreground">
+            {t("userProfilePage.noStatisticsYet")}
+          </p>
         ) : (
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <StatCard label="Workouts" value={stats.totalWorkouts ?? 0} />
               <StatCard
-                label="Total Volume"
+                label={t("userProfilePage.workoutsStatLabel")}
+                value={stats.totalWorkouts ?? 0}
+              />
+              <StatCard
+                label={t("userProfilePage.totalVolumeStatLabel")}
                 value={fmtVol(stats.totalVolume)}
               />
             </div>
@@ -124,7 +133,9 @@ const UserProfilePage = () => {
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold mb-3">Workouts</h2>
+        <h2 className="text-lg font-semibold mb-3">
+          {t("userProfilePage.workoutsHeading")}
+        </h2>
         <Separator className="mb-3" />
         {sessionsLoading ? (
           <div className="flex items-center justify-center py-6">
@@ -132,10 +143,12 @@ const UserProfilePage = () => {
           </div>
         ) : sessionsError ? (
           <p className="text-sm text-muted-foreground">
-            Failed to load workouts.
+            {t("userProfilePage.failedToLoadWorkouts")}
           </p>
         ) : !sessions || sessions.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No workouts yet.</p>
+          <p className="text-sm text-muted-foreground">
+            {t("userProfilePage.noWorkoutsYet")}
+          </p>
         ) : (
           <div>
             <ProfileWorkoutsList

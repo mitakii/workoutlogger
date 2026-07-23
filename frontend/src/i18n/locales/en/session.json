@@ -1,0 +1,31 @@
+{
+  "workoutPage": {
+    "loadError": "Failed to load workout session. Try again later.",
+    "noSession": "No workout session found",
+    "addExercise": "Add Exercise"
+  },
+  "sessionMenu": {
+    "openLastSession": "Open last session",
+    "startNewSession": "Start new session",
+    "createError": "Failed to start a new session"
+  },
+  "sessionExerciseList": {
+    "noActiveSession": "No active session"
+  },
+  "userExerciseTile": {
+    "deleteExercise": "Delete exercise",
+    "deleteConfirmTitle": "Delete exercise?",
+    "deleteConfirmDescription": "This will remove this exercise and all its sets from the workout. This cannot be undone.",
+    "deleteConfirmLabel": "Delete",
+    "weightLabel": "Weight",
+    "repsLabel": "Reps",
+    "addSet": "Add set",
+    "addSetError": "Failed to add set",
+    "deleteExerciseError": "Failed to delete exercise"
+  },
+  "userSetTile": {
+    "deleteSet": "Delete set",
+    "deleteError": "Failed to delete set",
+    "saveError": "Failed to save set, changes reverted"
+  }
+}

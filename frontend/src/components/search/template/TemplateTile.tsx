@@ -17,12 +17,14 @@ import type { UserTemplate } from "@/types/types";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   template: UserTemplate;
 };
 
 const TemplateTile = ({ template }: Props) => {
+  const { t } = useTranslation("search");
   const navigate = useNavigate();
   const { data: session } = useLastSession();
   const { mutateAsync: deleteTemplate } = useDeleteTemplate();
@@ -35,7 +37,7 @@ const TemplateTile = ({ template }: Props) => {
     try {
       await deleteTemplate(templateId);
     } catch (e) {
-      setError("Failed to delete template");
+      setError(t("templateTile.deleteFailed"));
     } finally {
       setDeleteDialogOpen(false);
     }
@@ -46,14 +48,14 @@ const TemplateTile = ({ template }: Props) => {
     templateId?: string
   ) => {
     if (!workoutId || !templateId) {
-      setError("Start a session before applying a template");
+      setError(t("templateTile.startSessionRequired"));
       return;
     }
     try {
       await applyTemplate({ workoutId, templateId });
       navigate(`/session/${workoutId}`);
     } catch (e) {
-      setError("Failed to apply template");
+      setError(t("templateTile.applyFailed"));
     } finally {
       setApplyDialogOpen(false);
     }
@@ -73,24 +75,24 @@ const TemplateTile = ({ template }: Props) => {
                   <DropdownMenuItem
                     onClick={() => navigate(`/editTemplate/${template.id}`)}
                   >
-                    Edit
+                    {t("templateTile.edit")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
                       if (!session?.workoutId) {
-                        setError("Start a session before applying a template");
+                        setError(t("templateTile.startSessionRequired"));
                         return;
                       }
                       setApplyDialogOpen(true);
                     }}
                   >
-                    Apply to workout
+                    {t("templateTile.applyToWorkout")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     variant="destructive"
                     onClick={() => setDeleteDialogOpen(true)}
                   >
-                    Delete
+                    {t("templateTile.delete")}
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </div>
@@ -99,18 +101,18 @@ const TemplateTile = ({ template }: Props) => {
           <ConfirmDialog
             open={deleteDialogOpen}
             onOpenChange={setDeleteDialogOpen}
-            title="Delete template?"
-            description="This will permanently delete this template. This cannot be undone."
-            confirmLabel="Delete"
+            title={t("templateTile.deleteDialogTitle")}
+            description={t("templateTile.deleteDialogDescription")}
+            confirmLabel={t("templateTile.deleteConfirmLabel")}
             variant="destructive"
             onConfirm={() => handleDeleteTemplate(template.id)}
           />
           <ConfirmDialog
             open={applyDialogOpen}
             onOpenChange={setApplyDialogOpen}
-            title="Apply template to current workout?"
-            description="This will add all exercises from this template to your in-progress workout."
-            confirmLabel="Apply"
+            title={t("templateTile.applyDialogTitle")}
+            description={t("templateTile.applyDialogDescription")}
+            confirmLabel={t("templateTile.applyConfirmLabel")}
             onConfirm={() =>
               handleApplyTemplate(session?.workoutId, template.id)
             }

@@ -1,0 +1,50 @@
+{
+  "statisticsPage": {
+    "title": "Statistics",
+    "notAvailable": "Statistics not available yet. Complete a workout to get started.",
+    "workouts": "Workouts",
+    "exercises": "Exercises",
+    "totalSets": "Total Sets",
+    "totalVolume": "Total Volume",
+    "volumeSectionTitle": "Volume — Last 30 Days",
+    "noVolumeData": "No workout data in the last 30 days.",
+    "lastUpdated": "Last updated:"
+  },
+  "exerciseStatisticsPage": {
+    "defaultTitle": "Exercise Statistics",
+    "notFound": "No statistics found for this exercise. Add it to a workout first.",
+    "maxWeight": "Max Weight",
+    "totalSets": "Total Sets",
+    "volume": "Volume",
+    "kgUnit": "kg",
+    "breakdownTitle": "Breakdown",
+    "maxDuration": "Max Duration",
+    "maxDistance": "Max Distance",
+    "totalDuration": "Total Duration",
+    "totalDistance": "Total Distance",
+    "totalVolumeRow": "Total Volume",
+    "minUnit": "min",
+    "kmUnit": "km",
+    "progressionSectionTitle": "Weight Progression — Last 30 Days",
+    "noProgressionData": "No weight progression data in the last 30 days."
+  },
+  "streakCard": {
+    "title": "Streak",
+    "current": "Current",
+    "longest": "Longest",
+    "weeksUnit": "wks"
+  },
+  "topLiftsCard": {
+    "title": "Top Lifts",
+    "bench": "Bench",
+    "squat": "Squat",
+    "deadlift": "Deadlift",
+    "kgUnit": "kg"
+  },
+  "volumeChart": {
+    "tooltipSummary": "{{exercises}} exercises · {{sets}} sets"
+  },
+  "weightProgressionChart": {
+    "tooltipWeight": "{{weight}} kg"
+  }
+}

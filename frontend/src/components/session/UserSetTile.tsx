@@ -15,6 +15,7 @@ import { useDeleteUserSet } from "@/hooks/react-query";
 import type { useSetUpdateQueue } from "@/hooks/useSetUpdateQueue";
 import type { UserSet } from "@/types/types";
 import { FieldError } from "../ui/field";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   userSet: UserSet;
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export const UserSetTile = ({ userSet, queueSetUpdate }: Props) => {
+  const { t } = useTranslation("session");
   const [reps, setReps] = useState<number>(userSet.reps);
   const [weight, setWeight] = useState<number>(userSet.weight);
   const [weightText, setWeightText] = useState<string>(String(userSet.weight));
@@ -35,7 +37,7 @@ export const UserSetTile = ({ userSet, queueSetUpdate }: Props) => {
     try {
       await deleteSet(userSet);
     } catch (e) {
-      setError("Failed to delete set");
+      setError(t("userSetTile.deleteError"));
     }
   };
 
@@ -120,7 +122,7 @@ export const UserSetTile = ({ userSet, queueSetUpdate }: Props) => {
     })
       .then(() => setError(""))
       .catch(() => {
-        setError("Failed to save set, changes reverted");
+        setError(t("userSetTile.saveError"));
         setReps(userSet.reps);
         setWeight(userSet.weight);
         setRepsText(String(userSet.reps));
@@ -206,7 +208,7 @@ export const UserSetTile = ({ userSet, queueSetUpdate }: Props) => {
           <DropdownMenuContent className="w-40" align="start">
             <DropdownMenuGroup>
               <DropdownMenuItem variant="destructive" onClick={handleSetDelete}>
-                Delete set
+                {t("userSetTile.deleteSet")}
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>

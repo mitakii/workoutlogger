@@ -1,5 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 const LiderBoard = () => {
-  return <div>LiderBoard</div>;
+  const { t } = useTranslation("home");
+  return <div>{t("liderBoard.placeholder")}</div>;
 };
 
 export default LiderBoard;
