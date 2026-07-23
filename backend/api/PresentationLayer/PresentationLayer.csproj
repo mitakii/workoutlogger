@@ -29,10 +29,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Hangfire.AspNetCore" Version="1.8.23" />
+      <PackageReference Include="Hangfire.AspNetCore" Version="1.8.24" />
       <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.29" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.29">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>

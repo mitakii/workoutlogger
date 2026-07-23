@@ -12,9 +12,9 @@
 
     <ItemGroup>
       <PackageReference Include="CloudinaryDotNet" Version="1.29.2" />
-      <PackageReference Include="Hangfire.AspNetCore" Version="1.8.23" />
+      <PackageReference Include="Hangfire.AspNetCore" Version="1.8.24" />
       <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.0" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.21.0" />
     </ItemGroup>
 
     <ItemGroup>
