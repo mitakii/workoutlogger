@@ -507,3 +507,7 @@ backend-analysis.pdf
 .gitignore
 frontend-analysis.pdf
 domain-https-setup-guide.pdf
+backend/api/DataAccessLayer/Data/SeedData/popular_exercises.json
+backend/api/DataAccessLayer/Data/SeedData/exercises.json
+backend/api/DataAccessLayer/Data/SeedData/more_popular_exercises.json
+k8s/secret.yaml

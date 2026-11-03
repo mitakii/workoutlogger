@@ -1,24 +1,30 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+﻿# syntax=docker/dockerfile:1
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-noble AS build
+ARG TARGETARCH
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["PresentationLayer/PresentationLayer.csproj", "PresentationLayer/"]
-RUN dotnet restore "PresentationLayer/PresentationLayer.csproj"
+
+# Restore first so the layer is cached until a csproj changes
+COPY PresentationLayer/PresentationLayer.csproj PresentationLayer/
+COPY BusinessLayer/BusinessLayer.csproj         BusinessLayer/
+COPY DataAccessLayer/DataAccessLayer.csproj     DataAccessLayer/
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet restore PresentationLayer/PresentationLayer.csproj -a $TARGETARCH
+
 COPY . .
-WORKDIR "/src/PresentationLayer"
-RUN dotnet build "./PresentationLayer.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./PresentationLayer.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+FROM build AS publish-api
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet publish PresentationLayer/PresentationLayer.csproj -c $BUILD_CONFIGURATION -a $TARGETARCH \
+      -o /app/publish /p:UseAppHost=false
 
-FROM base AS final
+# api
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-noble-chiseled-extra AS api
 WORKDIR /app
-ENV ASPNETCORE_URLS=http://+:8081
-COPY --from=publish /app/publish .
+ENV ASPNETCORE_HTTP_PORTS=8080
+EXPOSE 8080
+COPY --from=publish-api --chown=app:app /app/publish .
+USER app
 ENTRYPOINT ["dotnet", "PresentationLayer.dll"]

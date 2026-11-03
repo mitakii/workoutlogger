@@ -23,3 +23,7 @@
 **/values.dev.yaml
 LICENSE
 README.md
+**/*.DotSettings.user
+**/appsettings.Development.json
+**/Properties/launchSettings.json
+**/*.http

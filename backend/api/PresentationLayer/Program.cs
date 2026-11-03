@@ -12,6 +12,7 @@ using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
+using PresentationLayer.Extensions;
 using PresentationLayer.Filters;
 
 
@@ -29,11 +30,13 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 5 * 1024 * 1024;
 });
 
+var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
     {
-        policy.WithOrigins("https://app.mitakiilab.com", "http://localhost:5173")
+        policy.WithOrigins(corsOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -106,6 +109,8 @@ builder.Logging.AddConsole();
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddWLoggerHealthChecks();
+
 var app = builder.Build();
 
 app.MapHangfireDashboard("/hangfire", new DashboardOptions
@@ -138,9 +143,8 @@ if (app.Environment.IsDevelopment())
     await SeedAdmin.SeedAsync(scope.ServiceProvider);
 }
 else
-{
-app.UseForwardedHeaders();
-    
+{ 
+    app.UseForwardedHeaders();
 }
 
 app.UseHttpsRedirection();
@@ -152,5 +156,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapWLoggerHealthChecks();
 
 app.Run();

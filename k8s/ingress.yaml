@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: workoutlog
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - app.mitakiilab.com
+        - api.mitakiilab.com
+      secretName: workoutlog-origin-tls
+  rules:
+    - host: app.mitakiilab.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: workoutlog-frontend
+                port:
+                  name: http
+    - host: api.mitakiilab.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: workoutlog-api
+                port:
+                  name: http

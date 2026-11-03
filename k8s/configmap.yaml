@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workoutlog-config
+data:
+  ASPNETCORE_ENVIRONMENT: Production
+
+  JwtOptions__Issuer: https://api.mitakiilab.com
+  JwtOptions__Audience: https://app.mitakiilab.com
+
+  Cors__AllowedOrigins__0: https://app.mitakiilab.com

@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: workoutlog
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - api.yaml
+  - frontend.yaml
+  - ingress.yaml
+
+images:
+  - name: workoutlog-api
+    newName: ghcr.io/mitakii/workoutlog-api
+    newTag: latest
+  - name: workoutlog-frontend
+    newName: ghcr.io/mitakii/workoutlog-frontend
+    newTag: latest
