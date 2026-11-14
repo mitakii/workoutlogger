@@ -21,6 +21,7 @@ import { useScrollDirection } from "@/hooks/scrollDirection";
 import type { NavAction } from "@/types/types";
 import { useEffect } from "react";
 import { supportedLanguages } from "@/i18n";
+import Logo from "./Logo";
 
 type RouteHandle = {
   nav?: NavAction[];
@@ -58,7 +59,8 @@ const Navbar = () => {
     >
       <div className="">
         <div className="flex items-center justify-between">
-          <Link to="/" className="font-semibold text-base">
+          <Link to="/" className="flex items-center gap-2 font-semibold text-base">
+            <Logo />
             {t("nav.brand")}
           </Link>
           <div className="flex items-center gap-2">
